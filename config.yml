@@ -1,0 +1,54 @@
+#                  Exodus                     #
+#                By MastaC                    #
+#      http://www.tidesofwaronline.com        #
+# Races
+races:
+  Venturi:
+    color: 1
+    block: GOLD_BLOCK
+    blockdatavalue: 0
+    coords:
+    
+  Abraxian:
+    color: 5
+    block: NETHER_BRICK
+    blockdatavalue: 0
+    
+  Dia'ab:
+    color: 4
+    block: WOOL
+    blockdatavalue: 14
+    
+  Nagrath:
+    color: 3
+    block: WOOL
+    blockdatavalue: 11
+    
+  Nordic:
+    color: f
+    block: SNOW_BLOCK
+    blockdatavalue: 0
+    
+  Science:
+    color: 6
+    block: IRON_BLOCK
+    blockdatavalue: 0
+    
+  Elven:
+    color: e
+    block: GLOWSTONE
+    blockdatavalue: 0
+    
+  Dwarves:
+    color: 7
+    block: OBSIDIAN
+    blockdatavalue: 0
+    
+# Experience
+maxlevel: 40
+statmax: 64
+xpmultiplier: 1.0
+donordoublexpweekend: true
+donorbonus: 1.2
+
+# Player Options

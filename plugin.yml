@@ -1,0 +1,19 @@
+name: Exodus
+version: 1.1.1
+description: The RPG plugin for Exodus
+author: MastaC
+website: http://www.tidesofwaronline.com
+main: com.tidesofwaronline.Exodus.Exodus
+depend: [MaterialAPI]
+softdepend: [ProtocolLib]
+
+commands:
+  stats:
+    description: Displays the stats menu.
+  exo:
+    description: Exodus Admin command.
+  exospawner:
+    description: Controls Exodus Spawners
+    aliases: [es]
+  party:
+    description: Exodus Party commands.
