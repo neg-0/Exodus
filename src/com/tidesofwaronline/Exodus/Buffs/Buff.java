@@ -1,5 +1,7 @@
 package com.tidesofwaronline.Exodus.Buffs;
 
-public class Buff {
+public abstract class Buff {
+	
+	public abstract void onHit();
 
 }
