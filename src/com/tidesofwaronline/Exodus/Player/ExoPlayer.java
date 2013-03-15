@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -21,12 +17,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.kitteh.tag.TagAPI;
 
+import com.tidesofwaronline.Exodus.Buffs.Buff;
 import com.tidesofwaronline.Exodus.Config.PlayerConfig;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.Effects.PlayerLevelUpEffect;
 import com.tidesofwaronline.Exodus.Spells.Spellbook;
 import com.tidesofwaronline.Exodus.Spells.Spells.Spell;
-import com.tidesofwaronline.Exodus.Util.FireworkEffectPlayer;
 import com.tidesofwaronline.Exodus.Util.IconMenu;
 import com.tidesofwaronline.Exodus.Util.Lists;
 import com.tidesofwaronline.Exodus.Util.MessageUtil;
@@ -48,14 +45,14 @@ public class ExoPlayer implements Runnable {
 	Inventory dcInv;
 	CustomItem pickeditem;
 	int slot;
-	
+
 	private Inventory buildInv;
 
 	//Equipped Equipment
 	public CustomItem equippedmelee;
 	public CustomItem equippedranged;
 	public CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
-	
+
 	//Combat
 	boolean inCombat = false;
 	boolean inDanger = false;
@@ -63,23 +60,24 @@ public class ExoPlayer implements Runnable {
 	public boolean showSpawners = false;
 
 	public int level;
-	
+
 	public Party party = null;
-	
+
 	Spellbook spellbook = new Spellbook(this);
+	
+	ArrayList<Buff> buffs = new ArrayList<Buff>();
 
 	public ExoPlayer(final Plugin plugin, final Player player) {
 
 		ExoPlayer.plugin = plugin;
 		this.player = player;
-		
+
 		PlayerIndex.registerPlayer(this);
 
 		buildInv = Bukkit.createInventory(player, InventoryType.PLAYER);
 
-
 		config.initialize();
-		
+
 		this.level = config.getConfig().getInt("level", 1);
 		equippedmelee = config.getEquippedMelee();
 		equippedranged = config.getEquippedRanged();
@@ -297,13 +295,13 @@ public class ExoPlayer implements Runnable {
 			return false;
 		}
 	}
-	
+
 	//@SuppressWarnings("deprecation")
 	public void inventoryLoad() {
 		buildInv.setContents(config.loadInventory(player).getContents());
 		for (ItemStack i : buildInv.getContents()) {
 			if (i != null)
-			player.sendMessage("" + i);
+				player.sendMessage("" + i);
 		}
 		if (!inCombat) {
 			player.getInventory().setContents(buildInv.getContents());
@@ -321,21 +319,8 @@ public class ExoPlayer implements Runnable {
 
 		player.sendMessage("Congratulations! You've reached level " + level
 				+ "!");
-		//Play Effects
-		player.getWorld().playSound(player.getLocation(),
-				Sound.ENDERDRAGON_GROWL, 1.0F, 1.0F);
-		player.getWorld().strikeLightningEffect(player.getLocation());
-		FireworkEffectPlayer fplayer = new FireworkEffectPlayer();
-		FireworkEffect fe = FireworkEffect.builder().with(Type.BURST)
-				.withColor(Color.YELLOW).withFlicker().withTrail().build();
-		try {
-			for (int i = 0; i < 5; i++) {
-				fplayer.playFirework(player.getWorld(), player.getLocation(),
-						fe);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+		new PlayerLevelUpEffect(this.player);
 
 		setMaxHP(calculateHealth());
 
@@ -684,28 +669,28 @@ public class ExoPlayer implements Runnable {
 			i.onHit(this.player, entity);
 		}
 	}
-	
+
 	public int getStaminaMax() {
 		return (config().getInt("stats.warrior") * 5)
 				+ (config().getInt("stats.cleric") * 4)
 				+ (config().getInt("stats.warlock") * 3);
 	}
-	
+
 	public int getStaminaRegen() {
 		return (config().getInt("stats.rogue") * 1)
 				+ (config().getInt("stats.ranger") * 1)
 				+ (config().getInt("stats.mage") * 1);
-		
+
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void takeDamage(Entity damager) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
