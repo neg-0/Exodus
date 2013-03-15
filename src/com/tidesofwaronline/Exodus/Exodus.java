@@ -16,7 +16,7 @@ import com.tidesofwaronline.Exodus.Config.ConfigManager;
 import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
-import com.tidesofwaronline.Exodus.GUI.GUI;
+import com.tidesofwaronline.Exodus.GUI.GUIWindow;
 import com.tidesofwaronline.Exodus.Listeners.EntityListener;
 import com.tidesofwaronline.Exodus.Listeners.LoginListener;
 import com.tidesofwaronline.Exodus.Listeners.PlayerListener;
@@ -36,7 +36,7 @@ public class Exodus extends JavaPlugin {
 	private ProtocolManager protocolManager;
 	
 	public static void main(String args[]) {
-		new GUI();
+		new GUIWindow();
 	}
 
 	@Override
