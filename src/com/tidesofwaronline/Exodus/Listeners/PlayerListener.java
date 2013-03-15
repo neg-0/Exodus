@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -230,5 +232,15 @@ public class PlayerListener implements Listener {
 						event.getClickedBlock());
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onDeath(PlayerDeathEvent event) {
+		event.getDrops().clear();
+		PlayerIndex.getExodusPlayer(event.getEntity()).setCombat(false);
+	}
+	
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent event) {
 	}
 }
