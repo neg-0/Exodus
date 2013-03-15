@@ -8,7 +8,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class CustomItemHandler {
 
-	static HashMap<Integer, CustomItem> map = new HashMap<Integer, CustomItem>();
+	static HashMap<Integer, CustomItem> customItems = new HashMap<Integer, CustomItem>();
+	static HashMap<String, CustomItem> definedItems = new HashMap<String, CustomItem>();
 
 	public enum Tier {
 		Trash(ChatColor.DARK_GRAY), Decent(ChatColor.GRAY), Common(
@@ -36,15 +37,15 @@ public class CustomItemHandler {
 	}
 
 	public static void register(CustomItem i) {
-		map.put(i.getID(), i);
+		customItems.put(i.getID(), i);
 	}
 
 	public static void unRegister(int i) {
-		map.remove(i);
+		customItems.remove(i);
 	}
 
 	public static CustomItem lookup(int i) {
-		return map.get(i);
+		return customItems.get(i);
 	}
 
 	public static boolean isCustomItem(ItemStack itemstack) {
@@ -68,5 +69,13 @@ public class CustomItemHandler {
 		}
 
 		return -1;
+	}
+	
+	public static void addDefinedItem(CustomItem item) {
+		definedItems.put(item.getName(), item);
+	}
+	
+	public static CustomItem getDefinedItem(String name) {
+		return definedItems.get(name);
 	}
 }

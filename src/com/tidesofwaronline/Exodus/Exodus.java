@@ -3,10 +3,13 @@ package com.tidesofwaronline.Exodus;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -28,13 +31,13 @@ import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 public class Exodus extends JavaPlugin {
 
 	public static Logger logger = Logger.getLogger("minecraft");
+	public static Economy econ = null;
 	String version = null;
-	Plugin dynmap;
 	public boolean filter = true;
 
 	@SuppressWarnings("unused")
 	private ProtocolManager protocolManager;
-	
+
 	public static void main(String args[]) {
 		new GUIWindow();
 	}
@@ -63,10 +66,10 @@ public class Exodus extends JavaPlugin {
 
 		new CustomEntityHandler(this);
 		new CustomItemHandler();
-		
+
 		//Register CustomEnchantments
 		CustomEnchantment.enchants.put("Poison", CustomEnchantment.POISON);
-		
+
 		//Register Commands
 		CommandListener comListener = new CommandListener(this);
 
@@ -79,6 +82,15 @@ public class Exodus extends JavaPlugin {
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
 			new ProtocolListener(this);
 			getLogger().log(Level.INFO, "Hooked into ProtocolLib!");
+		}
+
+		//Vault
+		if (!setupEconomy()) {
+			logger.severe(String.format(
+					"[%s] - Disabled due to no Vault dependency found!",
+					getDescription().getName()));
+			getServer().getPluginManager().disablePlugin(this);
+			return;
 		}
 
 		//Scan for players already in-game (in case of reload)
@@ -103,5 +115,18 @@ public class Exodus extends JavaPlugin {
 		}
 		PlayerIndex.clear();
 		CustomEntityHandler.dropLevels();
+	}
+
+	private boolean setupEconomy() {
+		if (getServer().getPluginManager().getPlugin("Vault") == null) {
+			return false;
+		}
+		RegisteredServiceProvider<Economy> rsp = getServer()
+				.getServicesManager().getRegistration(Economy.class);
+		if (rsp == null) {
+			return false;
+		}
+		econ = rsp.getProvider();
+		return econ != null;
 	}
 }

@@ -600,4 +600,14 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	public final void setGlow(boolean glow) {
 		this.glow = glow;
 	}
+
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+		this.meta.setDisplayName(this.color + this.name);
+		this.setItemMeta(this.meta);
+	}
 }

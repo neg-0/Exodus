@@ -18,6 +18,5 @@
 			<attribute name="javadoc_location" value="http://aadnk.github.com/ProtocolLib/Javadoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Dustin/Desktop/eclipse/jars/rpgitems.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
