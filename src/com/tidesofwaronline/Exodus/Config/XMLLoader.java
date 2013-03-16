@@ -1,17 +1,53 @@
 package com.tidesofwaronline.Exodus.Config;
 
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+import java.io.File;
+ 
+public class XMLLoader {
+ 
+  public static void main(String argv[]) {
+ 
+    try {
+ 
+	File fXmlFile = new File("E:\\Documents\\Tides of War\\Exodus\\Exodus\\Exodus.xml");
+	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	Document doc = dBuilder.parse(fXmlFile);
+ 
+	//optional, but recommended
+	//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+	doc.getDocumentElement().normalize();
+ 
+	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+ 
+	NodeList nList = doc.getElementsByTagName("staff");
+ 
+	System.out.println("----------------------------");
+ 
+	for (int temp = 0; temp < nList.getLength(); temp++) {
+ 
+		Node nNode = nList.item(temp);
+ 
+		System.out.println("\nCurrent Element :" + nNode.getNodeName());
+ 
+		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+ 
+			Element eElement = (Element) nNode;
+ 
+			System.out.println("Entity : " + eElement.getAttribute("Entity"));
+			System.out.println("Display Name : " + eElement.getElementsByTagName("DisplayName").item(0).getTextContent());
 
-public class XMLLoader extends DefaultHandler {
-	
-	public XMLLoader() throws Exception {
-		super();
-		
-		XMLReader xr = XMLReaderFactory.createXMLReader();
-		XMLLoader handler = new XMLLoader();
-		xr.setContentHandler(handler);
-		xr.setErrorHandler(handler);
+ 
+		}
 	}
+    } catch (Exception e) {
+	e.printStackTrace();
+    }
+  }
+ 
 }
