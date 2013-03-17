@@ -260,65 +260,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			this.name = MessageUtil
 					.removeColourCode(this.meta.getDisplayName());
 
-			for (int i = 0; i < list.size(); i++) {
-				String s = list.get(i);
-
-				if (s.contains("ID:")) {
-					this.ID = Integer.valueOf(s.replace("ID:", "")).intValue();
-				}
-
-				if (s.contains("Color:")) {
-					this.color = ChatColor.valueOf(s.replace("Color:", ""));
-				}
-
-				if (s.contains("Tier:")) {
-					this.tier = Enum
-							.valueOf(Tier.class, s.replace("Tier:", ""));
-				}
-
-				if (s.contains("Type:")) {
-					this.type = Enum
-							.valueOf(Type.class, s.replace("Type:", ""));
-				}
-
-				if (s.contains("dMin:")) {
-					this.damageMin = Integer.valueOf(s.replace("dMin:", ""))
-							.intValue();
-				}
-
-				if (s.contains("dMax:")) {
-					this.damageMax = Integer.valueOf(s.replace("dMax:", ""))
-							.intValue();
-				}
-
-				if (s.contains("Ench:")) {
-					this.addEnchantment(CustomEnchantment.valueOf(s.replace("Ench:", "")));
-				}
-
-				if (s.contains("Lvl:")) {
-					this.levelreq = Integer.valueOf(s.replace("Lvl:", ""))
-							.intValue();
-				}
-
-				if (s.contains("Att:")) {
-					this.attunement = Enum.valueOf(Attunement.class,
-							s.replace("Att:", ""));
-				}
-
-				if (s.contains("Atr:")) {
-					this.attunereq = Integer.valueOf(s.replace("Atr:", ""))
-							.intValue();
-				}
-				
-				if (s.contains("Glow:true")) {
-					this.glow = true;
-				}
-
-				if (s.contains("Lore:")) {
-					this.lore.add(s.replace("Lore:", ""));
-				}
-			}
-
+			buildFromString(list);
 			build();
 			CustomItemHandler.register(this);
 		}
@@ -359,6 +301,67 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	public CustomItem(Element eElement) {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public void buildFromString(List<String> list) {
+		for (int i = 0; i < list.size(); i++) {
+			String s = list.get(i);
+
+			if (s.contains("ID:")) {
+				this.ID = Integer.valueOf(s.replace("ID:", "")).intValue();
+			}
+
+			if (s.contains("Color:")) {
+				this.color = ChatColor.valueOf(s.replace("Color:", ""));
+			}
+
+			if (s.contains("Tier:")) {
+				this.tier = Enum
+						.valueOf(Tier.class, s.replace("Tier:", ""));
+			}
+
+			if (s.contains("Type:")) {
+				this.type = Enum
+						.valueOf(Type.class, s.replace("Type:", ""));
+			}
+
+			if (s.contains("dMin:")) {
+				this.damageMin = Integer.valueOf(s.replace("dMin:", ""))
+						.intValue();
+			}
+
+			if (s.contains("dMax:")) {
+				this.damageMax = Integer.valueOf(s.replace("dMax:", ""))
+						.intValue();
+			}
+
+			if (s.contains("Ench:")) {
+				this.addEnchantment(CustomEnchantment.valueOf(s.replace("Ench:", "")));
+			}
+
+			if (s.contains("Lvl:")) {
+				this.levelreq = Integer.valueOf(s.replace("Lvl:", ""))
+						.intValue();
+			}
+
+			if (s.contains("Att:")) {
+				this.attunement = Enum.valueOf(Attunement.class,
+						s.replace("Att:", ""));
+			}
+
+			if (s.contains("Atr:")) {
+				this.attunereq = Integer.valueOf(s.replace("Atr:", ""))
+						.intValue();
+			}
+			
+			if (s.contains("Glow:true")) {
+				this.glow = true;
+			}
+
+			if (s.contains("Lore:")) {
+				this.lore.add(s.replace("Lore:", ""));
+			}
+		}
 	}
 
 	public void addEnchantment(CustomEnchantment e) {

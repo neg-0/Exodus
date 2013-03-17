@@ -19,9 +19,10 @@ public class CommandListener implements CommandExecutor {
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command command,
 			final String label, final String[] args) {
-		
-		if (!(sender instanceof Player)) return false;
-		
+
+		if (!(sender instanceof Player))
+			return false;
+
 		final Player player = (Player) sender;
 
 		if (command.getName().equalsIgnoreCase("stats")) {
@@ -47,13 +48,18 @@ public class CommandListener implements CommandExecutor {
 			new ComHelp(plugin, player);
 			return;
 		}
-		
+
 		String command = args[0];
-		
+		String[] commandArgs = new String[args.length];
+
+		for (int i = 1; i < args.length; i++) {
+			commandArgs[i - 1] = args[i];
+		}
+
 		if (command.equalsIgnoreCase("stats")) {
 			new ComStats(args, player);
 		}
-		
+
 		if (command.equalsIgnoreCase("setrace")) {
 			setrace(player, args[1]);
 		}
@@ -61,44 +67,48 @@ public class CommandListener implements CommandExecutor {
 		if (command.equalsIgnoreCase("test")) {
 			new ComTest(player, args);
 		}
-		
-		if (command.equalsIgnoreCase("PURGE")) {
+
+		if (command.equalsIgnoreCase("purge")) {
 			new ComPurge(plugin, player, args[1]);
 		}
-		
+
 		if (command.equalsIgnoreCase("info")) {
 			new ComInfo(player, args);
 		}
-		
+
 		if (command.equalsIgnoreCase("spawners")) {
 			new ComSpawners(player);
 		}
-		
+
 		if (command.equalsIgnoreCase("heal")) {
 			new ComHeal(player, args);
 		}
-		
+
 		if (command.equalsIgnoreCase("save")) {
 			new ComSave(player);
 		}
-		
+
 		if (command.equalsIgnoreCase("load")) {
 			new ComLoad(player);
 		}
-		
+
 		if (command.equalsIgnoreCase("filter")) {
 			new ComFilter(plugin, player);
 		}
-		
+
 		if (command.equalsIgnoreCase("text")) {
 			new ComTexture(player, args);
 		}
+
+		if (command.equalsIgnoreCase("item")) {
+			new ComTexture(player, commandArgs);
+		}
 	}
-	
+
 	private void setrace(Player player, String string) {
 		PlayerIndex.getExodusPlayer(player).setRace(string);
 	}
-	
+
 	public boolean isPlayer(final CommandSender sender) {
 		if (sender instanceof Player) {
 			return true;
