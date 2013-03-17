@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.w3c.dom.Element;
 
 import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Tier;
@@ -354,6 +355,10 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		super(mat, i);
 		this.material = mat;
 		CustomItemHandler.register(this);
+	}
+
+	public CustomItem(Element eElement) {
+		// TODO Auto-generated constructor stub
 	}
 
 	public void addEnchantment(CustomEnchantment e) {
