@@ -6,6 +6,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
+import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Type;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Tier;
 
@@ -36,7 +37,8 @@ public class ComTest extends Command {
 				.withGlow()
 				.build();
 
-		player.getInventory().addItem(CUSTOM_ITEM);
+		//player.getInventory().addItem(CUSTOM_ITEM);
+		player.getInventory().addItem(CustomItemHandler.getDefinedItem("Sword of Storms"));
 	}
 
 }
