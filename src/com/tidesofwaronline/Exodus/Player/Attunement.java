@@ -6,7 +6,8 @@ public enum Attunement {
 	RANGER,
 	CLERIC,
 	MAGE,
-	WARLOCK;
+	WARLOCK,
+	ANY;
 	
 	Attunement() {
 		
