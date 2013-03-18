@@ -42,7 +42,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		private Attunement attunement = Attunement.WARRIOR;
 		private int attunereq = 0;
 		private boolean glow = false;
-		private ArrayList<String> lore = new ArrayList<String>();
+		private String lore;
 
 		CustomItemBuilder() {
 		}
@@ -115,17 +115,8 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			return this;
 		}
 
-		public CustomItemBuilder withLore(List<String> lore) {
-			this.lore.addAll(lore);
-			return this;
-		}
-
 		public CustomItemBuilder withLore(String lore) {
-			if (lore.length() > 20 && lore.length() > this.name.length()) {
-				withLore(MessageUtil.wrapText(lore, 20));
-				return this;
-			}
-			this.lore.add(lore);
+			this.lore = lore;
 			return this;
 		}
 
@@ -179,7 +170,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	private Attunement attunement = Attunement.WARRIOR;
 	private int attunereq = 0;
 	private boolean glow = false;
-	private List<String> lore = new ArrayList<String>();
+	private String lore = "";
 
 	List<String> displayWindow; //The printed lore
 
@@ -201,7 +192,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.attunement = i.attunement;
 		this.attunereq = i.attunereq;
 		this.glow = i.glow;
-		this.lore.addAll(i.lore);
+		this.lore = i.lore;
 
 		build();
 		CustomItemHandler.register(this);
@@ -216,7 +207,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	public CustomItem(UUID ID, String name, ChatColor color, Material material,
 			Tier tier, Type type, int damagemin, int damagemax,
 			List<CustomEnchantment> el, int levelreq, Attunement attunement,
-			int attunereq, boolean glow, List<String> lore) {
+			int attunereq, boolean glow, String lore) {
 		super(material);
 
 		this.material = material;
@@ -263,7 +254,6 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public CustomItem(Map<String, Object> map) {
 		super(Material.getMaterial(map.get("Material").toString()));
 		this.ID = UUID.fromString(String.valueOf(map.get("ID")));
@@ -287,7 +277,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		}
 		this.attunereq = (Integer) map.get("AttunementLevel");
 		this.glow = (Boolean) map.get("Glow");
-		this.lore = (ArrayList<String>) map.get("Lore");
+		this.lore = (String) map.get("Lore");
 
 		build();
 		CustomItemHandler.register(this);
@@ -355,7 +345,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			}
 
 			if (s.contains("Lore:")) {
-				this.lore.add(s.replace("Lore:", ""));
+				this.lore = s.replace("Lore:", "");
 			}
 		}
 	}
@@ -449,17 +439,14 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		}
 
 		if (!this.getLore().isEmpty()) {
-			List<String> setlore = new ArrayList<String>(this.getLore());
-			if (this.getLore().size() == 1) {
-				setlore.set(0, "\"" + this.getLore().get(0) + "\"");
-			} else {
-				int last = this.getLore().size() - 1;
-				setlore.set(0, "\"" + this.getLore().get(0));
-				setlore.set(last, this.getLore().get(last) + "\"");
-			}
-			setlore = MessageUtil.prependList(setlore,
+			String setlore = this.getLore();
+			setlore = "\"" + this.getLore() + "\"";
+
+			List<String> newLore = MessageUtil.wrapText(setlore, 20);
+			newLore = MessageUtil.prependList(newLore,
 					ChatColor.YELLOW.toString());
-			printLore.addAll(setlore);
+			
+			printLore.addAll(newLore);
 		}
 
 		return printLore;
@@ -481,7 +468,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		return levelreq;
 	}
 
-	public List<String> getLore() {
+	public String getLore() {
 		return lore;
 	}
 
@@ -500,7 +487,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("ID", this.ID);
+		map.put("ID", this.ID.toString());
 		map.put("Durability", this.getDurability());
 		map.put("Name", this.name);
 		map.put("Color", this.color.name());
@@ -555,7 +542,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.levelreq = levelreq;
 	}
 
-	public void setLore(List<String> lore) {
+	public void setLore(String lore) {
 		this.lore = lore;
 	}
 
@@ -589,9 +576,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		lore.add("Att:" + getAttunement().toString());
 		lore.add("Atr:" + String.valueOf(getAttunereq()));
 		lore.add("Glow:" + this.isGlow());
-		for (String s : this.getLore()) {
-			lore.add("Lore:" + s);
-		}
+		lore.add("Lore:" + getLore());
 
 		this.meta.setLore(lore);
 		this.setItemMeta(this.meta);
