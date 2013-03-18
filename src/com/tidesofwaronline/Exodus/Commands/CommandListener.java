@@ -101,7 +101,7 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		if (command.equalsIgnoreCase("item")) {
-			new ComTexture(player, commandArgs);
+			new ComItem(player, commandArgs);
 		}
 	}
 
