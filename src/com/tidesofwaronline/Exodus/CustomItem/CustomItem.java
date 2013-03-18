@@ -186,7 +186,9 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	Random random = new Random();
 
 	public CustomItem(CustomItem i) {
-		this.ID = i.ID;
+		super(i.material);
+		this.ID = UUID.fromString(i.ID.toString());
+		this.material = i.material;
 		this.meta = i.meta;
 		this.name = i.name;
 		this.color = i.color;
@@ -263,7 +265,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	@SuppressWarnings("unchecked")
 	public CustomItem(Map<String, Object> map) {
-		super(Material.STONE);
+		super(Material.getMaterial(map.get("Material").toString()));
 		this.ID = UUID.fromString(String.valueOf(map.get("ID")));
 		this.name = (String) map.get("Name");
 		this.color = ChatColor.valueOf(map.get("Color").toString());
@@ -382,15 +384,14 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		}
 
 		if (this.getTypeId() != 0) {
-			if (this.hasItemMeta()) {
-				this.meta = this.getItemMeta();
-				if (this.color != null) {
-					this.meta.setDisplayName(this.color + this.name);
-				} else {
-					this.meta.setDisplayName(this.name);
-				}
-				this.setItemMeta(this.meta);
+			this.meta = this.getItemMeta();
+			if (this.color != null) {
+				this.meta.setDisplayName(this.color + this.name);
+			} else {
+				this.meta.setDisplayName(this.name);
 			}
+			this.setItemMeta(this.meta);
+
 		}
 
 		writeStats();

@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 
@@ -23,9 +24,9 @@ public class XMLLoader {
 
 	private static HashMap<String, String> enchantments = new HashMap<String, String>();
 	private static HashMap<String, HashMap<String, String>> enums = new HashMap<String, HashMap<String, String>>();
-
-	public static void main(String argv[]) {
-
+	
+	public XMLLoader() {
+		
 		Thread updater = new XMLUpdater();
 		updater.start();
 
@@ -39,7 +40,7 @@ public class XMLLoader {
 		try {
 
 			File fXmlFile = new File(
-					"E:\\Documents\\Tides of War\\Exodus\\Exodus\\Exodus.xml");
+					"plugins/Exodus/Exodus.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -69,7 +70,7 @@ public class XMLLoader {
 				}
 			}
 
-			System.out.println("Parsed " + enums.size() + " enums.");
+			Exodus.logger.info("Parsed " + enums.size() + " enums.");
 
 			NodeList entityList = doc.getElementsByTagName("Entity");
 
@@ -90,7 +91,7 @@ public class XMLLoader {
 				}
 			}
 
-			System.out.println("Parsed " + enchantments.size()
+			Exodus.logger.info("Parsed " + enchantments.size()
 					+ " enchantments.");
 
 			for (int temp = 0; temp < entityList.getLength(); temp++) {
@@ -109,9 +110,9 @@ public class XMLLoader {
 				}
 			}
 
-			System.out.println("Parsed " + itemCount + " items.");
+			Exodus.logger.info("Parsed " + itemCount + " items.");
 
-			System.out.println("Total time: "
+			Exodus.logger.info("Total time: "
 					+ (System.currentTimeMillis() - time) + "ms");
 
 		} catch (Exception e) {
@@ -161,12 +162,16 @@ public class XMLLoader {
 
 		Map<String, Object> itemMap = new HashMap<String, Object>();
 
-		System.out.println("Parsing defined item: "
+		Exodus.logger.info("Parsing defined item: "
 				+ eElement.getElementsByTagName("DisplayName").item(0)
 						.getTextContent().trim());
 
 		UUID id = UUID.fromString(eElement.getAttribute("Guid"));
 		itemMap.put("ID", id);
+		
+		String name = eElement.getElementsByTagName("DisplayName").item(0)
+				.getTextContent().trim();
+		itemMap.put("Name", name);
 
 		NodeList properties = eElement.getElementsByTagName("Properties")
 				.item(0).getChildNodes();
@@ -233,5 +238,7 @@ public class XMLLoader {
 
 		CustomItem i = new CustomItem(itemMap);
 		CustomItemHandler.addDefinedItem(i);
+		
+		Exodus.logger.info(i.toString());
 	}
 }

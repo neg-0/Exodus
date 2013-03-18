@@ -1,5 +1,6 @@
 package com.tidesofwaronline.Exodus.CustomItem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -74,10 +75,24 @@ public class CustomItemHandler {
 	}
 	
 	public static void addDefinedItem(CustomItem item) {
-		definedItems.put(item.getName(), item);
+		definedItems.put(item.getName().trim().replace(" ", ""), item);
 	}
 	
 	public static CustomItem getDefinedItem(String name) {
 		return definedItems.get(name);
+	}
+	
+	public static int getDefinedItemsSize() {
+		return definedItems.size();
+	}
+
+	public static List<String> getDefinedItems() {
+		List<String> list = new ArrayList<String>();
+		
+		for (CustomItem i : definedItems.values()) {
+			list.add(i.getName());
+		}
+		
+		return list;
 	}
 }

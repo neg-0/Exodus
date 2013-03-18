@@ -10,13 +10,23 @@ public class ComItem extends Command {
 	public ComItem(Player player, String[] args) {
 		String itemname = "";
 		for (String s : args) {
-			itemname += s + " ";
+			if (s != null)
+				itemname += s;
 		}
+
 		CustomItem item = CustomItemHandler.getDefinedItem(itemname);
+
 		if (item != null) {
 			player.getInventory().addItem(item);
 		} else {
-			player.sendMessage("Item \"" + itemname + "\" not found.");
+			player.sendMessage("Item \"" + itemname.trim() + "\" not found.");
+			player.sendMessage("Number of defined items: "
+					+ CustomItemHandler.getDefinedItemsSize());
+			for (int i = 0; i < CustomItemHandler.getDefinedItemsSize(); i++) {
+				for (String s : CustomItemHandler.getDefinedItems()) {
+					player.sendMessage(s);
+				}
+			}
 		}
 	}
 }

@@ -70,6 +70,9 @@ public class Exodus extends JavaPlugin {
 
 		//Register CustomEnchantments
 		CustomEnchantment.enchants.put("Poison", CustomEnchantment.POISON);
+		
+		//Start the XML Loader
+		new XMLLoader();
 
 		//Register Commands
 		CommandListener comListener = new CommandListener(this);
