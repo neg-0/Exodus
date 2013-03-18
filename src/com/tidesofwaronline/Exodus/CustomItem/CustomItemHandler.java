@@ -2,19 +2,21 @@ package com.tidesofwaronline.Exodus.CustomItem;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class CustomItemHandler {
 
-	static HashMap<Integer, CustomItem> customItems = new HashMap<Integer, CustomItem>();
+	static HashMap<UUID, CustomItem> customItems = new HashMap<UUID, CustomItem>();
 	static HashMap<String, CustomItem> definedItems = new HashMap<String, CustomItem>();
 
 	public enum Tier {
-		Trash(ChatColor.DARK_GRAY), Decent(ChatColor.GRAY), Common(
-				ChatColor.WHITE), Uncommon(ChatColor.DARK_GREEN), Rare(
-				ChatColor.DARK_BLUE), Legendary(ChatColor.DARK_PURPLE), Heroic(
+		TRASH(ChatColor.DARK_GRAY), DECENT(ChatColor.GRAY), COMMON(
+				ChatColor.WHITE), UNCOMMON(ChatColor.DARK_GREEN), RARE(
+				ChatColor.DARK_BLUE), LEGENDARY(ChatColor.DARK_PURPLE), HEROIC(
 				ChatColor.GOLD), ;
 
 		ChatColor color;
@@ -29,34 +31,34 @@ public class CustomItemHandler {
 	}
 
 	public enum Type {
-		Sword, Axe, Pickaxe, Spade, Hoe, Wand, Talasmin, Arrow
+		SWORD, AXE, PICKAXE, SPADE, HOE, WAND, TALISMAN, ARROW
 	}
 
 	public enum Prefix {
-		Bloody, Honed, Busted, Broken, Prestine, Epic;
+		BLOODY, HONED, BUSTED, BROKEN, PRESTINE, EPIC;
 	}
 
 	public static void register(CustomItem i) {
 		customItems.put(i.getID(), i);
 	}
 
-	public static void unRegister(int i) {
+	public static void unRegister(UUID i) {
 		customItems.remove(i);
 	}
 
-	public static CustomItem lookup(int i) {
+	public static CustomItem lookup(UUID i) {
 		return customItems.get(i);
 	}
 
 	public static boolean isCustomItem(ItemStack itemstack) {
-		return (getCustomId(itemstack) != -1);
+		return (getCustomId(itemstack) != null);
 	}
 
-	public static int getCustomId(ItemStack itemstack) {
+	public static UUID getCustomId(ItemStack itemstack) {
 		ItemMeta m = itemstack.getItemMeta();
 
 		if ((m == null) || (!(m.hasLore()))) {
-			return -1;
+			return null;
 		}
 
 		List<String> l = m.getLore();
@@ -64,11 +66,11 @@ public class CustomItemHandler {
 			String s = l.get(i);
 
 			if (s.contains("ID:")) {
-				return Integer.valueOf(s.replace("ID:", "")).intValue();
+				return UUID.fromString(s.replace("ID:", ""));
 			}
 		}
 
-		return -1;
+		return null;
 	}
 	
 	public static void addDefinedItem(CustomItem item) {

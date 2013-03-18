@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,7 +18,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.w3c.dom.Element;
 
 import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Tier;
@@ -29,12 +29,12 @@ import com.tidesofwaronline.Exodus.Util.MessageUtil;
 public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	public static class CustomItemBuilder {
-		private int ID = 0;
+		private UUID ID = UUID.randomUUID();
 		private String name = "Custom Item";
 		private ChatColor color = ChatColor.WHITE;
 		private Material material = Material.WOOD_SWORD;
-		private Tier tier = Tier.Common;
-		private Type type = Type.Sword;
+		private Tier tier = Tier.COMMON;
+		private Type type = Type.SWORD;
 		private int damageMin = 1;
 		private int damageMax = 1;
 		private ArrayList<CustomEnchantment> el = new ArrayList<CustomEnchantment>();
@@ -49,8 +49,8 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 		public CustomItem build() {
 			return new CustomItem(ID, name, color, material, tier, type,
-					damageMin, damageMax, el, levelreq, attunement,
-					attunereq, glow, lore);
+					damageMin, damageMax, el, levelreq, attunement, attunereq,
+					glow, lore);
 		}
 
 		public CustomItemBuilder withAttunement(Attunement attunement) {
@@ -92,19 +92,20 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			this.el.add(new CustomEnchantment(enchantment, 1));
 			return this;
 		}
-		
+
 		public CustomItemBuilder withEnchantment(Enchantment enchantment,
 				int level) {
 			this.el.add(new CustomEnchantment(enchantment, level));
 			return this;
 		}
 
-		public CustomItemBuilder withEnchantments(Collection<CustomEnchantment> ce) {
+		public CustomItemBuilder withEnchantments(
+				Collection<CustomEnchantment> ce) {
 			this.el.addAll(ce);
 			return this;
 		}
 
-		public CustomItemBuilder withID(int ID) {
+		public CustomItemBuilder withID(UUID ID) {
 			this.ID = ID;
 			return this;
 		}
@@ -147,7 +148,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			this.type = type;
 			return this;
 		}
-		
+
 		public CustomItemBuilder withGlow() {
 			this.glow = true;
 			return this;
@@ -164,13 +165,13 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	}
 
-	private int ID = 0;
-	private ItemMeta meta;	
+	private UUID ID = UUID.randomUUID();
+	private ItemMeta meta;
 	private String name = "Custom Item";
 	private ChatColor color = ChatColor.WHITE;
 	private Material material = Material.WOOD_SWORD;
-	private Tier tier = Tier.Common;
-	private Type type = Type.Sword;
+	private Tier tier = Tier.COMMON;
+	private Type type = Type.SWORD;
 	private int damageMin = 1;
 	private int damageMax = 1;
 	private List<CustomEnchantment> el = new ArrayList<CustomEnchantment>();
@@ -210,17 +211,11 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		CustomItemHandler.register(this);
 	}
 
-	public CustomItem(int ID, String name, ChatColor color, Material material,
+	public CustomItem(UUID ID, String name, ChatColor color, Material material,
 			Tier tier, Type type, int damagemin, int damagemax,
-			List<CustomEnchantment> el, int levelreq,
-			Attunement attunement, int attunereq, boolean glow, List<String> lore) {
+			List<CustomEnchantment> el, int levelreq, Attunement attunement,
+			int attunereq, boolean glow, List<String> lore) {
 		super(material);
-
-		if (ID != 0) {
-			this.ID = ID;
-		} else {
-			this.ID = this.hashCode();
-		}
 
 		this.material = material;
 		this.name = name;
@@ -236,7 +231,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.setAttunereq(attunereq);
 		this.glow = glow;
 		this.setLore(lore);
-		
+
 		CustomItemHandler.register(this);
 
 		this.getDamage(); //Set random damage
@@ -269,21 +264,25 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	@SuppressWarnings("unchecked")
 	public CustomItem(Map<String, Object> map) {
 		super(Material.STONE);
-		this.ID = (Integer) map.get("ID");
+		this.ID = UUID.fromString(String.valueOf(map.get("ID")));
 		this.name = (String) map.get("Name");
 		this.color = ChatColor.valueOf(map.get("Color").toString());
-		this.material = Material.valueOf(map.get("Material").toString());
+		this.material = Material.getMaterial(map.get("Material").toString());
 		this.tier = Tier.valueOf(map.get("Tier").toString());
 		this.type = Type.valueOf(map.get("Type").toString());
 		this.damageMin = (Integer) map.get("damageMin");
 		this.damageMax = (Integer) map.get("damageMax");
 		int i = 0;
 		while (map.containsKey("Enchantments." + i)) {
-			this.el.add(CustomEnchantment.valueOf(map.get("Enchantments." + i).toString()));
+			this.el.add(CustomEnchantment.valueOf(map.get("Enchantments." + i)
+					.toString()));
 			i++;
 		}
 		this.levelreq = (Integer) map.get("LevelReq");
-		this.attunement = Attunement.valueOf(map.get("Attunement").toString());
+		if (map.get("Attunement") != null) {
+			this.attunement = Attunement.valueOf(map.get("Attunement")
+					.toString());
+		}
 		this.attunereq = (Integer) map.get("AttunementLevel");
 		this.glow = (Boolean) map.get("Glow");
 		this.lore = (ArrayList<String>) map.get("Lore");
@@ -299,16 +298,12 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		CustomItemHandler.register(this);
 	}
 
-	public CustomItem(Element eElement) {
-		// TODO Auto-generated constructor stub
-	}
-	
 	public void buildFromString(List<String> list) {
 		for (int i = 0; i < list.size(); i++) {
 			String s = list.get(i);
 
 			if (s.contains("ID:")) {
-				this.ID = Integer.valueOf(s.replace("ID:", "")).intValue();
+				this.ID = UUID.fromString((s.replace("ID:", "")));
 			}
 
 			if (s.contains("Color:")) {
@@ -316,13 +311,11 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			}
 
 			if (s.contains("Tier:")) {
-				this.tier = Enum
-						.valueOf(Tier.class, s.replace("Tier:", ""));
+				this.tier = Enum.valueOf(Tier.class, s.replace("Tier:", ""));
 			}
 
 			if (s.contains("Type:")) {
-				this.type = Enum
-						.valueOf(Type.class, s.replace("Type:", ""));
+				this.type = Enum.valueOf(Type.class, s.replace("Type:", ""));
 			}
 
 			if (s.contains("dMin:")) {
@@ -336,7 +329,8 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			}
 
 			if (s.contains("Ench:")) {
-				this.addEnchantment(CustomEnchantment.valueOf(s.replace("Ench:", "")));
+				this.addEnchantment(CustomEnchantment.valueOf(s.replace(
+						"Ench:", "")));
 			}
 
 			if (s.contains("Lvl:")) {
@@ -353,7 +347,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 				this.attunereq = Integer.valueOf(s.replace("Atr:", ""))
 						.intValue();
 			}
-			
+
 			if (s.contains("Glow:true")) {
 				this.glow = true;
 			}
@@ -374,27 +368,31 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	public void build() {
 		this.setType(this.material);
-		
+
 		for (CustomEnchantment cei : this.getEl()) {
 			if (cei.getEnchantment() != null) {
-				this.addUnsafeEnchantment(Enchantment.getById(cei.getEnchantment().getId()), cei.getLevel());
+				this.addUnsafeEnchantment(
+						Enchantment.getById(cei.getEnchantment().getId()),
+						cei.getLevel());
 			}
-			
+
 			if (cei.getCustomEnchantment() != null) {
 				//this.addUnsafeEnchantment(Enchantment., level)
 			}
 		}
-		
+
 		if (this.getTypeId() != 0) {
-			this.meta = this.getItemMeta();
-			if (this.color != null) {
-				this.meta.setDisplayName(this.color + this.name);
-			} else {
-				this.meta.setDisplayName(this.name);
+			if (this.hasItemMeta()) {
+				this.meta = this.getItemMeta();
+				if (this.color != null) {
+					this.meta.setDisplayName(this.color + this.name);
+				} else {
+					this.meta.setDisplayName(this.name);
+				}
+				this.setItemMeta(this.meta);
 			}
-			this.setItemMeta(this.meta);
 		}
-		
+
 		writeStats();
 	}
 
@@ -470,10 +468,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		return el;
 	}
 
-	public Integer getID() {
-		if (this.ID == 0) {
-			this.ID = this.hashCode();
-		}
+	public UUID getID() {
 		return this.ID;
 	}
 
@@ -497,7 +492,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	public void onHit(Player player, LivingEntity entity) {
 		for (CustomEnchantment ce : el) {
 			if (ce.getCustomEnchantment() != null)
-			ce.getCustomEnchantment().onHit(player, entity);
+				ce.getCustomEnchantment().onHit(player, entity);
 		}
 	}
 
@@ -514,7 +509,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		map.put("damageMin", this.getDamageMin());
 		map.put("damageMax", this.getDamageMax());
 		for (int i = 0; i < this.getEl().size(); i++) {
-			map.put("Enchantments." + i, this.getEl().get(i).toString());	
+			map.put("Enchantments." + i, this.getEl().get(i).toString());
 		}
 		map.put("LevelReq", this.getLevelreq());
 		map.put("Attunement", this.getAttunement().toString());
@@ -612,7 +607,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 		this.meta.setDisplayName(this.color + this.name);
