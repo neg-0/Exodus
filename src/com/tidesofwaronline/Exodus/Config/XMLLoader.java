@@ -233,12 +233,11 @@ public class XMLLoader {
 //					System.out.print(map + ":");
 //					System.out.println(getEnumValue(map, key));
 				}
+				
 			}
 		}
 
 		CustomItem i = new CustomItem(itemMap);
 		CustomItemHandler.addDefinedItem(i);
-		
-		Exodus.logger.info(i.toString());
 	}
 }
