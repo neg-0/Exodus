@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -418,8 +419,8 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 		List<String> printLore = new ArrayList<String>();
 
-		printLore.add(ChatColor.WHITE + this.getTier().toString() + " - "
-				+ this.getItemType());
+		printLore.add(this.getTier().getColor() + WordUtils.capitalizeFully("A " + this.getTier().toString()
+				+ " " + this.getItemType().toString()));
 		printLore.add(ChatColor.WHITE + "" + this.getDamageMin() + " - "
 				+ this.getDamageMax() + " Damage");
 
@@ -445,7 +446,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			List<String> newLore = MessageUtil.wrapText(setlore, 20);
 			newLore = MessageUtil.prependList(newLore,
 					ChatColor.YELLOW.toString());
-			
+
 			printLore.addAll(newLore);
 		}
 
