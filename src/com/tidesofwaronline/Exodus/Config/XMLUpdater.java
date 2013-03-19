@@ -16,7 +16,9 @@ public class XMLUpdater extends Thread {
 		try {
 			while (true) {
 				if (fXmlFile.lastModified() != lastModified) {
-					Exodus.logger.info("Exodus XML file modified. Reloading and Reparsing.");
+					Exodus.logger.info("Exodus XML file modified. Waiting 10 seconds.");
+					Thread.sleep(10000);
+					Exodus.logger.info("Parsing new XML file.");
 					XMLLoader.parse();
 					lastModified = fXmlFile.lastModified();
 				}
