@@ -1,7 +1,6 @@
 package com.tidesofwaronline.Exodus.Config;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,9 +23,9 @@ public class XMLLoader {
 
 	private static HashMap<String, String> enchantments = new HashMap<String, String>();
 	private static HashMap<String, HashMap<String, String>> enums = new HashMap<String, HashMap<String, String>>();
-	
+
 	public XMLLoader() {
-		
+
 		Thread updater = new XMLUpdater();
 		updater.start();
 
@@ -39,8 +38,7 @@ public class XMLLoader {
 
 		try {
 
-			File fXmlFile = new File(
-					"plugins/Exodus/Exodus.xml");
+			File fXmlFile = new File("plugins/Exodus/Exodus.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -168,7 +166,7 @@ public class XMLLoader {
 
 		UUID id = UUID.fromString(eElement.getAttribute("Guid"));
 		itemMap.put("ID", id);
-		
+
 		String name = eElement.getElementsByTagName("DisplayName").item(0)
 				.getTextContent().trim();
 		itemMap.put("Name", name);
@@ -184,14 +182,7 @@ public class XMLLoader {
 				String nodeText = node.getTextContent().trim();
 
 				if (node.getNodeName().equals("String")) {
-					if (node.getAttributes().getNamedItem("Name")
-							.getNodeValue().equalsIgnoreCase("Lore")) {
-						ArrayList<String> lore = new ArrayList<String>();
-						lore.add(nodeText);
-						itemMap.put(nodeName, lore);
-					} else {
-						itemMap.put(nodeName, nodeText);
-					}
+					itemMap.put(nodeName, nodeText);
 					//System.out.print(nodeName + ":");
 					//System.out.println(nodeText);
 				}
@@ -233,7 +224,7 @@ public class XMLLoader {
 //					System.out.print(map + ":");
 //					System.out.println(getEnumValue(map, key));
 				}
-				
+
 			}
 		}
 
