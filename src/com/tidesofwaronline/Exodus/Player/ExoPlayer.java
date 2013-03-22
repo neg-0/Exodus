@@ -299,10 +299,6 @@ public class ExoPlayer implements Runnable {
 	//@SuppressWarnings("deprecation")
 	public void inventoryLoad() {
 		buildInv.setContents(config.loadInventory(player).getContents());
-		for (ItemStack i : buildInv.getContents()) {
-			if (i != null)
-				player.sendMessage("" + i);
-		}
 		if (!inCombat) {
 			player.getInventory().setContents(buildInv.getContents());
 		}
