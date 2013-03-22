@@ -364,7 +364,6 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.setType(this.material);
 
 		for (CustomEnchantment cei : this.getEl()) {
-			System.out.print(cei);
 			if (cei.getEnchantment() != null) {
 				this.addUnsafeEnchantment(
 						Enchantment.getById(cei.getEnchantment().getId()),
