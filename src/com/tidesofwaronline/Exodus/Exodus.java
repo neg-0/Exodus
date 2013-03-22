@@ -17,7 +17,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.tidesofwaronline.Exodus.Commands.CommandListener;
 import com.tidesofwaronline.Exodus.Config.ConfigManager;
 import com.tidesofwaronline.Exodus.Config.XMLLoader;
-import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Listeners.EntityListener;
