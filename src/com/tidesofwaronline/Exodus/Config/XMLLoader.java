@@ -23,13 +23,13 @@ public class XMLLoader {
 
 	private static HashMap<String, String> enchantments = new HashMap<String, String>();
 	private static HashMap<String, HashMap<String, String>> enums = new HashMap<String, HashMap<String, String>>();
+	private static File fXmlFile;
 
 	public XMLLoader() {
-
+		parse();
+		
 		Thread updater = new XMLUpdater();
 		updater.start();
-
-		parse();
 	}
 
 	public static void parse() {
@@ -38,7 +38,10 @@ public class XMLLoader {
 
 		try {
 
-			File fXmlFile = new File("plugins/Exodus/Exodus.xml");
+			fXmlFile = new File("plugins/Exodus/Exodus.xml");
+			if (!fXmlFile.exists()) {
+				fXmlFile = new File("E:\\Documents\\Exodus.xml");
+			}
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -194,17 +197,21 @@ public class XMLLoader {
 				}
 
 				if (node.getNodeName().equals("References")) {
+					
+					int y = 0;
+					
 					for (int x = 0; x < node.getChildNodes().getLength(); x++) {
 						if (node.getChildNodes().item(x).hasAttributes()) {
-							itemMap.put(nodeName, getEnchantmentByUUID(node
+							itemMap.put(nodeName + "." + y, getEnchantmentByUUID(node
 									.getChildNodes().item(x).getAttributes()
 									.getNamedItem("GuidRef").getNodeValue()
 									.trim()));
-							//System.out.print(nodeName + ":");
-//							//System.out.println(getEnchantmentByUUID(node
-//									.getChildNodes().item(x).getAttributes()
-//									.getNamedItem("GuidRef").getNodeValue()
-//									.trim()));
+							System.out.print(nodeName + "." + y);
+							System.out.println(getEnchantmentByUUID(node
+									.getChildNodes().item(x).getAttributes()
+									.getNamedItem("GuidRef").getNodeValue()
+									.trim()));
+							y++;
 						}
 					}
 				}
@@ -230,5 +237,11 @@ public class XMLLoader {
 
 		CustomItem i = new CustomItem(itemMap);
 		CustomItemHandler.addDefinedItem(i);
+		
+		Exodus.logger.info(i.toString());
+	}
+	
+	public static File getFile() {
+		return fXmlFile;
 	}
 }

@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Tier;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Type;
@@ -363,6 +364,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.setType(this.material);
 
 		for (CustomEnchantment cei : this.getEl()) {
+			System.out.print(cei);
 			if (cei.getEnchantment() != null) {
 				this.addUnsafeEnchantment(
 						Enchantment.getById(cei.getEnchantment().getId()),
@@ -374,7 +376,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			}
 		}
 
-		if (this.getTypeId() != 0) {
+		if (this.getTypeId() != 0 && !Exodus.debugMode) {
 			this.meta = this.getItemMeta();
 			if (this.color != null) {
 				this.meta.setDisplayName(this.color + this.name);

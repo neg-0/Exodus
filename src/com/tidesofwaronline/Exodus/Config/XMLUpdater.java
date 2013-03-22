@@ -6,12 +6,13 @@ import com.tidesofwaronline.Exodus.Exodus;
 
 public class XMLUpdater extends Thread {
 	
-	File fXmlFile = new File(
-			"plugins/Exodus/Exodus.xml");
+	File fXmlFile = XMLLoader.getFile();
 	long lastModified = fXmlFile.lastModified();
 
 	@Override
 	public void run() {
+		
+		Exodus.logger.info("Exodus XMLUpdater loaded and running.");
 		
 		try {
 			while (true) {

@@ -34,12 +34,13 @@ public class Exodus extends JavaPlugin {
 	public static Economy econ = null;
 	String version = null;
 	public boolean filter = true;
+	public static boolean debugMode = false;
 
 	@SuppressWarnings("unused")
 	private ProtocolManager protocolManager;
 
 	public static void main(String args[]) throws Exception {
-		//new GUIWindow();
+		debugMode = true;
 		new XMLLoader();
 	}
 

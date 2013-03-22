@@ -75,11 +75,11 @@ public class CustomItemHandler {
 	}
 	
 	public static void addDefinedItem(CustomItem item) {
-		definedItems.put(item.getName().trim().replace(" ", ""), item);
+		definedItems.put(item.getName().trim().replace(" ", "").toLowerCase(), item);
 	}
 	
 	public static CustomItem getDefinedItem(String name) {
-		return definedItems.get(name);
+		return definedItems.get(name.trim().replace(" ", "").toLowerCase());
 	}
 	
 	public static int getDefinedItemsSize() {
