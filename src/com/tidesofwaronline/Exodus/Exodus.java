@@ -51,6 +51,7 @@ public class Exodus extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+
 		new ConfigManager(this);
 		PluginManager pm = getServer().getPluginManager();
 
@@ -69,9 +70,6 @@ public class Exodus extends JavaPlugin {
 		new CustomEntityHandler(this);
 		new CustomItemHandler();
 
-		//Register CustomEnchantments
-		CustomEnchantment.enchants.put("Poison", CustomEnchantment.POISON);
-		
 		//Start the XML Loader
 		new XMLLoader();
 
