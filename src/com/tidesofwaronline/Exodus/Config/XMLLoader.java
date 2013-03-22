@@ -27,7 +27,7 @@ public class XMLLoader {
 
 	public XMLLoader() {
 		parse();
-		
+
 		Thread updater = new XMLUpdater();
 		updater.start();
 	}
@@ -125,8 +125,6 @@ public class XMLLoader {
 		String name = eElement.getElementsByTagName("ExternalId").item(0)
 				.getTextContent().trim();
 		String uuid = eElement.getAttribute("Guid");
-		//System.out.println("Parsing Enchantment: " + name);
-		//System.out.println("UUID: " + uuid);
 		enchantments.put(uuid, name);
 	}
 
@@ -186,31 +184,23 @@ public class XMLLoader {
 
 				if (node.getNodeName().equals("String")) {
 					itemMap.put(nodeName, nodeText);
-					//System.out.print(nodeName + ":");
-					//System.out.println(nodeText);
 				}
 
 				if (node.getNodeName().equals("Number")) {
 					itemMap.put(nodeName, Integer.parseInt(nodeText));
-					//System.out.print(nodeName + ":");
-					//System.out.println(nodeText);
 				}
 
 				if (node.getNodeName().equals("References")) {
-					
+
 					int y = 0;
-					
+
 					for (int x = 0; x < node.getChildNodes().getLength(); x++) {
 						if (node.getChildNodes().item(x).hasAttributes()) {
-							itemMap.put(nodeName + "." + y, getEnchantmentByUUID(node
-									.getChildNodes().item(x).getAttributes()
-									.getNamedItem("GuidRef").getNodeValue()
-									.trim()));
-							System.out.print(nodeName + "." + y);
-							System.out.println(getEnchantmentByUUID(node
-									.getChildNodes().item(x).getAttributes()
-									.getNamedItem("GuidRef").getNodeValue()
-									.trim()));
+							itemMap.put(nodeName + "." + y,
+									getEnchantmentByUUID(node.getChildNodes()
+											.item(x).getAttributes()
+											.getNamedItem("GuidRef")
+											.getNodeValue().trim()));
 							y++;
 						}
 					}
@@ -219,17 +209,12 @@ public class XMLLoader {
 				if (node.getNodeName().equals("Boolean")) {
 					itemMap.put(nodeName, Boolean.parseBoolean(nodeText
 							.replace("0", "False").replace("1", "True")));
-//					System.out.print(nodeName + ":");
-//					System.out.println(nodeText.replace("0", "false").replace(
-//							"1", "true"));
 				}
 
 				if (node.getNodeName().equals("Enum")) {
 					String map = nodeName;
 					String key = nodeText;
 					itemMap.put(map, getEnumValue(map, key));
-//					System.out.print(map + ":");
-//					System.out.println(getEnumValue(map, key));
 				}
 
 			}
@@ -237,10 +222,8 @@ public class XMLLoader {
 
 		CustomItem i = new CustomItem(itemMap);
 		CustomItemHandler.addDefinedItem(i);
-		
-		Exodus.logger.info(i.toString());
 	}
-	
+
 	public static File getFile() {
 		return fXmlFile;
 	}
