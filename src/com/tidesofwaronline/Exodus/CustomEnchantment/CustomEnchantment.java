@@ -7,7 +7,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Util.RomanNumeral;
 
 public class CustomEnchantment {
@@ -114,8 +113,7 @@ public class CustomEnchantment {
 	}
 	
 	private static CustomEnchantment register(CustomEnchantment ce) {
-		enchants.put(ce.getName().toUpperCase(), ce);
-		Exodus.logger.info("Enchantment: " + ce.getName().toUpperCase().replace(" ", ""));
+		enchants.put(ce.getName().toUpperCase().replace(" ", ""), ce);
 		return ce;
 	}
 }
