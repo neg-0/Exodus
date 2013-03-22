@@ -325,12 +325,6 @@ public class ExoPlayer implements Runnable {
 		config.save();
 	}
 
-	public void modifyAttribute(final String path, final double value) {
-		final double oldvalue = config.getConfig().getDouble(path);
-		final double newvalue = oldvalue + value;
-		config.getConfig().set(path, newvalue);
-	}
-
 	public void modifyAttribute(final String path, final int value) {
 		final int oldvalue = config.getConfig().getInt(path);
 		final int newvalue = oldvalue + value;
