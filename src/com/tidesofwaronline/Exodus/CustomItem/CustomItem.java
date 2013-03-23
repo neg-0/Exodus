@@ -258,28 +258,53 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	public CustomItem(Map<String, Object> map) {
 		super(Material.getMaterial(map.get("Material").toString()));
-		this.ID = UUID.fromString(String.valueOf(map.get("ID")));
-		this.name = (String) map.get("Name");
-		this.color = ChatColor.valueOf(map.get("Color").toString());
-		this.material = Material.getMaterial(map.get("Material").toString());
-		this.tier = Tier.valueOf(map.get("Tier").toString());
-		this.type = Type.valueOf(map.get("Type").toString());
-		this.damageMin = (Integer) map.get("damageMin");
-		this.damageMax = (Integer) map.get("damageMax");
+		if (map.containsKey("ID")) {
+			this.ID = UUID.fromString(String.valueOf(map.get("ID")));
+		}
+		if (map.containsKey("Name")) {
+			this.name = (String) map.get("Name");
+		}
+		if (map.containsKey("Color")) {
+			this.color = ChatColor.valueOf(map.get("Color").toString());
+		}
+		if (map.containsKey("Material")) {
+			this.material = Material
+					.getMaterial(map.get("Material").toString());
+		}
+		if (map.containsKey("Tier")) {
+			this.tier = Tier.valueOf(map.get("Tier").toString());
+		}
+		if (map.containsKey("Type")) {
+			this.type = Type.valueOf(map.get("Type").toString());
+		}
+		if (map.containsKey("damageMin")) {
+			this.damageMin = (Integer) map.get("damageMin");
+		}
+		if (map.containsKey("damageMax")) {
+			this.damageMax = (Integer) map.get("damageMax");
+		}
 		int i = 0;
 		while (map.containsKey("Enchantments." + i)) {
 			this.el.add(CustomEnchantment.valueOf(map.get("Enchantments." + i)
 					.toString()));
 			i++;
 		}
-		this.levelreq = (Integer) map.get("LevelReq");
-		if (map.get("Attunement") != null) {
+		if (map.containsKey("LevelReq")) {
+			this.levelreq = (Integer) map.get("LevelReq");
+		}
+		if (map.containsKey("Attunement")) {
 			this.attunement = Attunement.valueOf(map.get("Attunement")
 					.toString());
 		}
-		this.attunereq = (Integer) map.get("AttunementLevel");
-		this.glow = (Boolean) map.get("Glow");
-		this.lore = (String) map.get("Lore");
+		if (map.containsKey("AttunementLevel")) {
+			this.attunereq = (Integer) map.get("AttunementLevel");
+		}
+		if (map.containsKey("Glow")) {
+			this.glow = (Boolean) map.get("Glow");
+		}
+		if (map.containsKey("Lore")) {
+			this.lore = (String) map.get("Lore");
+		}
 
 		build();
 		CustomItemHandler.register(this);
@@ -420,8 +445,9 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 		List<String> printLore = new ArrayList<String>();
 
-		printLore.add(this.getTier().getColor() + WordUtils.capitalizeFully("A " + this.getTier().toString()
-				+ " " + this.getItemType().toString()));
+		printLore.add(this.getTier().getColor()
+				+ WordUtils.capitalizeFully("A " + this.getTier().toString()
+						+ " " + this.getItemType().toString()));
 		printLore.add(ChatColor.WHITE + "" + this.getDamageMin() + " - "
 				+ this.getDamageMax() + " Damage");
 
