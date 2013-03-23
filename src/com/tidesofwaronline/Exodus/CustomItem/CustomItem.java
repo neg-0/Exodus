@@ -15,6 +15,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -107,6 +108,11 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			return this;
 		}
 
+		public CustomItemBuilder withGlow() {
+			this.glow = true;
+			return this;
+		}
+
 		public CustomItemBuilder withID(UUID ID) {
 			this.ID = ID;
 			return this;
@@ -139,11 +145,6 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 		public CustomItemBuilder withType(Type type) {
 			this.type = type;
-			return this;
-		}
-
-		public CustomItemBuilder withGlow() {
-			this.glow = true;
 			return this;
 		}
 	}
@@ -204,35 +205,6 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		super(i);
 		this.material = Material.getMaterial(i);
 		CustomItemHandler.register(this);
-	}
-
-	public CustomItem(UUID ID, String name, ChatColor color, Material material,
-			Tier tier, Type type, int damagemin, int damagemax,
-			List<CustomEnchantment> el, int levelreq, Attunement attunement,
-			int attunereq, boolean glow, String lore) {
-		super(material);
-
-		this.material = material;
-		this.name = name;
-		this.color = color;
-		this.meta = this.getItemMeta();
-		this.setTier(tier);
-		this.type = type;
-		this.setDamageMin(damagemin);
-		this.setDamageMax(damagemax);
-		this.getEl().addAll(el);
-		this.setLevelreq(levelreq);
-		this.setAttunement(attunement);
-		this.setAttunereq(attunereq);
-		this.glow = glow;
-		this.setLore(lore);
-
-		CustomItemHandler.register(this);
-
-		this.getDamage(); //Set random damage
-
-		build();
-		//updateLore();
 	}
 
 	public CustomItem(ItemStack item) {
@@ -317,6 +289,72 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		CustomItemHandler.register(this);
 	}
 
+	public CustomItem(UUID ID, String name, ChatColor color, Material material,
+			Tier tier, Type type, int damagemin, int damagemax,
+			List<CustomEnchantment> el, int levelreq, Attunement attunement,
+			int attunereq, boolean glow, String lore) {
+		super(material);
+
+		this.material = material;
+		this.name = name;
+		this.color = color;
+		this.meta = this.getItemMeta();
+		this.setTier(tier);
+		this.type = type;
+		this.setDamageMin(damagemin);
+		this.setDamageMax(damagemax);
+		this.getEl().addAll(el);
+		this.setLevelreq(levelreq);
+		this.setAttunement(attunement);
+		this.setAttunereq(attunereq);
+		this.glow = glow;
+		this.setLore(lore);
+
+		CustomItemHandler.register(this);
+
+		this.getDamage(); //Set random damage
+
+		build();
+		//updateLore();
+	}
+
+	public void addEnchantment(CustomEnchantment e) {
+		el.add(e);
+	}
+
+	public void addEnchantments(List<CustomEnchantment> el) {
+		this.getEl().addAll(el);
+	}
+
+	public void build() {
+		this.setType(this.material);
+
+		for (CustomEnchantment cei : this.getEl()) {
+			if (cei.getEnchantment() != null) {
+				this.addUnsafeEnchantment(
+						Enchantment.getById(cei.getEnchantment().getId()),
+						cei.getLevel());
+			}
+
+			if (cei.getCustomEnchantment() != null) {
+				//this.addUnsafeEnchantment(Enchantment., level)
+			}
+		}
+
+		if (this.getTypeId() != 0 && !Exodus.debugMode) {
+			this.meta = this.getItemMeta();
+			if (this.color != null) {
+				this.meta.setDisplayName(this.color + this.name);
+			} else {
+				this.meta.setDisplayName(this.name);
+			}
+			this.setItemMeta(this.meta);
+
+		}
+
+		writeStats();
+	}
+
 	public void buildFromString(List<String> list) {
 		for (int i = 0; i < list.size(); i++) {
 			String s = list.get(i);
@@ -375,43 +413,6 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 				this.lore = s.replace("Lore:", "");
 			}
 		}
-	}
-
-	public void addEnchantment(CustomEnchantment e) {
-		el.add(e);
-	}
-
-	public void addEnchantments(List<CustomEnchantment> el) {
-		this.getEl().addAll(el);
-	}
-
-	public void build() {
-		this.setType(this.material);
-
-		for (CustomEnchantment cei : this.getEl()) {
-			if (cei.getEnchantment() != null) {
-				this.addUnsafeEnchantment(
-						Enchantment.getById(cei.getEnchantment().getId()),
-						cei.getLevel());
-			}
-
-			if (cei.getCustomEnchantment() != null) {
-				//this.addUnsafeEnchantment(Enchantment., level)
-			}
-		}
-
-		if (this.getTypeId() != 0 && !Exodus.debugMode) {
-			this.meta = this.getItemMeta();
-			if (this.color != null) {
-				this.meta.setDisplayName(this.color + this.name);
-			} else {
-				this.meta.setDisplayName(this.name);
-			}
-			this.setItemMeta(this.meta);
-
-		}
-
-		writeStats();
 	}
 
 	public Attunement getAttunement() {
@@ -500,8 +501,23 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		return lore;
 	}
 
+	public String getName() {
+		return this.name;
+	}
+
 	public Tier getTier() {
 		return tier;
+	}
+
+	public final boolean isGlow() {
+		return glow;
+	}
+
+	public void onDamage(Player player, Entity damager) {
+		for (CustomEnchantment ce : el) {
+			if (ce.getCustomEnchantment() != null)
+				ce.getCustomEnchantment().onDamage(player, (LivingEntity) damager);
+		}
 	}
 
 	//Called when damaging a entity.
@@ -562,6 +578,10 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.el.addAll(el);
 	}
 
+	public final void setGlow(boolean glow) {
+		this.glow = glow;
+	}
+
 	public void setItemType(Type type) {
 		this.type = type;
 	}
@@ -580,6 +600,12 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	public void setMinDamage(int min) {
 		this.setDamageMin(min);
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		this.meta.setDisplayName(this.color + this.name);
+		this.setItemMeta(this.meta);
 	}
 
 	public void setTier(Tier tier) {
@@ -607,24 +633,6 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		lore.add("Lore:" + getLore());
 
 		this.meta.setLore(lore);
-		this.setItemMeta(this.meta);
-	}
-
-	public final boolean isGlow() {
-		return glow;
-	}
-
-	public final void setGlow(boolean glow) {
-		this.glow = glow;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		this.meta.setDisplayName(this.color + this.name);
 		this.setItemMeta(this.meta);
 	}
 }
