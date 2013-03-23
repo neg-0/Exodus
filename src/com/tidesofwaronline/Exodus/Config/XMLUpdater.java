@@ -2,6 +2,9 @@ package com.tidesofwaronline.Exodus.Config;
 
 import java.io.File;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import com.tidesofwaronline.Exodus.Exodus;
 
 public class XMLUpdater extends Thread {
@@ -20,6 +23,11 @@ public class XMLUpdater extends Thread {
 					Exodus.logger.info("Exodus XML file modified. Waiting 10 seconds.");
 					Thread.sleep(10000);
 					Exodus.logger.info("Parsing new XML file.");
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						if (p.isOp()) {
+							p.sendMessage("Parsing new XML file.");
+						}
+					}
 					XMLLoader.parse();
 					lastModified = fXmlFile.lastModified();
 				}
