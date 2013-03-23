@@ -76,8 +76,8 @@ public class CustomEnchantment {
 		if (ce != null) {
 			return ce.getName() + " " + RomanNumeral.convertToRoman(level);
 		} else if (e != null) {
-			return WordUtils.capitalizeFully(e.getName()) + " "
-					+ RomanNumeral.convertToRoman(level);
+			return WordUtils.capitalizeFully(e.getName().replace("_", " "))
+					+ " " + RomanNumeral.convertToRoman(level);
 		} else {
 			return null;
 		}
@@ -85,7 +85,7 @@ public class CustomEnchantment {
 
 	public String getName() {
 		if (e != null)
-			return e.getName();
+			return e.getName().replace("_", " ");
 		if (ce != null)
 			return ce.getName();
 		return null;
@@ -111,7 +111,7 @@ public class CustomEnchantment {
 	public int getLevel() {
 		return this.level;
 	}
-	
+
 	private static CustomEnchantment register(CustomEnchantment ce) {
 		enchants.put(ce.getName().toUpperCase().replace(" ", ""), ce);
 		return ce;
