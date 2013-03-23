@@ -110,7 +110,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		PlayerIndex.getExodusPlayer((Player) event.getEntity()).takeDamage(event.getDamager());
+		PlayerIndex.getExodusPlayer((Player) event.getEntity()).onDamage(event.getDamager());
 	}
 
 	@EventHandler
