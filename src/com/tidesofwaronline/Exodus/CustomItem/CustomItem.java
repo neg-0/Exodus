@@ -257,8 +257,11 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		}
 		int i = 0;
 		while (map.containsKey("Enchantments." + i)) {
-			this.el.add(CustomEnchantment.valueOf(map.get("Enchantments." + i)
-					.toString()));
+			CustomEnchantment e = CustomEnchantment.valueOf(map.get(
+					"Enchantments." + i).toString());
+			if (e != null) {
+				this.el.add(e);
+			}
 			i++;
 		}
 		if (map.containsKey("LevelReq")) {
@@ -516,7 +519,8 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	public void onDamage(Player player, Entity damager) {
 		for (CustomEnchantment ce : el) {
 			if (ce.getCustomEnchantment() != null)
-				ce.getCustomEnchantment().onDamage(player, (LivingEntity) damager);
+				ce.getCustomEnchantment().onDamage(player,
+						(LivingEntity) damager);
 		}
 	}
 
