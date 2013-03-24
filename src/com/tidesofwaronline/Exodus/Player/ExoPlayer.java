@@ -2,6 +2,7 @@ package com.tidesofwaronline.Exodus.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -64,7 +65,7 @@ public class ExoPlayer implements Runnable {
 	public Party party = null;
 
 	Spellbook spellbook = new Spellbook(this);
-	
+
 	ArrayList<Buff> buffs = new ArrayList<Buff>();
 
 	public ExoPlayer(final Plugin plugin, final Player player) {
@@ -87,12 +88,19 @@ public class ExoPlayer implements Runnable {
 
 	}
 
+	public boolean addToInventory(ItemStack i) {
+		HashMap<Integer, ItemStack> extra = buildInv.addItem(i);
+		if (extra.size() != 0) {
+		}
+		return true;
+	}
+
 	public void addXP(final int amount) {
 		setAttribute("xp", (Integer) getAttribute("xp") + amount);
 		gainXPEvent();
 	}
 
-	public int calculateHealth() {
+	private int calculateHealth() {
 		return (int) Math.round((this.level * this.level) * 1.25 + 19);
 	}
 
@@ -100,7 +108,7 @@ public class ExoPlayer implements Runnable {
 		player.sendMessage("Casting");
 	}
 
-	public void click(IconMenu.OptionClickEvent event) {
+	private void click(IconMenu.OptionClickEvent event) {
 		final String icon = event.getName();
 
 		if (icon.equalsIgnoreCase("increase rogue")) {
@@ -147,7 +155,7 @@ public class ExoPlayer implements Runnable {
 		return this.config.getConfig();
 	}
 
-	public void createStatsMenu() {
+	private void createStatsMenu() {
 		//if (this.statsMenu != null) {this.statsMenu.destroy();}
 		//Set up stats menu
 		statsMenu = new IconMenu(this.player.getDisplayName() + "'s Stats", 54,
@@ -209,7 +217,7 @@ public class ExoPlayer implements Runnable {
 
 	}
 
-	public void enterCombat() {
+	private void enterCombat() {
 		player.sendMessage("ENTERING COMBAT!");
 		inCombat = true;
 		inventorySave();
@@ -227,13 +235,13 @@ public class ExoPlayer implements Runnable {
 
 	}
 
-	public void exitCombat() {
+	private void exitCombat() {
 		player.sendMessage("EXITING COMBAT");
 		inCombat = false;
 		player.getInventory().setContents(buildInv.getContents());
 	}
 
-	public void gainXPEvent() {
+	private void gainXPEvent() {
 		final int xp = (Integer) getAttribute("xp");
 		int level = config.getConfig().getInt("level");
 		player.sendMessage("XP this level: "
@@ -256,8 +264,22 @@ public class ExoPlayer implements Runnable {
 		return 0;
 	}
 
+	public int getMeleeDamage() {
+		ItemStack is = player.getInventory().getItemInHand();
+		if (CustomItemHandler.isCustomItem(is)) {
+			CustomItem i = new CustomItem(is);
+			return i.getDamage();
+		} else {
+			return -1;
+		}
+	}
+
 	public org.bukkit.ChatColor getNameColor() {
 		return this.namecolor;
+	}
+
+	public Party getParty() {
+		return this.party;
 	}
 
 	public Player getPlayer() {
@@ -273,7 +295,20 @@ public class ExoPlayer implements Runnable {
 		return spells;
 	}
 
-	public void increaseStat(final String atr, final int amount,
+	public int getStaminaMax() {
+		return (config().getInt("stats.warrior") * 5)
+				+ (config().getInt("stats.cleric") * 4)
+				+ (config().getInt("stats.warlock") * 3);
+	}
+
+	public int getStaminaRegen() {
+		return (config().getInt("stats.rogue") * 1)
+				+ (config().getInt("stats.ranger") * 1)
+				+ (config().getInt("stats.mage") * 1);
+
+	}
+
+	private void increaseStat(final String atr, final int amount,
 			final boolean override) {
 		if ((Integer) getAttribute(atr) < plugin.getConfig().getInt("statmax")) {
 			if (override) {
@@ -287,15 +322,6 @@ public class ExoPlayer implements Runnable {
 		config.save();
 	}
 
-	public boolean inventorySave() {
-		buildInv.setContents(player.getInventory().getContents());
-		if (config.saveInventory(buildInv)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	//@SuppressWarnings("deprecation")
 	public void inventoryLoad() {
 		buildInv.setContents(config.loadInventory(player).getContents());
@@ -303,6 +329,15 @@ public class ExoPlayer implements Runnable {
 			player.getInventory().setContents(buildInv.getContents());
 		}
 		//player.updateInventory();
+	}
+
+	public boolean inventorySave() {
+		buildInv.setContents(player.getInventory().getContents());
+		if (config.saveInventory(buildInv)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean isInCombat() {
@@ -329,6 +364,20 @@ public class ExoPlayer implements Runnable {
 		final int oldvalue = config.getConfig().getInt(path);
 		final int newvalue = oldvalue + value;
 		config.getConfig().set(path, newvalue);
+	}
+
+	public void onDamage(Entity damager) {
+		CustomItem i = new CustomItem(player.getInventory().getItemInHand());
+		if (CustomItemHandler.isCustomItem(i)) {
+			i.onDamage(this.player, damager);
+		}
+	}
+
+	public void onHit(LivingEntity entity) {
+		CustomItem i = new CustomItem(player.getInventory().getItemInHand());
+		if (CustomItemHandler.isCustomItem(i)) {
+			i.onHit(this.player, entity);
+		}
 	}
 
 	public void openStatsMenu() {
@@ -539,6 +588,28 @@ public class ExoPlayer implements Runnable {
 		}
 	}
 
+	/* Disabled due to client not sending InventoryOpenEvent
+	public boolean inventorySwitchCheck() {
+		// Get current time in nano seconds.
+		final long pressTime = System.currentTimeMillis();
+
+		//if standing
+		// If double click...
+		if (pressTime - inventoryLastPressTime <= DOUBLE_PRESS_INTERVAL) {
+			openStatsMenu();
+		}
+		// record the last time the menu button was pressed.
+		inventoryLastPressTime = pressTime;
+
+		return true;
+	}*/
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+
+	}
+
 	public boolean savePlayer() {
 		if (inCombat) {
 			setCombat(false);
@@ -599,22 +670,6 @@ public class ExoPlayer implements Runnable {
 
 	}
 
-	/* Disabled due to client not sending InventoryOpenEvent
-	public boolean inventorySwitchCheck() {
-		// Get current time in nano seconds.
-		final long pressTime = System.currentTimeMillis();
-
-		//if standing
-		// If double click...
-		if (pressTime - inventoryLastPressTime <= DOUBLE_PRESS_INTERVAL) {
-			openStatsMenu();
-		}
-		// record the last time the menu button was pressed.
-		inventoryLastPressTime = pressTime;
-
-		return true;
-	}*/
-
 	public void setRanged(final CustomItem item) {
 		this.equippedranged = new CustomItem(item);
 		setAttribute("equippedranged", item);
@@ -630,57 +685,5 @@ public class ExoPlayer implements Runnable {
 			}
 		}
 		return inCombat;
-	}
-
-	public boolean addToInventory(ItemStack i) {
-		HashMap<Integer, ItemStack> extra = buildInv.addItem(i);
-		if (extra.size() != 0) {
-		}
-		return true;
-	}
-
-	public Party getParty() {
-		return this.party;
-	}
-
-	public int getMeleeDamage() {
-		ItemStack is = player.getInventory().getItemInHand();
-		if (CustomItemHandler.isCustomItem(is)) {
-			CustomItem i = new CustomItem(is);
-			return i.getDamage();
-		} else {
-			return -1;
-		}
-	}
-
-	public void onHit(LivingEntity entity) {
-		CustomItem i = new CustomItem(player.getInventory().getItemInHand());
-		if (CustomItemHandler.isCustomItem(i)) {
-			i.onHit(this.player, entity);
-		}
-	}
-
-	public int getStaminaMax() {
-		return (config().getInt("stats.warrior") * 5)
-				+ (config().getInt("stats.cleric") * 4)
-				+ (config().getInt("stats.warlock") * 3);
-	}
-
-	public int getStaminaRegen() {
-		return (config().getInt("stats.rogue") * 1)
-				+ (config().getInt("stats.ranger") * 1)
-				+ (config().getInt("stats.mage") * 1);
-
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void takeDamage(Entity damager) {
-		// TODO Auto-generated method stub
-
 	}
 }
