@@ -50,8 +50,8 @@ public class ExoPlayer implements Runnable {
 	private Inventory buildInv;
 
 	//Equipped Equipment
-	public CustomItem equippedmelee;
-	public CustomItem equippedranged;
+	public CustomItem equippedmelee = new CustomItem(0);
+	public CustomItem equippedranged = new CustomItem(0);
 	public CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
 
 	//Combat

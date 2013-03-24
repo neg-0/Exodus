@@ -2,6 +2,7 @@ package com.tidesofwaronline.Exodus.Config;
 
 import java.io.File;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -122,7 +123,8 @@ public class PlayerConfig {
 			ItemStack item = inv.getItem(i);
 			if (item != null) {
 				if (CustomItemHandler.isCustomItem(item)) {
-					inventoryConfig.createSection("custom." + i, new CustomItem(item).serialize());
+					inventoryConfig.createSection("custom." + i,
+							new CustomItem(item).serialize());
 				} else {
 					inventoryConfig.set("inv." + i, inv.getItem(i));
 				}
@@ -131,8 +133,6 @@ public class PlayerConfig {
 				inventoryConfig.set("inv." + i, null);
 			}
 		}
-		
-		
 
 		if (save()) {
 			return true;
@@ -158,25 +158,44 @@ public class PlayerConfig {
 
 		for (int i = 0; i < 36; i++) {
 			if (inventoryConfig.contains("custom." + i)) {
-				CustomItem item = new CustomItem(inventoryConfig.getConfigurationSection("custom." + i).getValues(true));
+				CustomItem item = new CustomItem(inventoryConfig
+						.getConfigurationSection("custom." + i).getValues(true));
 				playerInv.setItem(i, item);
 			}
 		}
 		return playerInv;
 	}
-	
+
 	public CustomItem getEquippedMelee() {
-		if (!playerConfig.contains("equippedmelee")) return null;
-		return new CustomItem(playerConfig.getConfigurationSection("equippedmelee").getValues(true));
+		if (!playerConfig.contains("equippedmelee")) {
+			return null;
+		}
+		ConfigurationSection cs = playerConfig
+				.getConfigurationSection("equippedmelee");
+		if (cs != null) {
+			return new CustomItem(cs.getValues(true));
+		} else {
+			return null;
+		}
 	}
-	
+
 	public CustomItem getEquippedRanged() {
-		if (!playerConfig.contains("equippedranged")) return null;
-		return new CustomItem(playerConfig.getConfigurationSection("equippedranged").getValues(true));
+		if (!playerConfig.contains("equippedranged")) {
+			return null;
+		}
+		ConfigurationSection cs = playerConfig
+				.getConfigurationSection("equippedranged");
+		if (cs != null) {
+			return new CustomItem(cs.getValues(true));
+		} else {
+			return null;
+		}
 	}
-	
+
 	public CustomItem getEquippedArrow() {
-		if (!playerConfig.contains("equippedarrow")) return null;
-		return new CustomItem(playerConfig.getConfigurationSection("equippedarrow").getValues(true));
+		if (!playerConfig.contains("equippedarrow"))
+			return null;
+		return new CustomItem(playerConfig.getConfigurationSection(
+				"equippedarrow").getValues(true));
 	}
 }
