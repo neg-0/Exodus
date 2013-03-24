@@ -187,7 +187,9 @@ public class XMLLoader {
 				}
 
 				if (node.getNodeName().equals("Number")) {
-					itemMap.put(nodeName, Integer.parseInt(nodeText));
+					if (!nodeText.isEmpty()) {
+						itemMap.put(nodeName, Integer.parseInt(nodeText));
+					}
 				}
 
 				if (node.getNodeName().equals("References")) {
@@ -214,7 +216,9 @@ public class XMLLoader {
 				if (node.getNodeName().equals("Enum")) {
 					String map = nodeName;
 					String key = nodeText;
-					itemMap.put(map, getEnumValue(map, key));
+					if (getEnumValue(map, key) != null) {
+						itemMap.put(map, getEnumValue(map, key));
+					}
 				}
 
 			}
