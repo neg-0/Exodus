@@ -29,5 +29,10 @@ public class ComPurge extends Command {
 		p.setHealth(20);
 		PlayerIndex.removePlayer(player.getName());
 		new ExoPlayer(plugin, p);
+		
+		player.sendMessage("Player " + p.getName() + " has been purged.");
+		if (!p.getName().equals(player.getName())) {
+			p.sendMessage("Your stats have been purged!");
+		}
 	}
 }
