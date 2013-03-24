@@ -93,6 +93,9 @@ public class CustomEnchantment {
 
 	public void onHit(Player player, LivingEntity target) {
 	}
+	
+	public void onDamage(Player player, LivingEntity target) {
+	}
 
 	public Enchantment getEnchantment() {
 		if (e != null)
