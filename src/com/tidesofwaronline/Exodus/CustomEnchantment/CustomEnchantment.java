@@ -85,20 +85,20 @@ public class CustomEnchantment {
 
 	public String getName() {
 		if (e != null)
-			return String.valueOf(e.getId()).replace("0", "Protection")
-					.replace("1", "Fire Protection")
-					.replace("2", "Feather Falling")
-					.replace("3", "Blast Protection")
-					.replace("4", "Projectile Protection")
-					.replace("5", "Respiration").replace("6", "Aqua Afinity")
-					.replace("7", "Thorns").replace("16", "Sharpness")
+			return String.valueOf(e.getId()).replace("16", "Sharpness")
 					.replace("17", "Smite").replace("18", "Bane of Arthropods")
 					.replace("19", "Knockback").replace("20", "Fire Aspect")
 					.replace("21", "Looting").replace("32", "Efficiency")
 					.replace("33", "Silk Touch").replace("34", "Unbreaking")
 					.replace("35", "Fortune").replace("48", "Power")
 					.replace("49", "Punch").replace("50", "Flame")
-					.replace("51", "Infinity");
+					.replace("51", "Infinity").replace("0", "Protection")
+					.replace("1", "Fire Protection")
+					.replace("2", "Feather Falling")
+					.replace("3", "Blast Protection")
+					.replace("4", "Projectile Protection")
+					.replace("5", "Respiration").replace("6", "Aqua Afinity")
+					.replace("7", "Thorns");
 		if (ce != null)
 			return ce.getName();
 		return null;
