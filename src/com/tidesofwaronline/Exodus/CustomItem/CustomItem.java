@@ -42,7 +42,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		private int damageMax = 1;
 		private ArrayList<CustomEnchantment> el = new ArrayList<CustomEnchantment>();
 		private int levelreq = 0;
-		private Attunement attunement = Attunement.WARRIOR;
+		private Attunement attunement = Attunement.ANY;
 		private int attunereq = 0;
 		private boolean glow = false;
 		private String lore;
@@ -170,7 +170,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	private int damageMax = 1;
 	private List<CustomEnchantment> el = new ArrayList<CustomEnchantment>();
 	private int levelreq = 0;
-	private Attunement attunement = Attunement.WARRIOR;
+	private Attunement attunement = Attunement.ANY;
 	private int attunereq = 0;
 	private boolean glow = false;
 	private String lore = "";
