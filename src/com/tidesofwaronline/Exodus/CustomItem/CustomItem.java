@@ -465,7 +465,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 			printLore.add("Requires level " + this.getLevelreq());
 		}
 
-		if (this.getAttunereq() != 0) {
+		if (this.getAttunement() != Attunement.ANY) {
 			printLore.add("Requires " + this.getAttunement() + " "
 					+ this.getAttunereq());
 		}
