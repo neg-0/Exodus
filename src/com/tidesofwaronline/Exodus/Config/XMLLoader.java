@@ -22,6 +22,7 @@ public class XMLLoader {
 	UUID weaponsUUID = UUID.fromString("bb15a547-acae-4482-9c5f-a45515610466");
 
 	private static HashMap<String, String> enchantments = new HashMap<String, String>();
+	private static HashMap<String, String> Vanilla_Items = new HashMap<String, String>();
 	private static HashMap<String, HashMap<String, String>> enums = new HashMap<String, HashMap<String, String>>();
 	private static File fXmlFile;
 
@@ -57,7 +58,7 @@ public class XMLLoader {
 			for (int temp = 0; temp < enumList.getLength(); temp++) {
 				Node nNode = enumList.item(temp);
 
-				{
+				{ //Parse Enumerators 
 					if (nNode.getAttributes().getNamedItem("BasedOn") != null) {
 						if (nNode
 								.getAttributes()
@@ -88,6 +89,11 @@ public class XMLLoader {
 					if (eElement.getAttribute("ObjectTemplateReferenceName")
 							.equalsIgnoreCase("Enchantment")) {
 						parseEnchantment(eElement);
+					}
+
+					if (eElement.getAttribute("ObjectTemplateReferenceName")
+							.equalsIgnoreCase("Vanilla_Item")) {
+						parseVanillaItem(eElement);
 					}
 				}
 			}
@@ -121,6 +127,13 @@ public class XMLLoader {
 		}
 	}
 
+	private static void parseVanillaItem(Element eElement) {
+		String name = eElement.getElementsByTagName("ExternalId").item(0)
+				.getTextContent().trim();
+		String uuid = eElement.getAttribute("Guid");
+		Vanilla_Items.put(uuid, name);
+	}
+
 	private static void parseEnchantment(Element eElement) {
 		String name = eElement.getElementsByTagName("ExternalId").item(0)
 				.getTextContent().trim();
@@ -130,6 +143,10 @@ public class XMLLoader {
 
 	private static String getEnchantmentByUUID(String uuid) {
 		return enchantments.get(uuid);
+	}
+
+	private static String getVanillaItemByUUID(String uuid) {
+		return Vanilla_Items.get(uuid);
 	}
 
 	private static void parseEnum(Element eElement) {
@@ -206,6 +223,13 @@ public class XMLLoader {
 							y++;
 						}
 					}
+				}
+
+				if (node.getNodeName().equals("NamedReference")) {
+					itemMap.put(nodeName, getVanillaItemByUUID(node
+							.getAttributes().getNamedItem("GuidRef")
+							.getNodeValue().trim()));
+
 				}
 
 				if (node.getNodeName().equals("Boolean")) {
