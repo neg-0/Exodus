@@ -1,14 +1,12 @@
 package com.tidesofwaronline.Exodus.Commands;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
-import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
+import org.bukkit.util.Vector;
+
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Type;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Tier;
 
 public class ComTest extends Command {
 
@@ -23,7 +21,7 @@ public class ComTest extends Command {
 		//Level requirement
 		//Additional lore
 
-		CUSTOM_ITEM = CustomItem.customItemBuilder()
+		/*CUSTOM_ITEM = CustomItem.customItemBuilder()
 				.withName("Golden Phoenix Sword")
 				.withColor(ChatColor.GOLD)
 				.withMaterial(Material.GOLD_SWORD)
@@ -36,9 +34,17 @@ public class ComTest extends Command {
 				.withDamageMax(12)
 				.withGlow()
 				.build();
-
+		*/
 		//player.getInventory().addItem(CUSTOM_ITEM);
-		player.getInventory().addItem(CustomItemHandler.getDefinedItem("Sword of Storms"));
+		//player.getInventory().addItem(CustomItemHandler.getDefinedItem("Sword of Storms"));
+		Block block = player.getTargetBlock(null, 100);
+		Location loc = player.getTargetBlock(null, 100).getLocation();
+		if (block.getType().isSolid()) {
+			FallingBlock fb = loc.getWorld().spawnFallingBlock(loc,
+					block.getType(), (byte) 0);
+			block.setTypeId(0);
+			fb.setVelocity(new Vector(0, 0.5, 0));
+		}
 	}
 
 }
