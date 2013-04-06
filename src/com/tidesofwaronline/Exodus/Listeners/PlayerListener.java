@@ -58,7 +58,6 @@ public class PlayerListener implements Listener {
 	public static void changeExp(final PlayerExpChangeEvent event) {
 		ExperienceHandler.changeExp(event);
 	}
-	
 
 	@EventHandler
 	public void hitMob(EntityDamageByEntityEvent event) {
@@ -70,7 +69,7 @@ public class PlayerListener implements Listener {
 		if (!(event.getEntity() instanceof LivingEntity)) {
 			return;
 		}
-		
+
 		if (!(event.getDamager() instanceof Player)) {
 			return;
 		}
@@ -78,10 +77,11 @@ public class PlayerListener implements Listener {
 		Player player = (Player) event.getDamager();
 		ExoPlayer exop = PlayerIndex.getExodusPlayer(player);
 		LivingEntity entity = (LivingEntity) event.getEntity();
-		
+
 		int damage = exop.getMeleeDamage();
-		if (damage != -1) event.setDamage(damage);
-		
+		if (damage != -1)
+			event.setDamage(damage);
+
 		exop.onHit(entity);
 
 		if (CustomEntityHandler.getCustomEntity(entity) != null) {
@@ -92,25 +92,25 @@ public class PlayerListener implements Listener {
 					+ " HP | Damage done: " + event.getDamage());
 
 		} else {
-			player.sendMessage("Level: "
-					+ "1" + " | "
-					+ entity.getHealth() + "/" + entity.getMaxHealth()
-					+ " HP | Damage done: " + event.getDamage());
+			player.sendMessage("Level: " + "1" + " | " + entity.getHealth()
+					+ "/" + entity.getMaxHealth() + " HP | Damage done: "
+					+ event.getDamage());
 		}
 	}
-	
+
 	@EventHandler
 	public static void takeDamage(EntityDamageByEntityEvent event) {
-		
+
 		if (event.isCancelled()) {
 			return;
 		}
-		
+
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
-		
-		PlayerIndex.getExodusPlayer((Player) event.getEntity()).onDamage(event.getDamager());
+
+		PlayerIndex.getExodusPlayer((Player) event.getEntity()).onDamage(
+				event.getDamager());
 	}
 
 	@EventHandler
@@ -233,13 +233,13 @@ public class PlayerListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		event.getDrops().clear();
 		PlayerIndex.getExodusPlayer(event.getEntity()).setCombat(false);
 	}
-	
+
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent event) {
 	}
