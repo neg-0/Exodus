@@ -1,7 +1,10 @@
 package com.tidesofwaronline.Exodus.Listeners;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +26,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
@@ -85,11 +89,21 @@ public class PlayerListener implements Listener {
 		exop.onHit(entity);
 
 		if (CustomEntityHandler.getCustomEntity(entity) != null) {
-			player.sendMessage("Level: "
-					+ String.valueOf(CustomEntityHandler
-							.getCustomEntity(entity).getLevel()) + " | "
-					+ entity.getHealth() + "/" + entity.getMaxHealth()
-					+ " HP | Damage done: " + event.getDamage());
+			
+			String msg = "Level: ";
+			msg += String.valueOf(CustomEntityHandler
+					.getCustomEntity(entity).getLevel());
+			msg += " | ";
+			if (entity.getHealth() - event.getDamage() > 0) {
+				msg += (entity.getHealth() - event.getDamage()) + "/" + entity.getMaxHealth()
+						+ " HP | ";
+			} else {
+				msg += "Dead! | ";
+			}
+			
+			msg += "Damage done: " + event.getDamage();
+			
+			player.sendMessage(msg);
 
 		} else {
 			player.sendMessage("Level: " + "1" + " | " + entity.getHealth()
