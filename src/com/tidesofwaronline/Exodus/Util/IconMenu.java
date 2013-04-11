@@ -73,9 +73,9 @@ public class IconMenu implements Listener {
 	}
 	
 	public void rebuildMenu() {
-		for (int i = 0; i < optionIcons.length; i++) {
-			if (optionIcons[i] != null) {
-				this.inventory.setItem(i, optionIcons[i]);
+		for (int i = 0; i < this.optionIcons.length; i++) {
+			if (this.optionIcons[i] != null) {
+				this.inventory.setItem(i, this.optionIcons[i]);
 			}
 		}
 	}
