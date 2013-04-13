@@ -265,13 +265,14 @@ public class ExoPlayer implements Runnable {
 	}
 
 	public int getMeleeDamage() {
-		ItemStack is = player.getInventory().getItemInHand();
-		if (CustomItemHandler.isCustomItem(is)) {
-			CustomItem i = new CustomItem(is);
-			return i.getDamage();
-		} else {
-			return -1;
+		if (this.isInCombat()) {
+			ItemStack is = player.getInventory().getItemInHand();
+			if (CustomItemHandler.isCustomItem(is)) {
+				CustomItem i = new CustomItem(is);
+				return i.getDamage();
+			}
 		}
+		return -1;
 	}
 
 	public org.bukkit.ChatColor getNameColor() {
