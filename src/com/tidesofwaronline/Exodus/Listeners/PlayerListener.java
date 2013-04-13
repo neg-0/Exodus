@@ -81,30 +81,32 @@ public class PlayerListener implements Listener {
 		int damage = exop.getMeleeDamage();
 		if (damage != -1)
 			event.setDamage(damage);
-
+		
+		event.setDamage(10);
+		
 		exop.onHit(entity);
-
+		
 		if (CustomEntityHandler.getCustomEntity(entity) != null) {
-			
-			String msg = "Level: ";
-			msg += String.valueOf(CustomEntityHandler
-					.getCustomEntity(entity).getLevel());
-			msg += " | ";
-			if (entity.getHealth() - event.getDamage() > 0) {
-				msg += (entity.getHealth() - event.getDamage()) + "/" + entity.getMaxHealth()
-						+ " HP | ";
-			} else {
-				msg += "Dead! | ";
-			}
-			
-			msg += "Damage done: " + event.getDamage();
-			
-			player.sendMessage(msg);
+			if (!event.getEntity().isDead()) {
+				String msg = "Level: ";
+				msg += String.valueOf(CustomEntityHandler.getCustomEntity(
+						entity).getLevel());
+				msg += " | ";
+				if (entity.getHealth() - event.getDamage() > 0) {
+					msg += (entity.getHealth() - event.getDamage()) + "/"
+							+ entity.getMaxHealth() + " HP | ";
+				} else {
+					msg += "Dead! | ";
+				}
 
-		} else {
-			player.sendMessage("Level: " + "1" + " | " + entity.getHealth()
-					+ "/" + entity.getMaxHealth() + " HP | Damage done: "
-					+ event.getDamage());
+				msg += "Damage done: " + event.getDamage();
+
+				player.sendMessage(msg);
+			} else {
+				player.sendMessage("Level: " + "1" + " | " + entity.getHealth()
+						+ "/" + entity.getMaxHealth() + " HP | Damage done: "
+						+ event.getDamage());
+			}
 		}
 	}
 
