@@ -651,10 +651,11 @@ public class ExoPlayer implements Runnable {
 		config.save();
 	}
 
-	public void setMelee(final CustomItem item) {
+	public void setMelee(CustomItem item) {
 		this.equippedmelee = item;
 		setAttribute("equippedmelee", item);
 		player.sendMessage("Melee Weapon Equipped!");
+		config.save();
 	}
 
 	public void setRace(String string) {
