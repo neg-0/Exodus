@@ -79,33 +79,38 @@ public class PlayerListener implements Listener {
 		LivingEntity entity = (LivingEntity) event.getEntity();
 
 		int damage = exop.getMeleeDamage();
-		if (damage != -1)
-			event.setDamage(damage);
+
+		event.setDamage(0);
 		
-		event.setDamage(10);
-		
+		if (entity.getHealth() - damage < 1) {
+			entity.setHealth(0);
+		} else if (damage != -1) {
+			//entity.damage(damage);
+			entity.setHealth(entity.getHealth() - damage);
+		}
+
 		exop.onHit(entity);
-		
+
 		if (CustomEntityHandler.getCustomEntity(entity) != null) {
 			if (!event.getEntity().isDead()) {
 				String msg = "Level: ";
 				msg += String.valueOf(CustomEntityHandler.getCustomEntity(
 						entity).getLevel());
 				msg += " | ";
-				if (entity.getHealth() - event.getDamage() > 0) {
-					msg += (entity.getHealth() - event.getDamage()) + "/"
+				if (entity.getHealth() > 0) {
+					msg += (entity.getHealth()) + "/"
 							+ entity.getMaxHealth() + " HP | ";
 				} else {
 					msg += "Dead! | ";
 				}
 
-				msg += "Damage done: " + event.getDamage();
+				msg += "Damage done: " + damage;
 
 				player.sendMessage(msg);
 			} else {
 				player.sendMessage("Level: " + "1" + " | " + entity.getHealth()
 						+ "/" + entity.getMaxHealth() + " HP | Damage done: "
-						+ event.getDamage());
+						+ damage);
 			}
 		}
 	}
