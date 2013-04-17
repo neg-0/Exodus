@@ -174,6 +174,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	private int attunereq = 0;
 	private boolean glow = false;
 	private String lore = "";
+	private String soulbind = "";
 
 	List<String> displayWindow; //The printed lore
 
@@ -614,6 +615,14 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 	public void setTier(Tier tier) {
 		this.tier = tier;
+	}
+	
+	public void soulbind(String player) {
+		this.soulbind = player;
+	}
+	
+	public void clearSoulbind() {
+		this.soulbind = "";
 	}
 
 	private void writeStats() {
