@@ -616,13 +616,17 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	public void setTier(Tier tier) {
 		this.tier = tier;
 	}
-	
+
 	public void soulbind(String player) {
 		this.soulbind = player;
 	}
-	
+
 	public void clearSoulbind() {
 		this.soulbind = "";
+	}
+	
+	public String getSoulbind() {
+		return soulbind;
 	}
 
 	private void writeStats() {
