@@ -59,6 +59,7 @@ public class PlayerListener implements Listener {
 		ExperienceHandler.changeExp(event);
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void hitMob(EntityDamageByEntityEvent event) {
 
@@ -77,6 +78,16 @@ public class PlayerListener implements Listener {
 		Player player = (Player) event.getDamager();
 		ExoPlayer exop = PlayerIndex.getExodusPlayer(player);
 		LivingEntity entity = (LivingEntity) event.getEntity();
+		ItemStack item = player.getItemInHand();
+		
+		if (item.getType().getMaxDurability() > 0
+				&& item.getType().getMaxDurability() - item.getDurability() <= 5) {
+			item.setDurability((short) (item.getType().getMaxDurability() - 2));
+			event.setCancelled(true);
+			player.sendMessage("This item is broken and cannot be used!");
+			player.updateInventory();
+			return;
+		}
 
 		int damage = exop.getMeleeDamage();
 
