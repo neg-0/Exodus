@@ -5,8 +5,8 @@ public class RandomLootChest extends Chest {
 	private int level; //For randomized loot
 
 
-	public RandomLootChest() {
-		// TODO Auto-generated constructor stub
+	public RandomLootChest(int level) {
+		this.level = level;
 	}
 
 
