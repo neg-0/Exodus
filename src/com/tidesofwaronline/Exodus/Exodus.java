@@ -79,6 +79,7 @@ public class Exodus extends JavaPlugin {
 		getCommand("exo").setExecutor(comListener);
 		getCommand("exospawner").setExecutor(comListener);
 		getCommand("party").setExecutor(comListener);
+		getCommand("guild").setExecutor(comListener);
 
 		//ProtocolLib
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {

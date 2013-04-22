@@ -63,6 +63,7 @@ public class ExoPlayer implements Runnable {
 	public int level;
 
 	public Party party = null;
+	public Guild guild = null;
 
 	Spellbook spellbook = new Spellbook(this);
 
@@ -80,8 +81,8 @@ public class ExoPlayer implements Runnable {
 		config.initialize();
 
 		this.level = config.getConfig().getInt("level", 1);
-		equippedmelee = config.getEquippedMelee();
-		equippedranged = config.getEquippedRanged();
+		this.equippedmelee = config.getEquippedMelee();
+		this.equippedranged = config.getEquippedRanged();
 
 		createStatsMenu();
 		recalcXPBar();
@@ -264,6 +265,10 @@ public class ExoPlayer implements Runnable {
 		return 0;
 	}
 
+	public Guild getGuild() {
+		return this.guild;
+	}
+
 	public int getMeleeDamage() {
 		if (this.isInCombat()) {
 			ItemStack is = player.getInventory().getItemInHand();
@@ -393,6 +398,22 @@ public class ExoPlayer implements Runnable {
 		}
 		player.setExp(ExperienceHandler.getXPBarPercentage(this));
 	}
+
+	/* Disabled due to client not sending InventoryOpenEvent
+	public boolean inventorySwitchCheck() {
+		// Get current time in nano seconds.
+		final long pressTime = System.currentTimeMillis();
+
+		//if standing
+		// If double click...
+		if (pressTime - inventoryLastPressTime <= DOUBLE_PRESS_INTERVAL) {
+			openStatsMenu();
+		}
+		// record the last time the menu button was pressed.
+		inventoryLastPressTime = pressTime;
+
+		return true;
+	}*/
 
 	public void refreshOptions() {
 		statsMenu
@@ -588,22 +609,6 @@ public class ExoPlayer implements Runnable {
 					"No Ranged Weapon Equipped!");
 		}
 	}
-
-	/* Disabled due to client not sending InventoryOpenEvent
-	public boolean inventorySwitchCheck() {
-		// Get current time in nano seconds.
-		final long pressTime = System.currentTimeMillis();
-
-		//if standing
-		// If double click...
-		if (pressTime - inventoryLastPressTime <= DOUBLE_PRESS_INTERVAL) {
-			openStatsMenu();
-		}
-		// record the last time the menu button was pressed.
-		inventoryLastPressTime = pressTime;
-
-		return true;
-	}*/
 
 	@Override
 	public void run() {

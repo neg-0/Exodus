@@ -27,12 +27,15 @@ public class CommandListener implements CommandExecutor {
 
 		if (command.getName().equalsIgnoreCase("stats")) {
 			stats(player);
-		}
+		} else
 		if (command.getName().equalsIgnoreCase("exo")) {
 			exo(player, args);
-		}
+		} else
 		if (command.getName().equalsIgnoreCase("party")) {
 			new ComParty(plugin, player, args);
+		} else
+		if (command.getName().equalsIgnoreCase("guild")) {
+			new ComGuild(plugin, player, args);
 		}
 
 		return true;
