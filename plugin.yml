@@ -16,3 +16,5 @@ commands:
     aliases: [es]
   party:
     description: Exodus Party commands.
+  guild:
+    description: Exodus Guild commands.
