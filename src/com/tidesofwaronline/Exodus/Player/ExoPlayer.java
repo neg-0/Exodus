@@ -1,6 +1,7 @@
 package com.tidesofwaronline.Exodus.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -23,6 +24,7 @@ import com.tidesofwaronline.Exodus.Config.PlayerConfig;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Effects.PlayerLevelUpEffect;
+import com.tidesofwaronline.Exodus.Races.Races.Race;
 import com.tidesofwaronline.Exodus.Spells.Spellbook;
 import com.tidesofwaronline.Exodus.Spells.Spells.Spell;
 import com.tidesofwaronline.Exodus.Util.IconMenu;
@@ -692,5 +694,35 @@ public class ExoPlayer implements Runnable {
 			}
 		}
 		return inCombat;
+	}
+	
+	public Integer getReputation(Race race) {
+		switch(race) {
+		case VENTURI: return Integer.valueOf(getAttribute("repVenturi").toString());
+		case DIAAB: return Integer.valueOf(getAttribute("repDia'ab").toString());
+		case NORDIC: return Integer.valueOf(getAttribute("repNordic").toString());
+		case ELVEN: return Integer.valueOf(getAttribute("repElven").toString());
+		case ABRAXIAN: return Integer.valueOf(getAttribute("repAbraxian").toString());
+		case NAGRATH: return Integer.valueOf(getAttribute("repNagrath").toString());
+		case SCIENCE: return Integer.valueOf(getAttribute("repScience").toString());
+		case DWARVES: return Integer.valueOf(getAttribute("repDwarves").toString());
+		default: return null;
+		}
+	}
+	
+	public int[] getReputation() {
+		int[] a = new int[8];
+		a[0] = Integer.valueOf(getAttribute("repVenturi").toString());
+		a[1] = Integer.valueOf(getAttribute("repDia'ab").toString());
+		a[2] = Integer.valueOf(getAttribute("repNordic").toString());
+		a[3] = Integer.valueOf(getAttribute("repElven").toString());
+		a[4] = Integer.valueOf(getAttribute("repAbraxian").toString());
+		a[5] = Integer.valueOf(getAttribute("repNagrath").toString());
+		a[6] = Integer.valueOf(getAttribute("repScience").toString());
+		a[7] = Integer.valueOf(getAttribute("repDwarves").toString());
+		
+		Arrays.sort(a);
+		
+		return a;
 	}
 }
