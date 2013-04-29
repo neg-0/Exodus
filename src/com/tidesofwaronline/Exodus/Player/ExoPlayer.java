@@ -50,24 +50,25 @@ public class ExoPlayer implements Runnable {
 	CustomItem pickeditem;
 	int slot;
 
-	private Inventory buildInv;
+	//Inventories
+	private Inventory buildInventory;
 
 	//Equipped Equipment
 	public CustomItem equippedmelee = new CustomItem(0);
+
 	public CustomItem equippedranged = new CustomItem(0);
 	public CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
-
 	//Combat
 	boolean inCombat = false;
-	boolean inDanger = false;
 
+	boolean inDanger = false;
 	public boolean showSpawners = false;
 
 	public int level;
 
 	public Party party = null;
-	public Guild guild = null;
 
+	public Guild guild = null;
 	Spellbook spellbook = new Spellbook(this);
 
 	ArrayList<Buff> buffs = new ArrayList<Buff>();
@@ -79,7 +80,7 @@ public class ExoPlayer implements Runnable {
 
 		PlayerIndex.registerPlayer(this);
 
-		buildInv = Bukkit.createInventory(player, InventoryType.PLAYER);
+		buildInventory = Bukkit.createInventory(player, InventoryType.PLAYER);
 
 		config.initialize();
 
@@ -92,7 +93,7 @@ public class ExoPlayer implements Runnable {
 	}
 
 	public boolean addToInventory(ItemStack i) {
-		HashMap<Integer, ItemStack> extra = buildInv.addItem(i);
+		HashMap<Integer, ItemStack> extra = buildInventory.addItem(i);
 		if (extra.size() != 0) {
 		}
 		return true;
@@ -173,6 +174,10 @@ public class ExoPlayer implements Runnable {
 		refreshOptions();
 	}
 
+	public Currency Currency() {
+		return this.currency;
+	}
+
 	@SuppressWarnings("deprecation")
 	public void doWeaponSwap(final InventoryClickEvent event) {
 		// Get current time in nano seconds.
@@ -241,7 +246,7 @@ public class ExoPlayer implements Runnable {
 	private void exitCombat() {
 		player.sendMessage("EXITING COMBAT");
 		inCombat = false;
-		player.getInventory().setContents(buildInv.getContents());
+		player.getInventory().setContents(buildInventory.getContents());
 	}
 
 	private void gainXPEvent() {
@@ -265,6 +270,10 @@ public class ExoPlayer implements Runnable {
 			return toreturn;
 		}
 		return 0;
+	}
+
+	public Inventory getBuildInventory() {
+		return buildInventory;
 	}
 
 	public Guild getGuild() {
@@ -371,16 +380,16 @@ public class ExoPlayer implements Runnable {
 
 	//@SuppressWarnings("deprecation")
 	public void inventoryLoad() {
-		buildInv.setContents(config.loadInventory(player).getContents());
+		buildInventory.setContents(config.loadInventory(player).getContents());
 		if (!inCombat) {
-			player.getInventory().setContents(buildInv.getContents());
+			player.getInventory().setContents(buildInventory.getContents());
 		}
 		//player.updateInventory();
 	}
 
 	public boolean inventorySave() {
-		buildInv.setContents(player.getInventory().getContents());
-		if (config.saveInventory(buildInv)) {
+		buildInventory.setContents(player.getInventory().getContents());
+		if (config.saveInventory(buildInventory)) {
 			return true;
 		} else {
 			return false;
@@ -420,13 +429,6 @@ public class ExoPlayer implements Runnable {
 		}
 	}
 
-	public void onHit(LivingEntity entity) {
-		CustomItem i = new CustomItem(player.getInventory().getItemInHand());
-		if (CustomItemHandler.isCustomItem(i)) {
-			i.onHit(this.player, entity);
-		}
-	}
-
 	/* Disabled due to client not sending InventoryOpenEvent
 	public boolean inventorySwitchCheck() {
 		// Get current time in nano seconds.
@@ -442,6 +444,13 @@ public class ExoPlayer implements Runnable {
 
 		return true;
 	}*/
+
+	public void onHit(LivingEntity entity) {
+		CustomItem i = new CustomItem(player.getInventory().getItemInHand());
+		if (CustomItemHandler.isCustomItem(i)) {
+			i.onHit(this.player, entity);
+		}
+	}
 
 	public void openStatsMenu() {
 		refreshOptions();
@@ -733,9 +742,5 @@ public class ExoPlayer implements Runnable {
 			}
 		}
 		return inCombat;
-	}
-
-	public Currency Currency() {
-		return currency;
 	}
 }
