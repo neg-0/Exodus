@@ -37,7 +37,8 @@ public class ExoPlayer implements Runnable {
 	private final Player player;
 	private final PlayerConfig config = new PlayerConfig(this);
 	private IconMenu statsMenu;
-
+	private Currency currency = new Currency(this);
+	
 	private ChatColor namecolor = ChatColor.WHITE;
 
 	//Double Click Stuff
@@ -88,7 +89,6 @@ public class ExoPlayer implements Runnable {
 
 		createStatsMenu();
 		recalcXPBar();
-
 	}
 
 	public boolean addToInventory(ItemStack i) {
@@ -298,6 +298,45 @@ public class ExoPlayer implements Runnable {
 		return this.config;
 	}
 
+	public int[] getReputation() {
+		int[] a = new int[8];
+		a[0] = Integer.valueOf(getAttribute("repVenturi").toString());
+		a[1] = Integer.valueOf(getAttribute("repDia'ab").toString());
+		a[2] = Integer.valueOf(getAttribute("repNordic").toString());
+		a[3] = Integer.valueOf(getAttribute("repElven").toString());
+		a[4] = Integer.valueOf(getAttribute("repAbraxian").toString());
+		a[5] = Integer.valueOf(getAttribute("repNagrath").toString());
+		a[6] = Integer.valueOf(getAttribute("repScience").toString());
+		a[7] = Integer.valueOf(getAttribute("repDwarves").toString());
+
+		Arrays.sort(a);
+
+		return a;
+	}
+
+	public Integer getReputation(Race race) {
+		switch (race) {
+		case VENTURI:
+			return Integer.valueOf(getAttribute("repVenturi").toString());
+		case DIAAB:
+			return Integer.valueOf(getAttribute("repDia'ab").toString());
+		case NORDIC:
+			return Integer.valueOf(getAttribute("repNordic").toString());
+		case ELVEN:
+			return Integer.valueOf(getAttribute("repElven").toString());
+		case ABRAXIAN:
+			return Integer.valueOf(getAttribute("repAbraxian").toString());
+		case NAGRATH:
+			return Integer.valueOf(getAttribute("repNagrath").toString());
+		case SCIENCE:
+			return Integer.valueOf(getAttribute("repScience").toString());
+		case DWARVES:
+			return Integer.valueOf(getAttribute("repDwarves").toString());
+		default:
+			return null;
+		}
+	}
+
 	public Spell[] getSpells() {
 		Spell[] spells = { Spell.TEST, Spell.HEAL };
 		return spells;
@@ -388,19 +427,6 @@ public class ExoPlayer implements Runnable {
 		}
 	}
 
-	public void openStatsMenu() {
-		refreshOptions();
-		statsMenu.open(this.player);
-	}
-
-	public void recalcXPBar() {
-		final int level = (Integer) getAttribute("level");
-		if (player.getLevel() != level) {
-			player.setLevel(level);
-		}
-		player.setExp(ExperienceHandler.getXPBarPercentage(this));
-	}
-
 	/* Disabled due to client not sending InventoryOpenEvent
 	public boolean inventorySwitchCheck() {
 		// Get current time in nano seconds.
@@ -416,6 +442,19 @@ public class ExoPlayer implements Runnable {
 
 		return true;
 	}*/
+
+	public void openStatsMenu() {
+		refreshOptions();
+		statsMenu.open(this.player);
+	}
+
+	public void recalcXPBar() {
+		final int level = (Integer) getAttribute("level");
+		if (player.getLevel() != level) {
+			player.setLevel(level);
+		}
+		player.setExp(ExperienceHandler.getXPBarPercentage(this));
+	}
 
 	public void refreshOptions() {
 		statsMenu
@@ -695,34 +734,8 @@ public class ExoPlayer implements Runnable {
 		}
 		return inCombat;
 	}
-	
-	public Integer getReputation(Race race) {
-		switch(race) {
-		case VENTURI: return Integer.valueOf(getAttribute("repVenturi").toString());
-		case DIAAB: return Integer.valueOf(getAttribute("repDia'ab").toString());
-		case NORDIC: return Integer.valueOf(getAttribute("repNordic").toString());
-		case ELVEN: return Integer.valueOf(getAttribute("repElven").toString());
-		case ABRAXIAN: return Integer.valueOf(getAttribute("repAbraxian").toString());
-		case NAGRATH: return Integer.valueOf(getAttribute("repNagrath").toString());
-		case SCIENCE: return Integer.valueOf(getAttribute("repScience").toString());
-		case DWARVES: return Integer.valueOf(getAttribute("repDwarves").toString());
-		default: return null;
-		}
-	}
-	
-	public int[] getReputation() {
-		int[] a = new int[8];
-		a[0] = Integer.valueOf(getAttribute("repVenturi").toString());
-		a[1] = Integer.valueOf(getAttribute("repDia'ab").toString());
-		a[2] = Integer.valueOf(getAttribute("repNordic").toString());
-		a[3] = Integer.valueOf(getAttribute("repElven").toString());
-		a[4] = Integer.valueOf(getAttribute("repAbraxian").toString());
-		a[5] = Integer.valueOf(getAttribute("repNagrath").toString());
-		a[6] = Integer.valueOf(getAttribute("repScience").toString());
-		a[7] = Integer.valueOf(getAttribute("repDwarves").toString());
-		
-		Arrays.sort(a);
-		
-		return a;
+
+	public Currency Currency() {
+		return currency;
 	}
 }
