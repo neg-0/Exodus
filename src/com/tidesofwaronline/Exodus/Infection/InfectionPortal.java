@@ -17,33 +17,32 @@ import com.sk89q.worldedit.FilenameException;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.data.DataException;
+import com.tidesofwaronline.Exodus.DataStructure;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntity;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 import com.tidesofwaronline.Exodus.Util.TerrainManager;
 
-public class InfectedArea implements Runnable {
+public class InfectionPortal {
 
 	private Location loc;
 	private List<CustomEntity> mobs = new ArrayList<CustomEntity>();
 	private List<Location> changedBlocks = new ArrayList<Location>();
-	private boolean active = true;
-	private double size = 5;
-	private double maxSize = 25;
+
 	private Random ran = new Random();
 	World world;
 	TerrainManager tm;
 	WorldEditPlugin worldEdit = (WorldEditPlugin) Bukkit.getServer()
 			.getPluginManager().getPlugin("WorldEdit");
-	File portalFile = new File("plugins/Exodus/schematics/Portal.schematic");
+	File portalFile = new File(DataStructure.getSchematicsFolder() + "Portal.schematic");
 
-	public InfectedArea(World world, Location loc) {
+	public InfectionPortal(World world, Location loc) {
 		this.world = world;
 		this.loc = loc;
 
 		this.tm = new TerrainManager(worldEdit, world);
 		createPortal();
 		createMycel();
-		run();
+		//new Thread(new SpawnMobs(this));
 	}
 
 	public Location getLocation() {
@@ -80,45 +79,55 @@ public class InfectedArea implements Runnable {
 		return this.loc.getWorld().spawnEntity(loc, type);
 	}
 
-	@Override
-	public void run() {
-		try {
-			while (this.active) {
-				Thread.sleep(5000);
-
-				if (this.size < this.maxSize) {
-					this.size += 0.1;
-				}
-
-				if (mobs.size() < Math.pow(this.size, 2) / 5) {
-
-					int random = ran.nextInt(100);
-					Location spawnLoc = this.loc.add(0, 2, 0);
-
-					if (random < 5) {
-						spawnEntity(EntityType.BLAZE, spawnLoc);
-					} else if (random < 10) {
-						spawnEntity(EntityType.GHAST, spawnLoc);
-					} else if (random < 20) {
-						spawnEntity(EntityType.ENDERMAN, spawnLoc);
-					} else if (random < 40) {
-						spawnEntity(EntityType.CREEPER, spawnLoc);
-					} else if (random < 55) {
-						spawnEntity(EntityType.SPIDER, spawnLoc);
-					} else if (random < 75) {
-						spawnEntity(EntityType.SKELETON, spawnLoc);
-					} else {
-						spawnEntity(EntityType.ZOMBIE, spawnLoc);
-					}
-				}
-			}
-		} catch (InterruptedException e) {
-
-		}
-
-	}
-
 	public List<Location> getChangedBlocks() {
 		return changedBlocks;
+	}
+
+	public class SpawnMobs extends Thread {
+
+		public boolean active = true;
+		private double size = 5;
+		private double maxSize = 25;
+		private Location loc;
+
+		public SpawnMobs(InfectionPortal infectionPortal) {
+			this.loc = infectionPortal.loc;
+		}
+
+		public void run() {
+			try {
+				while (this.active) {
+					sleep(5000);
+
+					if (this.size < this.maxSize) {
+						this.size += 0.1;
+					}
+
+					if (mobs.size() < Math.pow(this.size, 2) / 5) {
+
+						int random = ran.nextInt(100);
+						Location spawnLoc = this.loc.add(0, 2, 0);
+
+						if (random < 5) {
+							spawnEntity(EntityType.BLAZE, spawnLoc);
+						} else if (random < 10) {
+							spawnEntity(EntityType.GHAST, spawnLoc);
+						} else if (random < 20) {
+							spawnEntity(EntityType.ENDERMAN, spawnLoc);
+						} else if (random < 40) {
+							spawnEntity(EntityType.CREEPER, spawnLoc);
+						} else if (random < 55) {
+							spawnEntity(EntityType.SPIDER, spawnLoc);
+						} else if (random < 75) {
+							spawnEntity(EntityType.SKELETON, spawnLoc);
+						} else {
+							spawnEntity(EntityType.ZOMBIE, spawnLoc);
+						}
+					}
+				}
+			} catch (InterruptedException e) {
+
+			}
+		}
 	}
 }
