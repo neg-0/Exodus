@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.tidesofwaronline.Exodus.DataStructure;
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
@@ -39,9 +40,9 @@ public class PlayerConfig {
 	}
 
 	public void load() {
-		configFile = new File("plugins/Exodus/players/" + playerName
+		configFile = new File(DataStructure.getPlayerConfigFolder() + playerName
 				+ "/config.yml");
-		inventoryFile = new File("plugins/Exodus/players/" + playerName
+		inventoryFile = new File(DataStructure.getPlayerConfigFolder() + playerName
 				+ "/inventory.yml");
 
 		playerConfig = YamlConfiguration.loadConfiguration(configFile);
@@ -168,15 +169,20 @@ public class PlayerConfig {
 
 	public CustomItem getEquippedMelee() {
 		if (!playerConfig.contains("equippedmelee")) {
+			System.out.println("1");
 			return null;
 		}
 		ConfigurationSection cs = playerConfig
 				.getConfigurationSection("equippedmelee");
-		if (cs != null) {
-			return new CustomItem(cs.getValues(true));
-		} else {
-			return null;
+		
+		if (cs.isConfigurationSection("equippedmelee")) {
+			System.out.println("2");
 		}
+			
+		
+			return new CustomItem(cs.getValues(true));
+		
+		
 	}
 
 	public CustomItem getEquippedRanged() {
