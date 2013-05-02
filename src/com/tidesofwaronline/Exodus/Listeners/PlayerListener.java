@@ -95,7 +95,7 @@ public class PlayerListener implements Listener {
 		
 		if (entity.getHealth() - damage < 1) {
 			entity.setHealth(0);
-		} else if (damage != -1) {
+		} else {
 			//entity.damage(damage);
 			entity.setHealth(entity.getHealth() - damage);
 		}
