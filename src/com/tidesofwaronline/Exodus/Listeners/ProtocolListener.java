@@ -21,7 +21,6 @@
  */
 package com.tidesofwaronline.Exodus.Listeners;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -41,6 +40,7 @@ import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 /**
  * Hooking into the ProtocolLib to hide enchantments and the custom id int the
@@ -65,7 +65,7 @@ public class ProtocolListener extends PacketAdapter {
 		try {
 			switch (e.getPacketID()) {
 			case 103: {
-				if (exodus.filter) {
+				if (PlayerIndex.getExodusPlayer(e.getPlayer()).isFilter()) {
 					removeCustomId(packet.getItemModifier().read(0));
 				}
 				break;
@@ -76,7 +76,7 @@ public class ProtocolListener extends PacketAdapter {
 
 				for (int i = 0; i < elements.length; i++) {
 					if (elements[i] != null) {
-						if (exodus.filter) {
+						if (PlayerIndex.getExodusPlayer(e.getPlayer()).isFilter()) {
 							this.removeCustomId(elements[i]);
 						}
 					}
@@ -89,18 +89,6 @@ public class ProtocolListener extends PacketAdapter {
 			this.getPlugin().getLogger()
 					.log(Level.SEVERE, "Couldn't access field.", ex);
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private void test(ItemStack item) {
-		if (item == null) {
-			return;
-		}
-
-		ItemMeta m = item.getItemMeta();
-		m.setDisplayName("TEST");
-		m.setLore(Arrays.asList("Test", "test 2"));
-		item.setItemMeta(m);
 	}
 
 	/**

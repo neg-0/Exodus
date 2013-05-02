@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.kitteh.tag.TagAPI;
 
+import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Buffs.Buff;
 import com.tidesofwaronline.Exodus.Config.PlayerConfig;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
@@ -28,7 +31,7 @@ import com.tidesofwaronline.Exodus.Races.Races.Race;
 import com.tidesofwaronline.Exodus.Spells.Spellbook;
 import com.tidesofwaronline.Exodus.Spells.Spells.Spell;
 import com.tidesofwaronline.Exodus.Util.IconMenu;
-import com.tidesofwaronline.Exodus.Util.Lists;
+import com.tidesofwaronline.Exodus.Util.ItemUtil;
 import com.tidesofwaronline.Exodus.Util.MessageUtil;
 
 public class ExoPlayer implements Runnable {
@@ -37,7 +40,8 @@ public class ExoPlayer implements Runnable {
 	private final Player player;
 	private final PlayerConfig config = new PlayerConfig(this);
 	private IconMenu statsMenu;
-	private Currency currency = new Currency(this);
+	private Economy econ = Exodus.getEcon();
+	private boolean filter = false;
 	
 	private ChatColor namecolor = ChatColor.WHITE;
 
@@ -55,9 +59,9 @@ public class ExoPlayer implements Runnable {
 
 	//Equipped Equipment
 	public CustomItem equippedmelee = new CustomItem(0);
-
 	public CustomItem equippedranged = new CustomItem(0);
 	public CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
+	
 	//Combat
 	boolean inCombat = false;
 
@@ -174,10 +178,6 @@ public class ExoPlayer implements Runnable {
 		refreshOptions();
 	}
 
-	public Currency Currency() {
-		return this.currency;
-	}
-
 	@SuppressWarnings("deprecation")
 	public void doWeaponSwap(final InventoryClickEvent event) {
 		// Get current time in nano seconds.
@@ -197,12 +197,12 @@ public class ExoPlayer implements Runnable {
 				}
 
 				boolean onlist = false;
-				for (int i1 : Lists.weapons) { //if it's a weapon
+				for (int i1 : ItemUtil.weapons) { //if it's a weapon
 					if (pickeditem.getTypeId() == i1) {
 						onlist = true;
 					}
 				}
-				for (int i1 : Lists.tools) { //if it's a tool
+				for (int i1 : ItemUtil.tools) { //if it's a tool
 					if (pickeditem.getTypeId() == i1) {
 						onlist = true;
 					}
@@ -275,6 +275,10 @@ public class ExoPlayer implements Runnable {
 	public Inventory getBuildInventory() {
 		return buildInventory;
 	}
+	
+	public Economy econ() {
+		return econ;
+	}
 
 	public Guild getGuild() {
 		return this.guild;
@@ -288,7 +292,7 @@ public class ExoPlayer implements Runnable {
 				return i.getDamage();
 			}
 		}
-		return -1;
+		return 1;
 	}
 
 	public org.bukkit.ChatColor getNameColor() {
@@ -742,5 +746,13 @@ public class ExoPlayer implements Runnable {
 			}
 		}
 		return inCombat;
+	}
+
+	public boolean isFilter() {
+		return filter;
+	}
+
+	public void setFilter(boolean filter) {
+		this.filter = filter;
 	}
 }
