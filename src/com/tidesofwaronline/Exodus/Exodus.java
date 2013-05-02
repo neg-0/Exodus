@@ -31,21 +31,29 @@ public class Exodus extends JavaPlugin {
 
 	public static Logger logger = Logger.getLogger("minecraft");
 	public static Economy econ = null;
-	String version = null;
-	public boolean filter = true;
 	public static boolean debugMode = false;
-
-	@SuppressWarnings("unused")
-	private ProtocolManager protocolManager;
 
 	public static void main(String args[]) throws Exception {
 		debugMode = true;
 		new XMLLoader();
 	}
 
+	@SuppressWarnings("unused")
+	private ProtocolManager protocolManager;
+
 	@Override
-	public void onLoad() {
-		protocolManager = ProtocolLibrary.getProtocolManager();
+	public void onDisable() {
+		//Scan for players already in-game (in case of reload)
+		final Player[] playerlist = Bukkit.getOnlinePlayers();
+		try {
+			for (final Player p : playerlist) {
+				PlayerIndex.getExodusPlayer(p).savePlayer();
+			}
+		} catch (final NullPointerException e) {
+			logger.severe("Uh oh! " + e);
+		}
+		PlayerIndex.clear();
+		CustomEntityHandler.dropLevels();
 	}
 
 	@Override
@@ -106,18 +114,8 @@ public class Exodus extends JavaPlugin {
 	}
 
 	@Override
-	public void onDisable() {
-		//Scan for players already in-game (in case of reload)
-		final Player[] playerlist = Bukkit.getOnlinePlayers();
-		try {
-			for (final Player p : playerlist) {
-				PlayerIndex.getExodusPlayer(p).savePlayer();
-			}
-		} catch (final NullPointerException e) {
-			logger.severe("Uh oh! " + e);
-		}
-		PlayerIndex.clear();
-		CustomEntityHandler.dropLevels();
+	public void onLoad() {
+		protocolManager = ProtocolLibrary.getProtocolManager();
 	}
 
 	private boolean setupEconomy() {
@@ -131,5 +129,9 @@ public class Exodus extends JavaPlugin {
 		}
 		econ = rsp.getProvider();
 		return econ != null;
+	}
+	
+	public static Economy getEcon() {
+		return econ;
 	}
 }
