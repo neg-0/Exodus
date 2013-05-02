@@ -1,12 +1,9 @@
 package com.tidesofwaronline.Exodus.Commands;
 
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
+import com.tidesofwaronline.Exodus.Infection.InfectionPortal;
 
 public class ComTest extends Command {
 
@@ -37,14 +34,19 @@ public class ComTest extends Command {
 		*/
 		//player.getInventory().addItem(CUSTOM_ITEM);
 		//player.getInventory().addItem(CustomItemHandler.getDefinedItem("Sword of Storms"));
-		Block block = player.getTargetBlock(null, 100);
+		/*Block block = player.getTargetBlock(null, 100);
 		Location loc = player.getTargetBlock(null, 100).getLocation();
 		if (block.getType().isSolid()) {
 			FallingBlock fb = loc.getWorld().spawnFallingBlock(loc,
 					block.getType(), (byte) 0);
 			block.setTypeId(0);
 			fb.setVelocity(new Vector(0, 0.5, 0));
-		}
+		}*/
+		
+		//LivingEntity zombie = (LivingEntity) player.getWorld().spawnEntity(player.getLocation(), EntityType.ZOMBIE);
+		//zombie.setCustomName("Oh no, a Zombie!");
+		
+		new InfectionPortal(player.getWorld(), player.getLocation());
 	}
 
 }
