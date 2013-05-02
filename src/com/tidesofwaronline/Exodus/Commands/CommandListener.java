@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.tidesofwaronline.Exodus.Exodus;
+import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class CommandListener implements CommandExecutor {
@@ -23,13 +24,18 @@ public class CommandListener implements CommandExecutor {
 		if (!(sender instanceof Player))
 			return false;
 
-		final Player player = (Player) sender;
+		Player player = (Player) sender;
+		ExoPlayer exoplayer = PlayerIndex.getExodusPlayer(player);
 
 		if (command.getName().equalsIgnoreCase("stats")) {
 			stats(player);
 		} else
 		if (command.getName().equalsIgnoreCase("exo")) {
-			exo(player, args);
+			if (player.hasPermission("exodus.admin") || player.isOp()) {
+				exo(player, exoplayer, args);
+			} else {
+				player.sendMessage("You do not have permission for this command!");
+			}
 		} else
 		if (command.getName().equalsIgnoreCase("party")) {
 			new ComParty(plugin, player, args);
@@ -45,7 +51,7 @@ public class CommandListener implements CommandExecutor {
 		PlayerIndex.getExodusPlayer(player).openStatsMenu();
 	}
 
-	private void exo(final Player player, final String[] args) {
+	private void exo(final Player player, final ExoPlayer exoplayer, final String[] args) {
 
 		if (args.length == 0) {
 			new ComHelp(plugin, player);
@@ -96,7 +102,7 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		if (command.equalsIgnoreCase("filter")) {
-			new ComFilter(plugin, player);
+			new ComFilter(plugin, exoplayer);
 		}
 
 		if (command.equalsIgnoreCase("text")) {
