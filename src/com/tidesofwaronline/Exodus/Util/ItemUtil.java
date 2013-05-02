@@ -3,7 +3,7 @@ package com.tidesofwaronline.Exodus.Util;
 import java.util.Arrays;
 import java.util.List;
 
-public class Lists {
+public class ItemUtil {
 	public static List<Integer> weapons = Arrays
 			.asList(267, 268, 272, 276, 283);
 	public static List<Integer> tools = Arrays.asList(256, 257, 258, 269, 270,
