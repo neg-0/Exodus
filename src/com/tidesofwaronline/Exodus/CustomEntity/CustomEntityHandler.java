@@ -168,6 +168,25 @@ public class CustomEntityHandler {
 
 		return level;
 	}
+	
+	public static int getChunkLevel(Location loc) {
+
+		int level = 1;
+		int hash = loc.getChunk().hashCode();
+		if (chunkLevels.containsKey(hash)) {
+			level = chunkLevels.get(hash);
+		} else {
+			level = chunkLeveler(loc.getWorld(), hash, loc
+					.getChunk().getX() * 16, loc.getChunk()
+					.getZ() * 16);
+		}
+
+		if (level > 50) {
+			level = 50;
+		}
+
+		return level;
+	}
 
 	public static double getDistance(double x1, double x2, double z1, double z2) {
 		return Math.sqrt((x2 - x1) * (x2 - x1) + (z2 - z1) * (z2 - z1));
