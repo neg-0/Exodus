@@ -14,6 +14,10 @@ public class ComGuild extends Command {
 		ExoPlayer exop = PlayerIndex.getExodusPlayer(player);
 
 		Guild guild = exop.getGuild();
+		
+		if (guild == null) {
+			player.sendMessage("You are not in a guild!");
+		}
 
 		if (args.length == 0) {
 			guild.info(player);
