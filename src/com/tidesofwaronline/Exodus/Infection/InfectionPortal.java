@@ -109,9 +109,9 @@ public class InfectionPortal {
 						Location spawnLoc = this.loc.add(0, 2, 0);
 
 						if (random < 5) {
-							spawnEntity(EntityType.BLAZE, spawnLoc);
-						} else if (random < 10) {
 							spawnEntity(EntityType.GHAST, spawnLoc);
+						} else if (random < 10) {
+							spawnEntity(EntityType.BLAZE, spawnLoc);
 						} else if (random < 20) {
 							spawnEntity(EntityType.ENDERMAN, spawnLoc);
 						} else if (random < 40) {
