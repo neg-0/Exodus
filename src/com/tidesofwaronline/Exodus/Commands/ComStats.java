@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Player.ExperienceHandler;
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class ComStats extends Command {
 	
@@ -13,9 +12,9 @@ public class ComStats extends Command {
 		ExoPlayer exoplayer;
 		
 		if (player.getName() == args[1]) {
-			exoplayer = PlayerIndex.getExodusPlayer(player);
+			exoplayer = ExoPlayer.getExodusPlayer(player);
 		} else {
-			exoplayer = PlayerIndex.getExodusPlayer(args[1]);
+			exoplayer = ExoPlayer.getExodusPlayer(args[1]);
 		}
 		
 		if (exoplayer == null) {

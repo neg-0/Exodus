@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class ComPurge extends Command {
 	
@@ -22,13 +21,13 @@ public class ComPurge extends Command {
 			return;
 		}
 		
-		ExoPlayer exoplayer = PlayerIndex.getExodusPlayer(player);
+		ExoPlayer exoplayer = ExoPlayer.getExodusPlayer(player);
 		exoplayer.getPlayerConfig().loadDefaults();
 		exoplayer.getPlayerConfig().save();
 		exoplayer.getBuildInventory().clear();
 		p.setMaxHealth(20);
 		p.setHealth(20);
-		PlayerIndex.removePlayer(player.getName());
+		ExoPlayer.removePlayer(player.getName());
 		new ExoPlayer(plugin, p);
 		
 		player.sendMessage("Player " + p.getName() + " has been purged.");

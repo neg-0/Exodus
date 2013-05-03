@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class LoginListener implements Listener {
 
@@ -26,12 +25,12 @@ public class LoginListener implements Listener {
 	
 	@EventHandler
 	public void playerJoin(final PlayerJoinEvent event) {
-		PlayerIndex.getExodusPlayer(event.getPlayer()).inventoryLoad();
+		ExoPlayer.getExodusPlayer(event.getPlayer()).inventoryLoad();
 	}
 
 	@EventHandler
 	public void normalLogout(final PlayerQuitEvent event) {
 		//Save player
-		PlayerIndex.getExodusPlayer(event.getPlayer()).savePlayer();
+		ExoPlayer.getExodusPlayer(event.getPlayer()).savePlayer();
 	}
 }

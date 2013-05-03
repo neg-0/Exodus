@@ -28,7 +28,7 @@ public class ExperienceHandler {
 		int exp = (int) getMobXP(event.getPlayer().getLevel(), event.getAmount());
 		event.setAmount(0);
 		final Player player = event.getPlayer();
-		final ExoPlayer exoplayer = PlayerIndex.getExodusPlayer(player);
+		final ExoPlayer exoplayer = ExoPlayer.getExodusPlayer(player);
 		player.sendMessage("Gained " + exp + " XP");
 		exoplayer.addXP(exp);
 	}

@@ -25,7 +25,6 @@ import com.tidesofwaronline.Exodus.Listeners.PlayerListener;
 import com.tidesofwaronline.Exodus.Listeners.ProtocolListener;
 import com.tidesofwaronline.Exodus.Listeners.TagAPIListener;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class Exodus extends JavaPlugin {
 
@@ -47,12 +46,12 @@ public class Exodus extends JavaPlugin {
 		final Player[] playerlist = Bukkit.getOnlinePlayers();
 		try {
 			for (final Player p : playerlist) {
-				PlayerIndex.getExodusPlayer(p).savePlayer();
+				ExoPlayer.getExodusPlayer(p).savePlayer();
 			}
 		} catch (final NullPointerException e) {
 			logger.severe("Uh oh! " + e);
 		}
-		PlayerIndex.clear();
+		ExoPlayer.clear();
 		CustomEntityHandler.dropLevels();
 	}
 

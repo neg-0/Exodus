@@ -3,6 +3,7 @@ package com.tidesofwaronline.Exodus.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -11,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -36,7 +38,7 @@ import com.tidesofwaronline.Exodus.Util.MessageUtil;
 
 public class ExoPlayer implements Runnable {
 
-	private static Plugin plugin;
+	static Plugin plugin;
 	private final Player player;
 	private final PlayerConfig config = new PlayerConfig(this);
 	private IconMenu statsMenu;
@@ -82,7 +84,7 @@ public class ExoPlayer implements Runnable {
 		ExoPlayer.plugin = plugin;
 		this.player = player;
 
-		PlayerIndex.registerPlayer(this);
+		registerPlayer(this);
 
 		buildInventory = Bukkit.createInventory(player, InventoryType.PLAYER);
 
@@ -174,7 +176,7 @@ public class ExoPlayer implements Runnable {
 						click(event);
 						event.setWillClose(false);
 					}
-				}, ExoPlayer.plugin);
+				}, plugin);
 		refreshOptions();
 	}
 
@@ -754,5 +756,31 @@ public class ExoPlayer implements Runnable {
 
 	public void setFilter(boolean filter) {
 		this.filter = filter;
+	}
+	
+	private static Map<String, ExoPlayer> playerIndex = new HashMap<String, ExoPlayer>();
+
+	public static void registerPlayer(ExoPlayer exodusplayer) {
+		playerIndex.put(exodusplayer.getPlayer().getName(), exodusplayer);
+	}
+
+	public static ExoPlayer getExodusPlayer(Player player) {
+		return playerIndex.get(player.getName());
+	}
+	
+	public static ExoPlayer getExodusPlayer(String player) {
+		return playerIndex.get(player);
+	}
+
+	public static ExoPlayer getExodusPlayer(HumanEntity player) {
+		return playerIndex.get(player.getName());
+	}
+	
+	public static void removePlayer(String player) {
+		playerIndex.remove(player);
+	}
+	
+	public static void clear() {
+		playerIndex.clear();
 	}
 }

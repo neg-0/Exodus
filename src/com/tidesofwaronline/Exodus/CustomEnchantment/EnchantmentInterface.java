@@ -1,6 +1,7 @@
 package com.tidesofwaronline.Exodus.CustomEnchantment;
 
 import org.bukkit.entity.LivingEntity;
+
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public interface EnchantmentInterface {

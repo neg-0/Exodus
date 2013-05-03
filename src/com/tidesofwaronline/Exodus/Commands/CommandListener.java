@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class CommandListener implements CommandExecutor {
 
@@ -25,7 +24,7 @@ public class CommandListener implements CommandExecutor {
 			return false;
 
 		Player player = (Player) sender;
-		ExoPlayer exoplayer = PlayerIndex.getExodusPlayer(player);
+		ExoPlayer exoplayer = ExoPlayer.getExodusPlayer(player);
 
 		if (command.getName().equalsIgnoreCase("stats")) {
 			stats(player);
@@ -48,7 +47,7 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	public void stats(final Player player) {
-		PlayerIndex.getExodusPlayer(player).openStatsMenu();
+		ExoPlayer.getExodusPlayer(player).openStatsMenu();
 	}
 
 	private void exo(final Player player, final ExoPlayer exoplayer, final String[] args) {
@@ -115,7 +114,7 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	private void setrace(Player player, String string) {
-		PlayerIndex.getExodusPlayer(player).setRace(string);
+		ExoPlayer.getExodusPlayer(player).setRace(string);
 	}
 
 	public boolean isPlayer(final CommandSender sender) {

@@ -2,8 +2,8 @@ package com.tidesofwaronline.Exodus.Effects;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Sound;
 import org.bukkit.FireworkEffect.Type;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import com.tidesofwaronline.Exodus.Util.FireworkEffectPlayer;

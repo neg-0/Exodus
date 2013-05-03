@@ -5,13 +5,12 @@ import org.bukkit.entity.Player;
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Player.Guild;
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class ComGuild extends Command {
 
 	public ComGuild(Exodus plugin, Player player, String[] args) {
 
-		ExoPlayer exop = PlayerIndex.getExodusPlayer(player);
+		ExoPlayer exop = ExoPlayer.getExodusPlayer(player);
 
 		Guild guild = exop.getGuild();
 		
@@ -26,7 +25,7 @@ public class ComGuild extends Command {
 		String command = args[0];
 
 		if (command.equalsIgnoreCase("invite")) {
-			ExoPlayer toInvite = PlayerIndex.getExodusPlayer(args[1]);
+			ExoPlayer toInvite = ExoPlayer.getExodusPlayer(args[1]);
 
 			if (toInvite == null) {
 				player.sendMessage("Player not found!");
@@ -41,7 +40,7 @@ public class ComGuild extends Command {
 		}
 
 		else if (command.equalsIgnoreCase("kick")) {
-			ExoPlayer member = PlayerIndex.getExodusPlayer(args[1]);
+			ExoPlayer member = ExoPlayer.getExodusPlayer(args[1]);
 			if (member != null) {
 				guild.removeMember(member);
 			} else {

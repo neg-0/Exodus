@@ -29,7 +29,6 @@ import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 import com.tidesofwaronline.Exodus.CustomEntity.Spawner.CustomEntitySpawnerIndex;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Player.ExperienceHandler;
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
 
 public class PlayerListener implements Listener {
 
@@ -42,14 +41,14 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onSneakToggle(final PlayerToggleSneakEvent event) {
-		PlayerIndex.getExodusPlayer(event.getPlayer()).combatSwitchCheck();
+		ExoPlayer.getExodusPlayer(event.getPlayer()).combatSwitchCheck();
 	}
 
 	@EventHandler
 	public void playerInventoryClick(InventoryClickEvent event) {
 		if (event.getInventory().getType() == InventoryType.CRAFTING
 				|| event.getInventory().getType() == InventoryType.CREATIVE) {
-			PlayerIndex.getExodusPlayer((Player) event.getWhoClicked())
+			ExoPlayer.getExodusPlayer((Player) event.getWhoClicked())
 					.doWeaponSwap(event);
 		}
 	}
@@ -76,7 +75,7 @@ public class PlayerListener implements Listener {
 		}
 
 		Player player = (Player) event.getDamager();
-		ExoPlayer exop = PlayerIndex.getExodusPlayer(player);
+		ExoPlayer exop = ExoPlayer.getExodusPlayer(player);
 		LivingEntity entity = (LivingEntity) event.getEntity();
 		ItemStack item = player.getItemInHand();
 		
@@ -137,20 +136,20 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		PlayerIndex.getExodusPlayer((Player) event.getEntity()).onDamage(
+		ExoPlayer.getExodusPlayer((Player) event.getEntity()).onDamage(
 				event.getDamager());
 	}
 
 	@EventHandler
 	public static void onBlockDamage(BlockDamageEvent event) {
-		if (PlayerIndex.getExodusPlayer(event.getPlayer()).isInCombat()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInCombat()) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler
 	public static void onBlockBreak(BlockBreakEvent event) {
-		if (PlayerIndex.getExodusPlayer(event.getPlayer()).isInCombat()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInCombat()) {
 			event.setCancelled(true);
 		}
 	}
@@ -179,7 +178,7 @@ public class PlayerListener implements Listener {
 	public static void shootBow(EntityShootBowEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
-			ExoPlayer exo = PlayerIndex.getExodusPlayer(player);
+			ExoPlayer exo = ExoPlayer.getExodusPlayer(player);
 			if (exo.isInCombat()) {
 				player.getInventory().setItem(2, exo.equippedarrow);
 				player.getInventory().getItem(1).setDurability((short) 0);
@@ -195,7 +194,7 @@ public class PlayerListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onDropItem(PlayerDropItemEvent event) {
-		if (PlayerIndex.getExodusPlayer(event.getPlayer()).isInCombat()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInCombat()) {
 			event.setCancelled(true);
 			event.getPlayer().updateInventory();
 		}
@@ -212,7 +211,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPickup(PlayerPickupItemEvent event) {
 
-		ExoPlayer exo = PlayerIndex.getExodusPlayer(event.getPlayer());
+		ExoPlayer exo = ExoPlayer.getExodusPlayer(event.getPlayer());
 
 		if (exo.isInCombat()) {
 			exo.addToInventory(event.getItem().getItemStack());
@@ -227,7 +226,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
-		ExoPlayer exo = PlayerIndex.getExodusPlayer(event.getPlayer());
+		ExoPlayer exo = ExoPlayer.getExodusPlayer(event.getPlayer());
 		if (event.getAction() == Action.LEFT_CLICK_AIR
 				|| event.getAction() == Action.LEFT_CLICK_BLOCK
 				|| event.getAction() == Action.RIGHT_CLICK_AIR
@@ -265,7 +264,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		event.getDrops().clear();
-		PlayerIndex.getExodusPlayer(event.getEntity()).setCombat(false);
+		ExoPlayer.getExodusPlayer(event.getEntity()).setCombat(false);
 	}
 
 	@EventHandler

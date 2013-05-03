@@ -4,11 +4,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
 
-import com.tidesofwaronline.Exodus.Player.PlayerIndex;
+import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class TagAPIListener implements Listener {
 	@EventHandler
 	public void onNameTag(PlayerReceiveNameTagEvent event) {
-		PlayerIndex.getExodusPlayer(event.getNamedPlayer()).getNameColor();
+		ExoPlayer.getExodusPlayer(event.getNamedPlayer()).getNameColor();
 	}
 }

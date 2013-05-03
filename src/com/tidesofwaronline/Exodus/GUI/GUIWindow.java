@@ -1,25 +1,25 @@
 package com.tidesofwaronline.Exodus.GUI;
 
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.border.TitledBorder;
-import java.awt.Color;
-import javax.swing.UIManager;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.JButton;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
-import java.awt.FlowLayout;
-import java.awt.Rectangle;
-import java.awt.GridLayout;
+import javax.swing.border.TitledBorder;
 
 public class GUIWindow {
 
