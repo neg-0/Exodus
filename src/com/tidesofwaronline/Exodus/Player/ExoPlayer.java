@@ -29,6 +29,7 @@ import com.tidesofwaronline.Exodus.Config.PlayerConfig;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Effects.PlayerLevelUpEffect;
+import com.tidesofwaronline.Exodus.Quests.Quest;
 import com.tidesofwaronline.Exodus.Races.Races.Race;
 import com.tidesofwaronline.Exodus.Spells.Spellbook;
 import com.tidesofwaronline.Exodus.Spells.Spells.Spell;
@@ -43,9 +44,6 @@ public class ExoPlayer implements Runnable {
 	private final PlayerConfig config = new PlayerConfig(this);
 	private IconMenu statsMenu;
 	private Economy econ = Exodus.getEcon();
-	private boolean filter = false;
-	
-	private ChatColor namecolor = ChatColor.WHITE;
 
 	//Double Click Stuff
 	private long sneakLastPressTime;
@@ -58,26 +56,24 @@ public class ExoPlayer implements Runnable {
 
 	//Inventories
 	private Inventory buildInventory;
-
-	//Equipped Equipment
 	public CustomItem equippedmelee = new CustomItem(0);
 	public CustomItem equippedranged = new CustomItem(0);
 	public CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
 	
-	//Combat
+	//Gameplay
 	boolean inCombat = false;
-
 	boolean inDanger = false;
-	public boolean showSpawners = false;
-
 	public int level;
-
 	public Party party = null;
-
 	public Guild guild = null;
 	Spellbook spellbook = new Spellbook(this);
-
 	ArrayList<Buff> buffs = new ArrayList<Buff>();
+	private ChatColor namecolor = ChatColor.WHITE;
+	private ArrayList<Quest> quests = new ArrayList<Quest>();
+	
+	//Utility
+	public boolean showSpawners = false;
+	private boolean filter = false;
 
 	public ExoPlayer(final Plugin plugin, final Player player) {
 
@@ -782,5 +778,15 @@ public class ExoPlayer implements Runnable {
 	
 	public static void clear() {
 		playerIndex.clear();
+	}
+	
+	public Quest addQuest(Quest quest) {
+		quests.add(quest);
+		quest.alert(this.getPlayer());
+		return quest;
+	}
+
+	public ArrayList<Quest> getQuests() {
+		return quests;
 	}
 }
