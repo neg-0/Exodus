@@ -4,12 +4,13 @@ public class DataStructure {
 	
 	
 	private static String configFile = "plugins/Exodus/config.yml";
-	private static String guildsFolder = "plugins/Exodus/guilds";
-	private static String instancesFolder = "plugins/Exodus/instances";
-	private static String playerConfigFolder = "plugins/Exodus/players";
-	private static String schematicsFolder = "plugins/Exodus/schematics/";
 	
-	private static String spawnersFolder = "plugins/Exodus/spawners";
+	private static String guildsFolder = "plugins/Exodus/guilds/";
+	private static String instancesFolder = "plugins/Exodus/instances/";
+	private static String playerConfigFolder = "plugins/Exodus/players/";
+	private static String schematicsFolder = "plugins/Exodus/schematics/";
+	private static String spawnersFolder = "plugins/Exodus/spawners/";
+	
 	private static String XMLFile = "plugins/Exodus/Exodus.xml";
 	
 	public static String getConfigFile() {
