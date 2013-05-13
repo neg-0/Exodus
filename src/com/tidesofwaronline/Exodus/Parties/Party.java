@@ -1,8 +1,10 @@
-package com.tidesofwaronline.Exodus.Player;
+package com.tidesofwaronline.Exodus.Parties;
 
 import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
+
+import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class Party {
 	

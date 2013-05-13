@@ -1,9 +1,11 @@
-package com.tidesofwaronline.Exodus.Player;
+package com.tidesofwaronline.Exodus.Guilds;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+
+import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class Guild {
 	
