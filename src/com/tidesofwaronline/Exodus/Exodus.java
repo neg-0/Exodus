@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -25,6 +26,7 @@ import com.tidesofwaronline.Exodus.Listeners.PlayerListener;
 import com.tidesofwaronline.Exodus.Listeners.ProtocolListener;
 import com.tidesofwaronline.Exodus.Listeners.TagAPIListener;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
+import com.tidesofwaronline.Exodus.Worlds.ExoWorld;
 
 public class Exodus extends JavaPlugin {
 
@@ -109,6 +111,11 @@ public class Exodus extends JavaPlugin {
 			//ExodusPlayer exoplayer = 
 			new ExoPlayer(this, p);
 			//exoplayer.loadInventory();
+		}
+		
+		//Create ExoWorlds
+		for (World w : Bukkit.getWorlds()) {
+			new ExoWorld(w);
 		}
 	}
 
