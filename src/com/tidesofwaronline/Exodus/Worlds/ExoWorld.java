@@ -32,11 +32,13 @@ public class ExoWorld {
 	}
 	
 	public void lockTime(long time) {
+		timelock = new TimeLock(world, time);
 		timelock.start();
 	}
 	
 	public void unlockTime() {
 		timelock.interrupt();
+		timelock = null;
 	}
 	
 	public class TimeLock extends Thread {
