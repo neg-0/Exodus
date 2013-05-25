@@ -28,18 +28,15 @@ public class CommandListener implements CommandExecutor {
 
 		if (command.getName().equalsIgnoreCase("stats")) {
 			stats(player);
-		} else
-		if (command.getName().equalsIgnoreCase("exo")) {
+		} else if (command.getName().equalsIgnoreCase("exo")) {
 			if (player.hasPermission("exodus.admin") || player.isOp()) {
 				exo(player, exoplayer, args);
 			} else {
 				player.sendMessage("You do not have permission for this command!");
 			}
-		} else
-		if (command.getName().equalsIgnoreCase("party")) {
+		} else if (command.getName().equalsIgnoreCase("party")) {
 			new ComParty(plugin, player, args);
-		} else
-		if (command.getName().equalsIgnoreCase("guild")) {
+		} else if (command.getName().equalsIgnoreCase("guild")) {
 			new ComGuild(plugin, player, args);
 		}
 
@@ -50,7 +47,8 @@ public class CommandListener implements CommandExecutor {
 		ExoPlayer.getExodusPlayer(player).openStatsMenu();
 	}
 
-	private void exo(final Player player, final ExoPlayer exoplayer, final String[] args) {
+	private void exo(final Player player, final ExoPlayer exoplayer,
+			final String[] args) {
 
 		if (args.length == 0) {
 			new ComHelp(plugin, player);
@@ -60,56 +58,62 @@ public class CommandListener implements CommandExecutor {
 		String command = args[0];
 		String[] commandArgs = new String[args.length];
 
-		for (int i = 1; i < args.length; i++) {
-			commandArgs[i - 1] = args[i];
+		if (args.length > 1) {
+			for (int i = 1; i < args.length; i++) {
+				commandArgs[i - 1] = args[i];
+			}
 		}
 
 		if (command.equalsIgnoreCase("stats")) {
 			new ComStats(args, player);
 		}
 
-		if (command.equalsIgnoreCase("setrace")) {
+		else if (command.equalsIgnoreCase("setrace")) {
 			setrace(player, args[1]);
 		}
 
-		if (command.equalsIgnoreCase("test")) {
-			new ComTest(player, args);
+		else if (command.equalsIgnoreCase("test")) {
+			new ComTest(exoplayer, args);
 		}
 
-		if (command.equalsIgnoreCase("purge")) {
+		else if (command.equalsIgnoreCase("purge")) {
 			new ComPurge(plugin, player, args[1]);
 		}
 
-		if (command.equalsIgnoreCase("info")) {
+		else if (command.equalsIgnoreCase("info")) {
 			new ComInfo(player, args);
 		}
 
-		if (command.equalsIgnoreCase("spawners")) {
+		else if (command.equalsIgnoreCase("spawners")) {
 			new ComSpawners(player);
 		}
 
-		if (command.equalsIgnoreCase("heal")) {
+		else if (command.equalsIgnoreCase("heal")) {
 			new ComHeal(player, args);
 		}
 
-		if (command.equalsIgnoreCase("save")) {
+		else if (command.equalsIgnoreCase("save")) {
 			new ComSave(player);
 		}
 
-		if (command.equalsIgnoreCase("load")) {
+		else if (command.equalsIgnoreCase("load")) {
 			new ComLoad(player);
 		}
 
-		if (command.equalsIgnoreCase("filter")) {
+		else if (command.equalsIgnoreCase("filter")) {
 			new ComFilter(plugin, exoplayer);
 		}
 
-		if (command.equalsIgnoreCase("text")) {
+		else if (command.equalsIgnoreCase("text")) {
 			new ComTexture(player, args);
 		}
 
-		if (command.equalsIgnoreCase("item")) {
+		else if (command.equalsIgnoreCase("item")) {
 			new ComItem(player, commandArgs);
+		}
+
+		else if (command.equalsIgnoreCase("time")) {
+			new ComTime(player, commandArgs);
 		}
 	}
 
