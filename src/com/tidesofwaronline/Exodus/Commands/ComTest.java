@@ -1,15 +1,11 @@
 package com.tidesofwaronline.Exodus.Commands;
 
-import org.bukkit.entity.Player;
-
-import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
+import com.tidesofwaronline.Exodus.ScoreboardHandler;
+import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class ComTest extends Command {
 
-	public static CustomItem CUSTOM_ITEM;
-
-	public ComTest(Player player, String[] args) {
-		
+	public ComTest(ExoPlayer player, String[] args) {
+		new ScoreboardHandler(player.getPlayer());
 	}
-
 }
