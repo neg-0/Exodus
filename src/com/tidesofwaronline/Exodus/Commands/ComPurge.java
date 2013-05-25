@@ -24,7 +24,6 @@ public class ComPurge extends Command {
 		ExoPlayer exoplayer = ExoPlayer.getExodusPlayer(player);
 		exoplayer.getPlayerConfig().loadDefaults();
 		exoplayer.getPlayerConfig().save();
-		exoplayer.getBuildInventory().clear();
 		p.setMaxHealth(20);
 		p.setHealth(20);
 		ExoPlayer.removePlayer(player.getName());
