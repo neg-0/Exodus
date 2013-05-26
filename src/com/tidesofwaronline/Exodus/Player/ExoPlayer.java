@@ -226,7 +226,7 @@ public class ExoPlayer implements Runnable {
 	}
 
 	private void enterCombat() {
-		player.sendMessage("ENTERING COMBAT!");
+		player.sendMessage("ENTERING COMBAT! Double-tap shift to exit.");
 		inCombat = true;
 		inventorySave();
 		player.getInventory().clear();
@@ -244,7 +244,7 @@ public class ExoPlayer implements Runnable {
 	}
 
 	private void exitCombat() {
-		player.sendMessage("EXITING COMBAT");
+		player.sendMessage("EXITING COMBAT. Double-tap shift to enter.");
 		inCombat = false;
 		player.getInventory().setContents(buildInventory.getContents());
 	}
