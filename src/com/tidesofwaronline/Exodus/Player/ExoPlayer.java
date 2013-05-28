@@ -759,23 +759,23 @@ public class ExoPlayer implements Runnable {
 	private static Map<String, ExoPlayer> playerIndex = new HashMap<String, ExoPlayer>();
 
 	public static void registerPlayer(ExoPlayer exodusplayer) {
-		playerIndex.put(exodusplayer.getPlayer().getName(), exodusplayer);
+		playerIndex.put(exodusplayer.getPlayer().getName().toLowerCase(), exodusplayer);
 	}
 
 	public static ExoPlayer getExodusPlayer(Player player) {
-		return playerIndex.get(player.getName());
+		return playerIndex.get(player.getName().toLowerCase());
 	}
 	
 	public static ExoPlayer getExodusPlayer(String player) {
-		return playerIndex.get(player);
+		return playerIndex.get(player.toLowerCase());
 	}
 
 	public static ExoPlayer getExodusPlayer(HumanEntity player) {
-		return playerIndex.get(player.getName());
+		return playerIndex.get(player.getName().toLowerCase());
 	}
 	
 	public static void removePlayer(String player) {
-		playerIndex.remove(player);
+		playerIndex.remove(player.toLowerCase());
 	}
 	
 	public static void clear() {
@@ -790,5 +790,9 @@ public class ExoPlayer implements Runnable {
 
 	public ArrayList<Quest> getQuests() {
 		return quests;
+	}
+
+	public void setParty(Party party) {
+		this.party = party;
 	}
 }
