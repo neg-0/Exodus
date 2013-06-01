@@ -19,7 +19,7 @@ public class Races {
 		final String name;
 		final ChatColor color;
 		final Material block;
-		final DyeColor woolColor;
+		DyeColor woolColor = null;
 		
 		Race(String name, ChatColor color, Material block, DyeColor woolColor) {
 			this.name = name;
@@ -45,6 +45,14 @@ public class Races {
 
 		public final Material getBlock() {
 			return block;
+		}
+		
+		public final byte getBlockData() {
+			if (woolColor != null) {
+				return woolColor.getWoolData();
+			} else {
+				return 0;
+			}
 		}
 
 		public final DyeColor getWoolColor() {

@@ -2,7 +2,11 @@ package com.tidesofwaronline.Exodus.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.milkbowl.vault.economy.Economy;
@@ -61,7 +65,7 @@ public class ExoPlayer implements Runnable {
 	public CustomItem equippedmelee = new CustomItem(0);
 	public CustomItem equippedranged = new CustomItem(0);
 	public CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
-	
+
 	//Gameplay
 	boolean inCombat = false;
 	boolean inDanger = false;
@@ -72,7 +76,7 @@ public class ExoPlayer implements Runnable {
 	ArrayList<Buff> buffs = new ArrayList<Buff>();
 	private ChatColor namecolor = ChatColor.WHITE;
 	private ArrayList<Quest> quests = new ArrayList<Quest>();
-	
+
 	//Utility
 	public boolean showSpawners = false;
 	private boolean filter = false;
@@ -275,7 +279,7 @@ public class ExoPlayer implements Runnable {
 	public Inventory getBuildInventory() {
 		return buildInventory;
 	}
-	
+
 	public Economy econ() {
 		return econ;
 	}
@@ -325,6 +329,58 @@ public class ExoPlayer implements Runnable {
 		Arrays.sort(a);
 
 		return a;
+	}
+
+	public HashMap<Race, Integer> getRacesByRep() {
+		HashMap<Race, Integer> races = new HashMap<Race, Integer>();
+
+		races.put(Race.VENTURI,
+				Integer.valueOf(getAttribute("repVenturi").toString()));
+		races.put(Race.DIAAB,
+				Integer.valueOf(getAttribute("repDia'ab").toString()));
+		races.put(Race.NORDIC,
+				Integer.valueOf(getAttribute("repNordic").toString()));
+		races.put(Race.ELVEN,
+				Integer.valueOf(getAttribute("repElven").toString()));
+		races.put(Race.ABRAXIAN,
+				Integer.valueOf(getAttribute("repAbraxian").toString()));
+		races.put(Race.NAGRATH,
+				Integer.valueOf(getAttribute("repNagrath").toString()));
+		races.put(Race.SCIENCE,
+				Integer.valueOf(getAttribute("repScience").toString()));
+		races.put(Race.DWARVES,
+				Integer.valueOf(getAttribute("repDwarves").toString()));
+
+		List<Race> mapKeys = new ArrayList<Race>(races.keySet());
+		List<Integer> mapValues = new ArrayList<Integer>(races.values());
+		Collections.sort(mapValues);
+		Collections.reverse(mapValues);
+		Collections.sort(mapKeys);
+		Collections.reverse(mapKeys);
+
+		LinkedHashMap<Race, Integer> sortedMap = new LinkedHashMap<Race, Integer>();
+
+		Iterator<Integer> valueIt = mapValues.iterator();
+		while (valueIt.hasNext()) {
+			Object val = valueIt.next();
+			Iterator<Race> keyIt = mapKeys.iterator();
+
+			while (keyIt.hasNext()) {
+				Object key = keyIt.next();
+				String comp1 = races.get(key).toString();
+				String comp2 = val.toString();
+
+				if (comp1.equals(comp2)) {
+					races.remove(key);
+					mapKeys.remove(key);
+					sortedMap.put((Race) key, (Integer) val);
+					break;
+				}
+
+			}
+
+		}
+		return sortedMap;
 	}
 
 	public Integer getReputation(Race race) {
@@ -470,6 +526,10 @@ public class ExoPlayer implements Runnable {
 	}
 
 	public void refreshOptions() {
+
+		HashMap<Race, Integer> races = getRacesByRep();
+		Race[] racelist = (Race[]) races.keySet().toArray(new Race[8]);
+
 		statsMenu
 
 				//Misc. Stats
@@ -509,42 +569,58 @@ public class ExoPlayer implements Runnable {
 						13,
 						new ItemStack(Material.IRON_SWORD, (Integer) this
 								.getAttribute("stats.rogue")), "Rogue",
-						"Run and fight longer!")
+						"The Rogue is a master", "of melee damage and",
+						"deception.")
 				.setOption(
 						//Ranger
 						22,
 						new ItemStack(Material.BOW, (Integer) this
 								.getAttribute("stats.ranger")), "Ranger",
-						"Keeps you alive!")
+						"Rangers fight from a", "distance and can",
+						"lay traps!")
 
 				.setOption(
 						//Cleric
 						31,
 						new ItemStack(Material.NETHER_STAR, (Integer) this
 								.getAttribute("stats.cleric")), "Cleric",
-						"Modifies your Rogue regeneration rate!")
+						"The Cleric heals and", "cleanses players.")
 				.setOption(
 						//Mage
 						40,
 						new ItemStack(Material.BLAZE_POWDER, (Integer) this
 								.getAttribute("stats.mage"), (short) 3),
-						"Mage", "More mana, more spellpower!")
+						"Mage", "Mages unleash a fury of",
+						"magic onto their enemies!")
 				.setOption(
 						//Warlock
 						49,
 						new ItemStack(Material.EYE_OF_ENDER, (Integer) this
 								.getAttribute("stats.warlock")), "Warlock",
-						"Affects mana regen!")
+						"The Warlock practices dark", "magic and can raise",
+						"enemies from the dead.")
 
 				//Allegiance
-				.setOption(10, new ItemStack(Material.GOLD_BLOCK, 1),
-						"Venturi", "Reputation: " + getAttribute("repVenturi"))
-				.setOption(19, new ItemStack(Material.WOOL, 1, (short) 14),
-						"Dia'ab", "Reputation: " + getAttribute("repDia'ab"))
-				.setOption(28, new ItemStack(Material.SNOW_BLOCK, 1), "Nordic",
-						"Reputation: " + getAttribute("repNordic"))
-				.setOption(37, new ItemStack(Material.GLOWSTONE, 1), "Elven",
-						"Reputation: " + getAttribute("repElven"));
+				.setOption(
+						10,
+						new ItemStack(racelist[0].getBlock(), 1, racelist[0]
+								.getBlockData()), racelist[0].getName(),
+						"Reputation: " + races.get(racelist[0]))
+				.setOption(
+						19,
+						new ItemStack(racelist[1].getBlock(), 1, racelist[1]
+								.getBlockData()), racelist[1].getName(),
+						"Reputation: " + races.get(racelist[1]))
+				.setOption(
+						28,
+						new ItemStack(racelist[2].getBlock(), 1, racelist[2]
+								.getBlockData()), racelist[2].getName(),
+						"Reputation: " + races.get(racelist[2]))
+				.setOption(
+						37,
+						new ItemStack(racelist[3].getBlock(), 1, racelist[3]
+								.getBlockData()), racelist[3].getName(),
+						"Reputation: " + races.get(racelist[3]));
 
 		//Increase Stat Icon
 		if ((Integer) getAttribute("skillpoints") > 0) {
@@ -755,17 +831,18 @@ public class ExoPlayer implements Runnable {
 	public void setFilter(boolean filter) {
 		this.filter = filter;
 	}
-	
+
 	private static Map<String, ExoPlayer> playerIndex = new HashMap<String, ExoPlayer>();
 
 	public static void registerPlayer(ExoPlayer exodusplayer) {
-		playerIndex.put(exodusplayer.getPlayer().getName().toLowerCase(), exodusplayer);
+		playerIndex.put(exodusplayer.getPlayer().getName().toLowerCase(),
+				exodusplayer);
 	}
 
 	public static ExoPlayer getExodusPlayer(Player player) {
 		return playerIndex.get(player.getName().toLowerCase());
 	}
-	
+
 	public static ExoPlayer getExodusPlayer(String player) {
 		return playerIndex.get(player.toLowerCase());
 	}
@@ -773,15 +850,15 @@ public class ExoPlayer implements Runnable {
 	public static ExoPlayer getExodusPlayer(HumanEntity player) {
 		return playerIndex.get(player.getName().toLowerCase());
 	}
-	
+
 	public static void removePlayer(String player) {
 		playerIndex.remove(player.toLowerCase());
 	}
-	
+
 	public static void clear() {
 		playerIndex.clear();
 	}
-	
+
 	public Quest addQuest(Quest quest) {
 		quests.add(quest);
 		quest.alert(this.getPlayer());
