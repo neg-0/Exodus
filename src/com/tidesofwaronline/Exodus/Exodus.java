@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.tidesofwaronline.Exodus.Chests.Chest;
 import com.tidesofwaronline.Exodus.Commands.CommandListener;
 import com.tidesofwaronline.Exodus.Config.ConfigManager;
 import com.tidesofwaronline.Exodus.Config.XMLLoader;
@@ -117,6 +118,9 @@ public class Exodus extends JavaPlugin {
 		for (World w : Bukkit.getWorlds()) {
 			new ExoWorld(w);
 		}
+		
+		//Add recipes
+		Chest.addLockRecipes();
 	}
 
 	@Override
