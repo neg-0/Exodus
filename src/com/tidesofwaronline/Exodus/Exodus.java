@@ -15,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.tidesofwaronline.Exodus.Chests.Chest;
 import com.tidesofwaronline.Exodus.Commands.CommandListener;
 import com.tidesofwaronline.Exodus.Config.ConfigManager;
 import com.tidesofwaronline.Exodus.Config.XMLLoader;
@@ -26,6 +25,7 @@ import com.tidesofwaronline.Exodus.Listeners.LoginListener;
 import com.tidesofwaronline.Exodus.Listeners.PlayerListener;
 import com.tidesofwaronline.Exodus.Listeners.ProtocolListener;
 import com.tidesofwaronline.Exodus.Listeners.TagAPIListener;
+import com.tidesofwaronline.Exodus.Locks.Chest;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Worlds.ExoWorld;
 

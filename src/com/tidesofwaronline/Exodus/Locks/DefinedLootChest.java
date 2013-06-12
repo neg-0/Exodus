@@ -1,4 +1,4 @@
-package com.tidesofwaronline.Exodus.Chests;
+package com.tidesofwaronline.Exodus.Locks;
 
 public class DefinedLootChest extends Chest {
 

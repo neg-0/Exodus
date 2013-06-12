@@ -1,4 +1,4 @@
-package com.tidesofwaronline.Exodus.Chests;
+package com.tidesofwaronline.Exodus.Locks;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

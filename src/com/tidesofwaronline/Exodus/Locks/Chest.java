@@ -1,4 +1,4 @@
-package com.tidesofwaronline.Exodus.Chests;
+package com.tidesofwaronline.Exodus.Locks;
 
 import java.util.UUID;
 
@@ -62,14 +62,18 @@ public class Chest {
 		ironLockpick.addIngredient(Material.STICK);
 		ironLockpick.addIngredient(Material.IRON_INGOT);
 		Bukkit.getServer().addRecipe(ironLockpick);
+		
 		ShapelessRecipe goldLockpick = new ShapelessRecipe(new GoldLockpick());
 		goldLockpick.addIngredient(Material.STICK);
 		goldLockpick.addIngredient(Material.GOLD_INGOT);
 		Bukkit.getServer().addRecipe(goldLockpick);
+		
 		ShapelessRecipe diamondLockpick = new ShapelessRecipe(new DiamondLockpick());
 		diamondLockpick.addIngredient(Material.STICK);
 		diamondLockpick.addIngredient(Material.DIAMOND);
 		Bukkit.getServer().addRecipe(diamondLockpick);
+		
+		
 	}
 	
 }

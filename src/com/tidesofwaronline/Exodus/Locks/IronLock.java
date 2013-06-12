@@ -1,15 +1,15 @@
-package com.tidesofwaronline.Exodus.Chests;
+package com.tidesofwaronline.Exodus.Locks;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class IronLockpick extends ItemStack {
+public class IronLock extends ItemStack {
 
-	public IronLockpick() {
+	public IronLock() {
 		super(Material.IRON_INGOT);
 		ItemMeta im = this.getItemMeta();
-		im.setDisplayName("Iron Lockpick");
+		im.setDisplayName("Iron Lock");
 		this.setItemMeta(im);
 	}
 }
