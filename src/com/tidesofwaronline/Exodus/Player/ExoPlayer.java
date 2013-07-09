@@ -13,7 +13,9 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -32,13 +34,14 @@ import com.tidesofwaronline.Exodus.Buffs.Buff;
 import com.tidesofwaronline.Exodus.Config.PlayerConfig;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
 import com.tidesofwaronline.Exodus.Effects.PlayerLevelUpEffect;
 import com.tidesofwaronline.Exodus.Guilds.Guild;
 import com.tidesofwaronline.Exodus.Parties.Party;
 import com.tidesofwaronline.Exodus.Quests.Quest;
 import com.tidesofwaronline.Exodus.Races.Races.Race;
 import com.tidesofwaronline.Exodus.Spells.Spellbook;
-import com.tidesofwaronline.Exodus.Spells.Spells.Spell;
+import com.tidesofwaronline.Exodus.Spells.Spell;
 import com.tidesofwaronline.Exodus.Util.IconMenu;
 import com.tidesofwaronline.Exodus.Util.ItemUtil;
 import com.tidesofwaronline.Exodus.Util.MessageUtil;
@@ -79,7 +82,12 @@ public class ExoPlayer implements Runnable {
 
 	//Utility
 	public boolean showSpawners = false;
-	private boolean filter = false;
+	private boolean filter = true;
+	
+	//DungeonBlocks
+	private boolean inDBEditorMode = false;
+	public boolean hasBlockSelected = false;
+	public Block selectedBlock;
 
 	public ExoPlayer(final Plugin plugin, final Player player) {
 
@@ -407,8 +415,7 @@ public class ExoPlayer implements Runnable {
 	}
 
 	public Spell[] getSpells() {
-		Spell[] spells = { Spell.TEST, Spell.HEAL };
-		return spells;
+		return null;
 	}
 
 	public int getStaminaMax() {
@@ -871,5 +878,33 @@ public class ExoPlayer implements Runnable {
 
 	public void setParty(Party party) {
 		this.party = party;
+	}
+
+	public boolean isInDBEditorMode() {
+		return inDBEditorMode;
+	}
+
+	public void setInDBEditorMode(boolean inDBEditorMode) {
+		this.inDBEditorMode = inDBEditorMode;
+		
+		if (this.inDBEditorMode == true) {
+			player.sendMessage("Entering DungeonBlocks Editor Mode.");
+			inventorySave();
+			player.getInventory().clear();
+
+			player.getInventory().setContents(DBInventory.getInventory().getContents());
+			if (player.getGameMode() == GameMode.SURVIVAL) {
+				player.setAllowFlight(true);
+			}
+		}
+		
+		if (this.inDBEditorMode == false) {
+			player.sendMessage("Exiting DungeonBlocks Editor Mode.");
+			inDBEditorMode = false;
+			player.getInventory().setContents(buildInventory.getContents());
+			if (player.getGameMode() == GameMode.SURVIVAL) {
+				player.setAllowFlight(false);
+			}
+		}
 	}
 }

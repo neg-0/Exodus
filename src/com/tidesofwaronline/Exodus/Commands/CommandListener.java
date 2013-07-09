@@ -38,6 +38,8 @@ public class CommandListener implements CommandExecutor {
 			new ComParty(plugin, player, args);
 		} else if (command.getName().equalsIgnoreCase("guild")) {
 			new ComGuild(plugin, player, args);
+		} else if (command.getName().equalsIgnoreCase("dbe")) {
+			new ComDBE(plugin, player, args);
 		}
 
 		return true;
