@@ -3,7 +3,7 @@ package com.tidesofwaronline.Exodus.Spells;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-import com.tidesofwaronline.Exodus.Spells.Spells.Spell;
+import com.tidesofwaronline.Exodus.Spells.Spell;
 
 public abstract class SpellEvent extends Event {
 

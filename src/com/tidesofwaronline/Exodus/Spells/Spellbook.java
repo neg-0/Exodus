@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
-import com.tidesofwaronline.Exodus.Spells.Spells.Spell;
+import com.tidesofwaronline.Exodus.Spells.Spell;
 
 public class Spellbook {
 	
