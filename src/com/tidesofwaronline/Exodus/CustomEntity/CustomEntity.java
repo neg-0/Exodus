@@ -67,7 +67,7 @@ public class CustomEntity {
 		entity.setMaxHealth(health);
 	}
 
-	public int getHealth() {
+	public double getHealth() {
 		return entity.getHealth();
 	}
 
