@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -15,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -35,16 +35,16 @@ import com.tidesofwaronline.Exodus.Config.PlayerConfig;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Effects.PlayerLevelUpEffect;
 import com.tidesofwaronline.Exodus.Guilds.Guild;
 import com.tidesofwaronline.Exodus.Parties.Party;
 import com.tidesofwaronline.Exodus.Quests.Quest;
 import com.tidesofwaronline.Exodus.Races.Races.Race;
-import com.tidesofwaronline.Exodus.Spells.Spellbook;
 import com.tidesofwaronline.Exodus.Spells.Spell;
+import com.tidesofwaronline.Exodus.Spells.Spellbook;
 import com.tidesofwaronline.Exodus.Util.IconMenu;
 import com.tidesofwaronline.Exodus.Util.ItemUtil;
-import com.tidesofwaronline.Exodus.Util.MessageUtil;
 
 public class ExoPlayer implements Runnable {
 
@@ -86,8 +86,8 @@ public class ExoPlayer implements Runnable {
 	
 	//DungeonBlocks
 	private boolean inDBEditorMode = false;
-	public boolean hasBlockSelected = false;
-	public Block selectedBlock;
+	public DungeonBlock selectedBlock = null;
+	public DungeonBlock editingBlock = null;
 
 	public ExoPlayer(final Plugin plugin, final Player player) {
 
@@ -759,7 +759,7 @@ public class ExoPlayer implements Runnable {
 		}
 
 		if (inventorySave()) { //Saving inventory also saves config
-			MessageUtil.log("Player " + this.player.getName() + " saved");
+			Logger.getLogger("minecraft").info("Player " + this.player.getName() + " saved");
 			return true;
 		} else {
 			return false;
@@ -906,5 +906,13 @@ public class ExoPlayer implements Runnable {
 				player.setAllowFlight(false);
 			}
 		}
+	}
+	
+	public void setExoGameMode(ExoGameMode egm) {
+		//TODO
+	}
+	
+	public enum ExoGameMode {
+		BUILD, COMBAT, DBEDITOR;
 	}
 }
