@@ -20,6 +20,8 @@ import com.tidesofwaronline.Exodus.Config.ConfigManager;
 import com.tidesofwaronline.Exodus.Config.XMLLoader;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
+import com.tidesofwaronline.Exodus.Listeners.DungeonBlocksListener;
 import com.tidesofwaronline.Exodus.Listeners.EntityListener;
 import com.tidesofwaronline.Exodus.Listeners.LoginListener;
 import com.tidesofwaronline.Exodus.Listeners.PlayerListener;
@@ -68,6 +70,7 @@ public class Exodus extends JavaPlugin {
 		pm.registerEvents(new LoginListener(this), this);
 		pm.registerEvents(new PlayerListener(this), this);
 		pm.registerEvents(new EntityListener(this), this);
+		pm.registerEvents(new DungeonBlocksListener(), this);
 
 		//TagAPI
 		Plugin tagapi = pm.getPlugin("TagAPI");
@@ -90,6 +93,7 @@ public class Exodus extends JavaPlugin {
 		getCommand("exospawner").setExecutor(comListener);
 		getCommand("party").setExecutor(comListener);
 		getCommand("guild").setExecutor(comListener);
+		getCommand("dbe").setExecutor(comListener);
 
 		//ProtocolLib
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
@@ -121,6 +125,9 @@ public class Exodus extends JavaPlugin {
 		
 		//Add recipes
 		Chest.addLockRecipes();
+		
+		//Set up DBE Inventory
+		new DBInventory();
 	}
 
 	@Override
