@@ -73,7 +73,10 @@ public class Chest {
 		diamondLockpick.addIngredient(Material.DIAMOND);
 		Bukkit.getServer().addRecipe(diamondLockpick);
 		
-		
+		ShapelessRecipe lockedDoor = new ShapelessRecipe(new LockedDoor());
+		lockedDoor.addIngredient(Material.DIAMOND);
+		lockedDoor.addIngredient(Material.WOOD_DOOR);
+		Bukkit.getServer().addRecipe(lockedDoor);
 	}
 	
 }
