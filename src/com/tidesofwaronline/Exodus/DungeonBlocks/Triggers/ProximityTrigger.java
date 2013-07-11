@@ -27,7 +27,7 @@ public class ProximityTrigger extends DungeonBlock implements Runnable {
 	            if(entityTypes.contains(en.getType())) {
 	                double distance = en.getLocation().distance(block.getLocation());
 	                if(distance < proximity) {
-	                	for (DungeonBlock d : this.getLinkedBlocks(this)) {
+	                	for (DungeonBlock d : this.getLinkedBlocks()) {
 	                		d.onTrigger();
 	                	}
 	                }

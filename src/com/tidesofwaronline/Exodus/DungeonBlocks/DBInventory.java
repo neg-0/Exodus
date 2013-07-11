@@ -16,7 +16,7 @@ public class DBInventory {
 	public DBInventory () {
 		
 		//Tools
-		inv.setItem(0, new DBInventoryIcon(Material.BLAZE_ROD, "Info Tool", "Displays info on a block.", "Left click for block info.", "Right click to set up a link."));
+		inv.setItem(0, new DBInventoryIcon(Material.BLAZE_ROD, "Info Tool", "Displays info on a block.", "Left click for block info.", "Right click...", "Shift-Left Click to select a block.", "Shift-Right Click to link a block."));
 		
 		//Logic Blocks
 		inv.setItem(2, new DBInventoryIcon(Material.GOLD_BLOCK, "Dungeon Settings", "§8Dungeon Block", "Displays general dungeon information."));
@@ -31,7 +31,7 @@ public class DBInventory {
 		inv.setItem(30, new DBInventoryIcon(Material.REDSTONE_BLOCK, "Timer", "§8Dungeon Block"));
 		
 		//Action Blocks
-		inv.setItem(6, new DBInventoryIcon(Material.NETHERRACK, "Mob Spawner", "§8Dungeon Block"));
+		inv.setItem(6, new DBInventoryIcon(DungeonBlock.MOB_SPAWNER.getMaterial(), DungeonBlock.MOB_SPAWNER.getName()));
 		inv.setItem(7, new DBInventoryIcon(Material.ENDER_STONE, "Entity Spawner", "§8Dungeon Block"));
 		inv.setItem(8, new DBInventoryIcon(Material.QUARTZ_ORE, "Mob Tosser", "§8Dungeon Block"));
 		inv.setItem(24, new DBInventoryIcon(Material.DIAMOND_BLOCK, "Give Item", "§8Dungeon Block"));

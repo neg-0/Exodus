@@ -1,16 +1,27 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks.Actions;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockRedstoneEvent;
 
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlockInfo;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
+@DungeonBlockInfo(hasInput = true, hasOutput = false, name = "Mob Spawner", material = "NETHERRACK")
 public class MobSpawner extends DungeonBlock {
 	
 	EntityType spawnMob = EntityType.ZOMBIE;
+	
+	public MobSpawner(Location loc) {
+		super(loc);
+	}
+
+	public MobSpawner() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public void onTrigger() {
 		this.getBlock().getWorld().spawnEntity(this.getLocation(), spawnMob);
