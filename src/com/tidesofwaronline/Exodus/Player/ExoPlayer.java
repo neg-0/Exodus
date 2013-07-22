@@ -30,7 +30,6 @@ import org.bukkit.plugin.Plugin;
 import org.kitteh.tag.TagAPI;
 
 import com.tidesofwaronline.Exodus.Exodus;
-import com.tidesofwaronline.Exodus.Buffs.Buff;
 import com.tidesofwaronline.Exodus.Config.PlayerConfig;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
@@ -48,46 +47,76 @@ import com.tidesofwaronline.Exodus.Util.ItemUtil;
 
 public class ExoPlayer implements Runnable {
 
-	static Plugin plugin;
+	public enum ExoGameMode {
+		BUILD, COMBAT, DBEDITOR;
+	}
+	
+	private static Plugin plugin;
 	private final Player player;
 	private final PlayerConfig config = new PlayerConfig(this);
 	private IconMenu statsMenu;
-	private Economy econ = Exodus.getEcon();
 
+	private Economy econ = Exodus.getEcon();
 	//Double Click Stuff
 	private long sneakLastPressTime;
 	private long inventoryLastPressTime;
 	private boolean crouched;
 	private static final long DOUBLE_PRESS_INTERVAL = 250;
-	Inventory dcInv;
-	CustomItem pickeditem;
-	int slot;
+	private CustomItem pickeditem;
 
+	private int slot;
 	//Inventories
 	private Inventory buildInventory;
-	public CustomItem equippedmelee = new CustomItem(0);
-	public CustomItem equippedranged = new CustomItem(0);
-	public CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
+	private CustomItem equippedmelee = new CustomItem(0);
+	private CustomItem equippedranged = new CustomItem(0);
 
+	private CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
 	//Gameplay
-	boolean inCombat = false;
-	boolean inDanger = false;
-	public int level;
-	public Party party = null;
-	public Guild guild = null;
-	Spellbook spellbook = new Spellbook(this);
-	ArrayList<Buff> buffs = new ArrayList<Buff>();
+	private boolean inCombat = false;
+	private boolean inDanger = false;
+	private int level;
+	private Party party = null;
+	private Guild guild = null;
+	private Spellbook spellbook = new Spellbook(this);
 	private ChatColor namecolor = ChatColor.WHITE;
-	private ArrayList<Quest> quests = new ArrayList<Quest>();
 
+	private ArrayList<Quest> quests = new ArrayList<Quest>();
 	//Utility
-	public boolean showSpawners = false;
-	private boolean filter = true;
+	private boolean showSpawners = false;
 	
+	private boolean filter = true;
 	//DungeonBlocks
 	private boolean inDBEditorMode = false;
-	public DungeonBlock selectedBlock = null;
-	public DungeonBlock editingBlock = null;
+	private DungeonBlock selectedBlock = null;
+
+	private DungeonBlock editingBlock = null;
+
+	private static Map<String, ExoPlayer> playerIndex = new HashMap<String, ExoPlayer>();
+
+	public static void clear() {
+		playerIndex.clear();
+	}
+
+	public static ExoPlayer getExodusPlayer(HumanEntity player) {
+		return playerIndex.get(player.getName().toLowerCase());
+	}
+
+	public static ExoPlayer getExodusPlayer(Player player) {
+		return playerIndex.get(player.getName().toLowerCase());
+	}
+
+	public static ExoPlayer getExodusPlayer(String player) {
+		return playerIndex.get(player.toLowerCase());
+	}
+
+	public static void registerPlayer(ExoPlayer exodusplayer) {
+		playerIndex.put(exodusplayer.getPlayer().getName().toLowerCase(),
+				exodusplayer);
+	}
+
+	public static void removePlayer(String player) {
+		playerIndex.remove(player.toLowerCase());
+	}
 
 	public ExoPlayer(final Plugin plugin, final Player player) {
 
@@ -101,11 +130,17 @@ public class ExoPlayer implements Runnable {
 		config.initialize();
 
 		this.level = config.getConfig().getInt("level", 1);
-		this.equippedmelee = config.getEquippedMelee();
-		this.equippedranged = config.getEquippedRanged();
+		this.setEquippedmelee(config.getEquippedMelee());
+		this.setEquippedranged(config.getEquippedRanged());
 
 		createStatsMenu();
 		recalcXPBar();
+	}
+
+	public Quest addQuest(Quest quest) {
+		quests.add(quest);
+		quest.alert(this.getPlayer());
+		return quest;
 	}
 
 	public boolean addToInventory(ItemStack i) {
@@ -201,7 +236,7 @@ public class ExoPlayer implements Runnable {
 
 			if (event.getSlot() == slot) {
 				if (pickeditem.getTypeId() == 261) { //if it's a bow
-					ItemStack old = equippedranged;
+					ItemStack old = getEquippedranged();
 					setRanged(pickeditem);
 					player.setItemOnCursor(new ItemStack(0));
 					player.getInventory().setItem(slot, old);
@@ -221,7 +256,7 @@ public class ExoPlayer implements Runnable {
 				}
 
 				if (onlist == true) {
-					ItemStack old = equippedmelee;
+					ItemStack old = getEquippedmelee();
 					setMelee(pickeditem);
 					player.setItemOnCursor(new ItemStack(0));
 					player.getInventory().setItem(slot, old);
@@ -237,15 +272,19 @@ public class ExoPlayer implements Runnable {
 
 	}
 
+	public Economy econ() {
+		return econ;
+	}
+
 	private void enterCombat() {
 		player.sendMessage("ENTERING COMBAT! Double-tap shift to exit.");
 		inCombat = true;
 		inventorySave();
 		player.getInventory().clear();
 
-		player.getInventory().setItem(0, equippedmelee);
-		player.getInventory().setItem(1, equippedranged);
-		player.getInventory().setItem(2, equippedarrow);
+		player.getInventory().setItem(0, getEquippedmelee());
+		player.getInventory().setItem(1, getEquippedranged());
+		player.getInventory().setItem(2, getEquippedarrow());
 
 		ArrayList<Spell> spells = spellbook.getSpells();
 
@@ -288,8 +327,20 @@ public class ExoPlayer implements Runnable {
 		return buildInventory;
 	}
 
-	public Economy econ() {
-		return econ;
+	public DungeonBlock getEditingBlock() {
+		return editingBlock;
+	}
+
+	public CustomItem getEquippedarrow() {
+		return equippedarrow;
+	}
+
+	public CustomItem getEquippedmelee() {
+		return equippedmelee;
+	}
+
+	public CustomItem getEquippedranged() {
+		return equippedranged;
 	}
 
 	public Guild getGuild() {
@@ -323,20 +374,8 @@ public class ExoPlayer implements Runnable {
 		return this.config;
 	}
 
-	public int[] getReputation() {
-		int[] a = new int[8];
-		a[0] = Integer.valueOf(getAttribute("repVenturi").toString());
-		a[1] = Integer.valueOf(getAttribute("repDia'ab").toString());
-		a[2] = Integer.valueOf(getAttribute("repNordic").toString());
-		a[3] = Integer.valueOf(getAttribute("repElven").toString());
-		a[4] = Integer.valueOf(getAttribute("repAbraxian").toString());
-		a[5] = Integer.valueOf(getAttribute("repNagrath").toString());
-		a[6] = Integer.valueOf(getAttribute("repScience").toString());
-		a[7] = Integer.valueOf(getAttribute("repDwarves").toString());
-
-		Arrays.sort(a);
-
-		return a;
+	public ArrayList<Quest> getQuests() {
+		return quests;
 	}
 
 	public HashMap<Race, Integer> getRacesByRep() {
@@ -391,6 +430,38 @@ public class ExoPlayer implements Runnable {
 		return sortedMap;
 	}
 
+	/* Disabled due to client not sending InventoryOpenEvent
+	public boolean inventorySwitchCheck() {
+		// Get current time in nano seconds.
+		final long pressTime = System.currentTimeMillis();
+
+		//if standing
+		// If double click...
+		if (pressTime - inventoryLastPressTime <= DOUBLE_PRESS_INTERVAL) {
+			openStatsMenu();
+		}
+		// record the last time the menu button was pressed.
+		inventoryLastPressTime = pressTime;
+
+		return true;
+	}*/
+
+	public int[] getReputation() {
+		int[] a = new int[8];
+		a[0] = Integer.valueOf(getAttribute("repVenturi").toString());
+		a[1] = Integer.valueOf(getAttribute("repDia'ab").toString());
+		a[2] = Integer.valueOf(getAttribute("repNordic").toString());
+		a[3] = Integer.valueOf(getAttribute("repElven").toString());
+		a[4] = Integer.valueOf(getAttribute("repAbraxian").toString());
+		a[5] = Integer.valueOf(getAttribute("repNagrath").toString());
+		a[6] = Integer.valueOf(getAttribute("repScience").toString());
+		a[7] = Integer.valueOf(getAttribute("repDwarves").toString());
+
+		Arrays.sort(a);
+
+		return a;
+	}
+
 	public Integer getReputation(Race race) {
 		switch (race) {
 		case VENTURI:
@@ -412,6 +483,10 @@ public class ExoPlayer implements Runnable {
 		default:
 			return null;
 		}
+	}
+
+	public DungeonBlock getSelectedBlock() {
+		return selectedBlock;
 	}
 
 	public Spell[] getSpells() {
@@ -463,8 +538,20 @@ public class ExoPlayer implements Runnable {
 		}
 	}
 
+	public boolean isFilter() {
+		return filter;
+	}
+
 	public boolean isInCombat() {
 		return inCombat;
+	}
+
+	public boolean isInDBEditorMode() {
+		return inDBEditorMode;
+	}
+
+	public boolean isShowSpawners() {
+		return showSpawners;
 	}
 
 	public void levelUp() {
@@ -495,22 +582,6 @@ public class ExoPlayer implements Runnable {
 			i.onDamage(this.player, damager);
 		}
 	}
-
-	/* Disabled due to client not sending InventoryOpenEvent
-	public boolean inventorySwitchCheck() {
-		// Get current time in nano seconds.
-		final long pressTime = System.currentTimeMillis();
-
-		//if standing
-		// If double click...
-		if (pressTime - inventoryLastPressTime <= DOUBLE_PRESS_INTERVAL) {
-			openStatsMenu();
-		}
-		// record the last time the menu button was pressed.
-		inventoryLastPressTime = pressTime;
-
-		return true;
-	}*/
 
 	public void onHit(LivingEntity entity) {
 		CustomItem i = new CustomItem(player.getInventory().getItemInHand());
@@ -731,16 +802,16 @@ public class ExoPlayer implements Runnable {
 		}
 
 		//Melee weapon
-		if (equippedmelee != null && equippedmelee.getTypeId() != 0) {
-			statsMenu.setOption(20, equippedmelee);
+		if (getEquippedmelee() != null && getEquippedmelee().getTypeId() != 0) {
+			statsMenu.setOption(20, getEquippedmelee());
 		} else { //No melee equipped
 			statsMenu.setOption(20, new ItemStack(Material.IRON_SWORD),
 					"No Melee Weapon Equipped!");
 		}
 
 		//Ranged weapon
-		if (equippedranged != null && equippedranged.getTypeId() != 0) {
-			statsMenu.setOption(29, equippedranged);
+		if (getEquippedranged() != null && getEquippedranged().getTypeId() != 0) {
+			statsMenu.setOption(29, getEquippedranged());
 		} else {
 			statsMenu.setOption(29, new ItemStack(Material.BOW),
 					"No Ranged Weapon Equipped!");
@@ -781,107 +852,32 @@ public class ExoPlayer implements Runnable {
 
 	}
 
-	public void setInDanger(final boolean danger) {
-		inDanger = danger;
+	public void setEditingBlock(DungeonBlock editingBlock) {
+		this.editingBlock = editingBlock;
 	}
 
-	public void setMaxHP(int value) {
-		player.setMaxHealth(value);
-		player.setHealth(value);
-		config().set("maxhp", value);
-		config().set("hp", value);
-		config.save();
+	public void setEquippedarrow(CustomItem equippedarrow) {
+		this.equippedarrow = equippedarrow;
 	}
 
-	public void setMelee(CustomItem item) {
-		this.equippedmelee = item;
-		setAttribute("equippedmelee", item);
-		player.sendMessage("Melee Weapon Equipped!");
-		config.save();
+	public void setEquippedmelee(CustomItem equippedmelee) {
+		this.equippedmelee = equippedmelee;
 	}
 
-	public void setRace(String string) {
-		if (plugin.getConfig().contains("races." + string)) {
-			setAttribute("race", string);
-			this.namecolor = ChatColor.getByChar(plugin.getConfig().getString(
-					"races." + string + ".color", "f"));
-			TagAPI.refreshPlayer(player);
-			config.save();
-			player.sendMessage("Your race is now the " + string);
-		} else {
-			player.sendMessage("Race " + string + " does not exist!");
-		}
-
+	public void setEquippedranged(CustomItem equippedranged) {
+		this.equippedranged = equippedranged;
 	}
-
-	public void setRanged(final CustomItem item) {
-		this.equippedranged = new CustomItem(item);
-		setAttribute("equippedranged", item);
-		player.sendMessage("Ranged Weapon Equipped!");
+	
+	public void setExoGameMode(ExoGameMode e) {
+		//TODO
 	}
-
-	public boolean toggleCombat() {
-		if (inDanger == false) {
-			if (!inCombat) {
-				enterCombat();
-			} else {
-				exitCombat();
-			}
-		}
-		return inCombat;
-	}
-
-	public boolean isFilter() {
-		return filter;
-	}
-
+	
 	public void setFilter(boolean filter) {
 		this.filter = filter;
 	}
 
-	private static Map<String, ExoPlayer> playerIndex = new HashMap<String, ExoPlayer>();
-
-	public static void registerPlayer(ExoPlayer exodusplayer) {
-		playerIndex.put(exodusplayer.getPlayer().getName().toLowerCase(),
-				exodusplayer);
-	}
-
-	public static ExoPlayer getExodusPlayer(Player player) {
-		return playerIndex.get(player.getName().toLowerCase());
-	}
-
-	public static ExoPlayer getExodusPlayer(String player) {
-		return playerIndex.get(player.toLowerCase());
-	}
-
-	public static ExoPlayer getExodusPlayer(HumanEntity player) {
-		return playerIndex.get(player.getName().toLowerCase());
-	}
-
-	public static void removePlayer(String player) {
-		playerIndex.remove(player.toLowerCase());
-	}
-
-	public static void clear() {
-		playerIndex.clear();
-	}
-
-	public Quest addQuest(Quest quest) {
-		quests.add(quest);
-		quest.alert(this.getPlayer());
-		return quest;
-	}
-
-	public ArrayList<Quest> getQuests() {
-		return quests;
-	}
-
-	public void setParty(Party party) {
-		this.party = party;
-	}
-
-	public boolean isInDBEditorMode() {
-		return inDBEditorMode;
+	public void setInDanger(final boolean danger) {
+		inDanger = danger;
 	}
 
 	public void setInDBEditorMode(boolean inDBEditorMode) {
@@ -907,12 +903,62 @@ public class ExoPlayer implements Runnable {
 			}
 		}
 	}
-	
-	public void setExoGameMode(ExoGameMode egm) {
-		//TODO
+
+	public void setMaxHP(int value) {
+		player.setMaxHealth(value);
+		player.setHealth(value);
+		config().set("maxhp", value);
+		config().set("hp", value);
+		config.save();
 	}
-	
-	public enum ExoGameMode {
-		BUILD, COMBAT, DBEDITOR;
+
+	public void setMelee(CustomItem item) {
+		this.setEquippedmelee(item);
+		setAttribute("equippedmelee", item);
+		player.sendMessage("Melee Weapon Equipped!");
+		config.save();
+	}
+
+	public void setParty(Party party) {
+		this.party = party;
+	}
+
+	public void setRace(String string) {
+		if (plugin.getConfig().contains("races." + string)) {
+			setAttribute("race", string);
+			this.namecolor = ChatColor.getByChar(plugin.getConfig().getString(
+					"races." + string + ".color", "f"));
+			TagAPI.refreshPlayer(player);
+			config.save();
+			player.sendMessage("Your race is now the " + string);
+		} else {
+			player.sendMessage("Race " + string + " does not exist!");
+		}
+
+	}
+
+	public void setRanged(final CustomItem item) {
+		this.setEquippedranged(new CustomItem(item));
+		setAttribute("equippedranged", item);
+		player.sendMessage("Ranged Weapon Equipped!");
+	}
+
+	public void setSelectedBlock(DungeonBlock selectedBlock) {
+		this.selectedBlock = selectedBlock;
+	}
+
+	public void setShowSpawners(boolean showSpawners) {
+		this.showSpawners = showSpawners;
+	}
+
+	public boolean toggleCombat() {
+		if (inDanger == false) {
+			if (!inCombat) {
+				enterCombat();
+			} else {
+				exitCombat();
+			}
+		}
+		return inCombat;
 	}
 }
