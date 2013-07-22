@@ -16,7 +16,7 @@ public class DBInventory {
 	public DBInventory () {
 		
 		//Tools
-		inv.setItem(0, new DBInventoryIcon(Material.BLAZE_ROD, "Info Tool", "Displays info on a block.", "Left click for block info.", "Right click...", "Shift-Left Click to select a block.", "Shift-Right Click to link a block."));
+		inv.setItem(0, new DBInventoryIcon(Material.BLAZE_ROD, "Info Tool", "Displays info on a block.", "Left click for block info.", "Right click to Edit a block.", "Shift-Left Click to select a block.", "Shift-Right Click to link a block."));
 		
 		//Logic Blocks
 		inv.setItem(2, new DBInventoryIcon(Material.GOLD_BLOCK, "Dungeon Settings", "§8Dungeon Block", "Displays general dungeon information."));
