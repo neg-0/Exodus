@@ -180,7 +180,7 @@ public class PlayerListener implements Listener {
 			Player player = (Player) event.getEntity();
 			ExoPlayer exo = ExoPlayer.getExodusPlayer(player);
 			if (exo.isInCombat()) {
-				player.getInventory().setItem(2, exo.equippedarrow);
+				player.getInventory().setItem(2, exo.getEquippedarrow());
 				player.getInventory().getItem(1).setDurability((short) 0);
 				player.updateInventory();
 			} else {
