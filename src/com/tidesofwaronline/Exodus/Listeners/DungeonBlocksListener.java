@@ -29,12 +29,7 @@ public class DungeonBlocksListener implements Listener {
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInDBEditorMode()) {
-			if (!DungeonBlock.isDungeonBlock(event.getBlock().getLocation())) {
-				event.setCancelled(true);
-			}
-			DungeonBlock.breakBlockEvent(
-					ExoPlayer.getExodusPlayer(event.getPlayer()),
-					event.getBlock());
+			event.setCancelled(true);
 		}
 	}
 
@@ -64,7 +59,7 @@ public class DungeonBlocksListener implements Listener {
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		ExoPlayer exop = ExoPlayer.getExodusPlayer(event.getPlayer());
-		if (exop.isInDBEditorMode() && exop.editingBlock != null) {
+		if (exop.isInDBEditorMode() && exop.getEditingBlock() != null) {
 			new ComDBEBlockCommand(exop, event.getMessage());
 			event.setCancelled(true);
 		}
