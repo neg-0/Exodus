@@ -13,4 +13,6 @@ public @interface DungeonBlockInfo {
 	public String material();
 	public boolean hasInput();
 	public boolean hasOutput();
+	public String[] settings();
+	public String description();
 }

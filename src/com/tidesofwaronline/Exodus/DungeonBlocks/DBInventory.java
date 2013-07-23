@@ -31,7 +31,7 @@ public class DBInventory {
 		inv.setItem(30, new DBInventoryIcon(Material.REDSTONE_BLOCK, "Timer", "§8Dungeon Block"));
 		
 		//Action Blocks
-		inv.setItem(6, new DBInventoryIcon(DungeonBlock.MOB_SPAWNER.getMaterial(), DungeonBlock.MOB_SPAWNER.getName()));
+		inv.setItem(6, new DBInventoryIcon(DungeonBlock.ENTITY_SPAWNER.getMaterial(), DungeonBlock.ENTITY_SPAWNER.getName()));
 		inv.setItem(7, new DBInventoryIcon(Material.ENDER_STONE, "Entity Spawner", "§8Dungeon Block"));
 		inv.setItem(8, new DBInventoryIcon(Material.QUARTZ_ORE, "Mob Tosser", "§8Dungeon Block"));
 		inv.setItem(24, new DBInventoryIcon(Material.DIAMOND_BLOCK, "Give Item", "§8Dungeon Block"));

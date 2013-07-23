@@ -1,12 +1,10 @@
-package com.tidesofwaronline.Exodus.DungeonBlocks.Triggers;
+package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlockInfo;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 @DungeonBlockInfo(hasInput = false, hasOutput = true, name = "Click Trigger", material = "BEDROCK", settings = { "" }, description = "Pulses when clicked with a bare hand.")

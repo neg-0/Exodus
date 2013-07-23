@@ -1,4 +1,4 @@
-package com.tidesofwaronline.Exodus.DungeonBlocks.Actions;
+package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +12,8 @@ import com.google.common.base.Joiner;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntity;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlockCommand;
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlockInfo;
 
-@DungeonBlockInfo(hasInput = true, hasOutput = false, name = "Mob Spawner", material = "NETHERRACK", settings = { "EntityList" }, description = "Spawns a list of entities when triggered.")
+@DungeonBlockInfo(hasInput = true, hasOutput = false, name = "Entity Spawner", material = "NETHERRACK", settings = { "EntityList" }, description = "Spawns a list of entities when triggered.")
 public class EntitySpawner extends DungeonBlock {
 	
 	List<EntityType> spawnedEntities = new ArrayList<EntityType>();

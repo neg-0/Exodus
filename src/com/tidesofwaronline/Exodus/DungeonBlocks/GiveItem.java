@@ -1,6 +1,5 @@
-package com.tidesofwaronline.Exodus.DungeonBlocks.Actions;
+package com.tidesofwaronline.Exodus.DungeonBlocks;
 
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 
 public class GiveItem extends DungeonBlock {
 

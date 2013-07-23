@@ -1,9 +1,8 @@
-package com.tidesofwaronline.Exodus.DungeonBlocks.Triggers;
+package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 
 public class DBTriggerEvent extends Event {
 	

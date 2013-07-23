@@ -1,4 +1,4 @@
-package com.tidesofwaronline.Exodus.DungeonBlocks.Triggers;
+package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +6,7 @@ import java.util.List;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockRedstoneEvent;
 
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
-import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class ProximityTrigger extends DungeonBlock implements Runnable {
 	
@@ -38,24 +34,17 @@ public class ProximityTrigger extends DungeonBlock implements Runnable {
 		}
 		
 	}
-
-	@Override
-	public void onClickBlock(ExoPlayer exodusPlayer, Block clickedBlock,
-			Action action) {
-		// TODO Auto-generated method stub
-		
+	
+	enum Mode {
+		PLAYER,
+		PARTY,
+		MOB,
+		ENTITY;
 	}
-
-	@Override
-	public void onRedstoneEvent(BlockRedstoneEvent event) {
-		// TODO Auto-generated method stub
-		
+	
+	enum Reset {
+		TIMED,
+		SINGLE,
+		INFINITE;
 	}
-
-	@Override
-	public void onTrigger() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

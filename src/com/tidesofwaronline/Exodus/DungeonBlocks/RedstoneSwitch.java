@@ -1,11 +1,10 @@
-package com.tidesofwaronline.Exodus.DungeonBlocks.Logic;
+package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockRedstoneEvent;
 
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class RedstoneSwitch extends DungeonBlock {
