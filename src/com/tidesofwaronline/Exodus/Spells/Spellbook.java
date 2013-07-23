@@ -30,9 +30,9 @@ public class Spellbook {
 	}
 	
 	private void build() {
-		spellbook.setItem(0, exoPlayer.equippedmelee);
-		spellbook.setItem(1, exoPlayer.equippedranged);
-		spellbook.setItem(2, exoPlayer.equippedarrow);
+		spellbook.setItem(0, exoPlayer.getEquippedmelee());
+		spellbook.setItem(1, exoPlayer.getEquippedranged());
+		spellbook.setItem(2, exoPlayer.getEquippedarrow());
 		for (int i = 0; i < equippedSpells.size(); i++) {
 			spellbook.addItem(equippedSpells.get(i).getItemStack());
 		}
