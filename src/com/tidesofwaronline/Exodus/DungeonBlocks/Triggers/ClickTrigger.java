@@ -4,13 +4,12 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockRedstoneEvent;
 
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlockInfo;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
-@DungeonBlockInfo(hasInput = false, hasOutput = true, name = "Click Trigger", material = "BEDROCK")
+@DungeonBlockInfo(hasInput = false, hasOutput = true, name = "Click Trigger", material = "BEDROCK", settings = { "" }, description = "Pulses when clicked with a bare hand.")
 public class ClickTrigger extends DungeonBlock {
 
 	public ClickTrigger(Location loc) {
@@ -26,17 +25,4 @@ public class ClickTrigger extends DungeonBlock {
 			triggerLinkedBlocks();
 		}
 	}
-
-	@Override
-	public void onRedstoneEvent(BlockRedstoneEvent event) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onTrigger() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
