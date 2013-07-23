@@ -3,6 +3,7 @@ package com.tidesofwaronline.Exodus.Commands;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 
@@ -28,15 +29,19 @@ public class ComDBEBlockCommand {
 					Object o;
 					
 					if (m.getParameterTypes().length > 0) {
-						o = m.invoke(exop.getEditingBlock(), new Object[] { arguments });
+						o = m.invoke(exop.getEditingBlock(), new Object[] { new CommandInfo(exop, arguments) });
 					} else {
 						o = m.invoke(exop.getEditingBlock());
 					}
-										
+															
 					if (m.getReturnType() == String.class) {
 						p.sendMessage(o.toString());
 					} else if (m.getReturnType() == boolean.class && Boolean.parseBoolean(o.toString())) {
 						p.sendMessage("Done!");
+					} else if (m.getReturnType() == List.class) {
+						@SuppressWarnings("unchecked")
+						List<String> output = (List<String>) o;
+						p.sendMessage(output.toArray(new String[output.size()]));
 					}
 					
 					return;
@@ -58,6 +63,25 @@ public class ComDBEBlockCommand {
 			exop.setEditingBlock(null);
 		} else {
 			p.sendMessage("§7Command \"" + command + "\" not valid!");
+		}
+	}
+	
+	public class CommandInfo {
+		
+		private ExoPlayer exoPlayer;
+		private String[] arguments;
+		
+		public CommandInfo(ExoPlayer exop, String[] args) {
+			this.arguments = args;
+			this.exoPlayer = exop;
+		}
+
+		public ExoPlayer getExoPlayer() {
+			return exoPlayer;
+		}
+
+		public String[] getArguments() {
+			return arguments;
 		}
 	}
 
