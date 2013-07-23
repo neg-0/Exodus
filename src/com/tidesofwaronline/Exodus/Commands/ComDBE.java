@@ -21,10 +21,12 @@ public class ComDBE extends Command {
 				
 				if (command.equalsIgnoreCase("on")) {
 					ep.setInDBEditorMode(true);
+					ep.setEditingBlock(null);
 				}
 				
 				if (command.equalsIgnoreCase("off")) {
 					ep.setInDBEditorMode(false);
+					ep.setEditingBlock(null);
 				}
 			}
 		}
