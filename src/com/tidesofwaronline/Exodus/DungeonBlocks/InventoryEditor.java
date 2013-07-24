@@ -1,7 +1,7 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 
-public class GiveItem extends DungeonBlock {
+public class InventoryEditor extends DungeonBlock {
 
 	@Override
 	public void onTrigger() {

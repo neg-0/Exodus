@@ -37,7 +37,7 @@ public abstract class DungeonBlock {
 	public static final DungeonBlock ENTITY_SPAWNER = new EntitySpawner();
 	//public static final DungeonBlock ENTITY_SPAWNER
 	//public static final DungeonBlock MOB_TOSSER
-	public static final DungeonBlock GIVE_ITEM = new GiveItem();
+	public static final DungeonBlock INVENTORY_EDITOR = new InventoryEditor();
 	//public static final DungeonBlock TAKE_ITEM
 	//public static final DungeonBlock CAVEIN
 	//public static final DungeonBlock LIGHTNING
