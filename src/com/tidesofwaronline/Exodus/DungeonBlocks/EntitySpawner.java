@@ -13,7 +13,7 @@ import com.tidesofwaronline.Exodus.CustomEntity.CustomEntity;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 
-@DungeonBlockInfo(hasInput = true, hasOutput = false, name = "Entity Spawner", material = "NETHERRACK", settings = { "EntityList" }, description = "Spawns a list of entities when triggered.")
+@DungeonBlockInfo(hasInput = true, hasOutput = false, name = "Entity Spawner", material = "NETHERRACK", description = "Spawns a list of entities when triggered.")
 public class EntitySpawner extends DungeonBlock {
 	
 	List<EntityType> spawnedEntities = new ArrayList<EntityType>();
