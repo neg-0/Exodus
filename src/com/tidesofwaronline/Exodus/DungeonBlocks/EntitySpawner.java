@@ -9,6 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
+import com.tidesofwaronline.Exodus.Commands.ComDBEBlockCommand.CommandInfo;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntity;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
@@ -47,13 +48,13 @@ public class EntitySpawner extends DungeonBlock {
 	}
 	
 	@DungeonBlockCommand(example = "add zombie; add zombie, spider, giant; add log; add 276; add Sword of Storms", syntax = "add Entity, Entity, Entity...", description = "Adds an entity to the list of spawned entities.")
-	public String add(String[] e) {
+	public String add(CommandInfo ci) {
 		List<EntityType> entitiesToAdd = new ArrayList<EntityType>();
 		List<CustomEntity> customEntitiesToAdd = new ArrayList<CustomEntity>();
 		List<ItemStack> itemStacksToAdd = new ArrayList<ItemStack>();
 		List<CustomItem> customItemsToAdd = new ArrayList<CustomItem>();
 				
-		String[] args = Joiner.on(" ").join(e).split(",");
+		String[] args = Joiner.on(" ").join(ci.getArguments()).split(",");
 		for (int i = 0; i < args.length; i++) {
 			args[i] = args[i].trim();
 		}
@@ -113,13 +114,13 @@ public class EntitySpawner extends DungeonBlock {
 	}
 	
 	@DungeonBlockCommand(example = "remove zombie; remove zombie spider giant", syntax = "remove EntityType...", description = "Removes an entity from the list of spawned entities.")
-	public String remove(String[] e) {
+	public String remove(CommandInfo ci) {
 		List<EntityType> entitiesToRemove = new ArrayList<EntityType>();
 		List<CustomEntity> customEntitiesToRemove = new ArrayList<CustomEntity>();
 		List<ItemStack> itemStacksToRemove = new ArrayList<ItemStack>();
 		List<CustomItem> customItemsToRemove = new ArrayList<CustomItem>();
 				
-		String[] args = Joiner.on(" ").join(e).split(",");
+		String[] args = Joiner.on(" ").join(ci.getArguments()).split(",");
 		for (int i = 0; i < args.length; i++) {
 			args[i] = args[i].trim();
 		}
