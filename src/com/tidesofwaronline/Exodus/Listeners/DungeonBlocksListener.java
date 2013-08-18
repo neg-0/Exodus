@@ -13,13 +13,14 @@ import com.tidesofwaronline.Exodus.Commands.ComDBEBlockCommand;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
+import com.tidesofwaronline.Exodus.Player.ExoPlayer.ExoGameMode;
 
 public class DungeonBlocksListener implements Listener {
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInDBEditorMode()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).getExoGameMode() == ExoGameMode.DBEDITOR) {
 			DungeonBlock.placeBlock(ExoPlayer.getExodusPlayer(event.getPlayer()), event.getItemInHand(), event.getBlock().getLocation());
 			event.getPlayer().getInventory().setContents(DBInventory.getInventory().getContents());
 			event.getPlayer().updateInventory();
@@ -28,7 +29,7 @@ public class DungeonBlocksListener implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInDBEditorMode()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).getExoGameMode() == ExoGameMode.DBEDITOR) {
 			event.setCancelled(true);
 		}
 	}
@@ -37,7 +38,7 @@ public class DungeonBlocksListener implements Listener {
 	public void onBlockClick(PlayerInteractEvent event) {
 		if (event.hasBlock()
 				&& ExoPlayer.getExodusPlayer(event.getPlayer())
-						.isInDBEditorMode()) {
+				.getExoGameMode() == ExoGameMode.DBEDITOR) {
 			DungeonBlock.clickBlockEvent(
 					ExoPlayer.getExodusPlayer(event.getPlayer()),
 					event.getClickedBlock(), event.getAction());
@@ -51,7 +52,7 @@ public class DungeonBlocksListener implements Listener {
 
 	@EventHandler
 	public void playerPickupBlockEvent(PlayerPickupItemEvent event) {
-		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInDBEditorMode()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).getExoGameMode() == ExoGameMode.DBEDITOR) {
 			event.setCancelled(true);
 		}
 	}
@@ -59,7 +60,7 @@ public class DungeonBlocksListener implements Listener {
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		ExoPlayer exop = ExoPlayer.getExodusPlayer(event.getPlayer());
-		if (exop.isInDBEditorMode() && exop.getEditingBlock() != null) {
+		if (exop.getExoGameMode() == ExoGameMode.DBEDITOR && exop.getEditingBlock() != null) {
 			new ComDBEBlockCommand(exop, event.getMessage());
 			event.setCancelled(true);
 		}

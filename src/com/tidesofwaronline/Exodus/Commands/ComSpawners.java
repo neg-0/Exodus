@@ -8,7 +8,7 @@ import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 public class ComSpawners extends Command {
 
 	public ComSpawners(Player player) {
-		if (!ExoPlayer.getExodusPlayer(player).isShowSpawners()) {
+		if (!ExoPlayer.getExodusPlayer(player).isShowingSpawners()) {
 			CustomEntitySpawnerIndex.showSpawners(player);
 		} else {
 			CustomEntitySpawnerIndex.hideSpawners(player);

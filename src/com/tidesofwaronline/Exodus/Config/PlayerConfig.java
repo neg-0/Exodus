@@ -15,6 +15,7 @@ import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
+import com.tidesofwaronline.Exodus.Player.ExoPlayer.ExoGameMode;
 import com.tidesofwaronline.Exodus.Util.MessageUtil;
 
 public class PlayerConfig {
@@ -67,6 +68,7 @@ public class PlayerConfig {
 		set("hp", 20);
 		set("xp", 0);
 		set("level", 1);
+		set("ExoGameMode", ExoGameMode.BUILD);
 
 		set("stats.warrior", 4);
 		set("stats.rogue", 4);
@@ -170,22 +172,24 @@ public class PlayerConfig {
 
 	public CustomItem getEquippedMelee() {
 		if (!playerConfig.contains("equippedmelee")) {
-			System.out.println("1");
 			return null;
 		}
-		ConfigurationSection cs = playerConfig
-				.getConfigurationSection("equippedmelee");
+		ConfigurationSection cs = playerConfig.getConfigurationSection("equippedmelee");
 		
-		if (cs.isConfigurationSection("equippedmelee")) {
+		if (cs == null) {
+			System.out.println("cs is null");
+		}
+		if (cs != null && cs.isConfigurationSection("equippedmelee")) {
 			System.out.println("2");
 		}
-			
 		
 			return new CustomItem(cs.getValues(true));
-		
-		
 	}
 
+	public void setEquippedItem(String path, CustomItem item) {
+		playerConfig.createSection(path, item.serialize());
+	}
+	
 	public CustomItem getEquippedRanged() {
 		if (!playerConfig.contains("equippedranged")) {
 			return null;

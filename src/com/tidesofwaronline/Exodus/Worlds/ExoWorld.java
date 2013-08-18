@@ -1,14 +1,35 @@
 package com.tidesofwaronline.Exodus.Worlds;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.bukkit.World;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-public class ExoWorld {
+import com.tidesofwaronline.Exodus.DataStructure;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
+
+public class ExoWorld implements ConfigurationSerializable {
 	
 	World world;
 	Thread timelock;
 	static HashMap<World, ExoWorld> registry = new HashMap<World, ExoWorld>();
+	
+	File worldFile;
+	File dungeonBlockFile;
+	
+	static File dungeonBlockClassesFile;
+	static YamlConfiguration dungeonBlockClassesConfig;
+	
+	YamlConfiguration worldConfig;
+	YamlConfiguration dungeonBlockConfig;
 	
 	public World getWorld() {
 		return world;
@@ -21,6 +42,14 @@ public class ExoWorld {
 	public ExoWorld(World world) {
 		this.world = world;
 		register(this.world, this);
+		
+		worldFile = new File(DataStructure.getWorldsFolder() + world.getName() + "/world.yml");
+		dungeonBlockFile = new File(DataStructure.getWorldsFolder() + world.getName() + "/dungeonblocks.yml");
+		
+		worldConfig = YamlConfiguration.loadConfiguration(worldFile);
+		dungeonBlockConfig = YamlConfiguration.loadConfiguration(dungeonBlockFile);
+		
+		load();
 	}
 	
 	private void register(World w, ExoWorld e) {
@@ -72,5 +101,111 @@ public class ExoWorld {
 				}
 			}
 		}
+	}
+	
+	public void load() {
+		//loadDungeonBlocks();
+	}
+	
+	public void loadDungeonBlocks() {
+		
+		Collection<DungeonBlock> dbList = DungeonBlock.getDungeonBlocks(this);
+		Iterator<DungeonBlock> i = dbList.iterator();
+		
+		//Remove Dungeon Blocks in-game that do not exist in the dungeonBlockConfig
+		while (i.hasNext()) {
+			DungeonBlock db = i.next();
+			if (!dungeonBlockConfig.contains(db.getName() + " " + db.getID())) {
+				i.remove();
+				db.delete();
+			}
+		}
+		
+		dungeonBlockConfig = YamlConfiguration.loadConfiguration(dungeonBlockFile);
+	}
+
+	public void save() {
+		saveWorld();
+		saveDungeonBlocks();
+	}
+	
+	public void saveWorld() {
+		worldConfig.createSection(getWorld().getName(), this.serialize());
+		try {
+			worldConfig.save(worldFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveDungeonBlocks() {		
+		if (DungeonBlock.getDungeonBlocks(this) != null) {
+			Collection<DungeonBlock> dbList = DungeonBlock.getDungeonBlocks(this);
+			
+			if (!dungeonBlockConfig.getValues(false).isEmpty()) {
+				for (String s : dungeonBlockConfig.getValues(false).keySet()) {
+					if (!dbList.contains(s)) {
+						dungeonBlockConfig.set(s, null);
+					}
+				}
+			}
+			
+			for (DungeonBlock d : dbList) {
+				if (d != null) {
+					//dungeonBlockConfig.createSection(d.getName() + " " + d.getID(), d.serialize());
+					dungeonBlockConfig.set(d.getName() + " " + d.getID(), d);
+				}
+			}
+		}
+		try {
+			dungeonBlockConfig.save(dungeonBlockFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		checkDungeonBlockClasses(this);
+	}
+	
+	public static void checkDungeonBlockClasses(ExoWorld world) {
+		if (DungeonBlock.getDungeonBlocks(world) != null) {
+			for (DungeonBlock db : DungeonBlock.getDungeonBlocks(world)) {
+				if (!dungeonBlockClassesConfig.contains(db.getName())) {
+					dungeonBlockClassesConfig.set(db.getName(), db.getClass().getName());
+				}
+			}
+		}
+		try {
+			dungeonBlockClassesConfig.save(dungeonBlockClassesFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Class<? extends DungeonBlock>> getDungeonBlockClasses() {
+		
+		dungeonBlockClassesFile = new File(DataStructure.getWorldsFolder()+ "dungeonblockclasses.yml");
+		dungeonBlockClassesConfig = YamlConfiguration.loadConfiguration(dungeonBlockClassesFile);
+		
+		List<Class<? extends DungeonBlock>> list = new ArrayList<Class<? extends DungeonBlock>>();
+		for (String s : dungeonBlockClassesConfig.getKeys(false)) {
+			try {
+				list.add((Class<? extends DungeonBlock>) Class.forName(dungeonBlockClassesConfig.getString(s)));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+	
+
+
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		//TODO
+		
+		
+		return map;
 	}
 }

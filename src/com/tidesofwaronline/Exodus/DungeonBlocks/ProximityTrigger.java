@@ -2,8 +2,8 @@ package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
@@ -12,19 +12,19 @@ public class ProximityTrigger extends DungeonBlock implements Runnable {
 	
 	List<EntityType> entityTypes = new ArrayList<EntityType>();
 	int proximity = 10;
+	Mode mode = Mode.DISABLED;
 
 	@Override
 	public void run() {
 		try {
 			Thread.sleep(1000);
 			
-			Block block = this.getBlock();
-	        for(Entity en : block.getWorld().getEntities()) {
+	        for(Entity en : getLocation().getWorld().getEntities()) {
 	            if(entityTypes.contains(en.getType())) {
-	                double distance = en.getLocation().distance(block.getLocation());
+	                double distance = en.getLocation().distance(getLocation());
 	                if(distance < proximity) {
 	                	for (DungeonBlock d : this.getLinkedBlocks()) {
-	                		d.onTrigger();
+	                		d.onTrigger(new DungeonBlockEvent(this, en));
 	                	}
 	                }
 	            }
@@ -35,7 +35,10 @@ public class ProximityTrigger extends DungeonBlock implements Runnable {
 		
 	}
 	
+	
+	
 	enum Mode {
+		DISABLED,
 		PLAYER,
 		PARTY,
 		MOB,
@@ -46,5 +49,11 @@ public class ProximityTrigger extends DungeonBlock implements Runnable {
 		TIMED,
 		SINGLE,
 		INFINITE;
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

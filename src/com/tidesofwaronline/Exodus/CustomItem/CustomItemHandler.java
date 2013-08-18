@@ -32,7 +32,7 @@ public class CustomItemHandler {
 	}
 
 	public enum Type {
-		SWORD, AXE, PICKAXE, SPADE, HOE, WAND, TALISMAN, ARROW
+		SWORD, AXE, PICKAXE, SPADE, HOE, WAND, TALISMAN, BOW, ARROW;
 	}
 
 	public enum Prefix {

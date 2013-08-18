@@ -1,36 +1,50 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import java.beans.Introspector;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
+import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Commands.ComDBEBlockCommand.CommandInfo;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
+import com.tidesofwaronline.Exodus.Util.SerializableLocation;
+import com.tidesofwaronline.Exodus.Worlds.ExoWorld;
 
-public abstract class DungeonBlock {
+public abstract class DungeonBlock implements ConfigurationSerializable {
 	
-	static HashMap<Location, DungeonBlock> DBRegistry = new HashMap<Location, DungeonBlock>();
-	List<DungeonBlock> linkedBlocks = new ArrayList<DungeonBlock>();
+	static HashMap<ExoWorld, HashMap<Location, DungeonBlock>> DBRegistry = new HashMap<ExoWorld, HashMap<Location, DungeonBlock>>();
+	public List<DungeonBlock> linkedBlocks = new ArrayList<DungeonBlock>();
 	
-	Block block;
-	Location loc;
-	int ID;
-	int IDcount = 1;
+	public SerializableLocation location;
+	public int ID;
+	public boolean enabled = true;
 
-	public void onTrigger() {
+	public void onTrigger(DungeonBlockEvent event) {
 	}
 	public void onClickBlock(ExoPlayer exodusPlayer, Block clickedBlock, Action action) {
 	}
@@ -38,27 +52,68 @@ public abstract class DungeonBlock {
 	}
 	
 	public DungeonBlock() {
+		initWorldRegistries();
 	}
 	
 	public DungeonBlock(Location loc) {
-		this.loc = loc;
-		this.block = loc.getBlock();
+		this();
+		this.location = new SerializableLocation(loc);		
 		this.ID = assignNewID();
-		registerDungeonBlock(this);
+		registerDungeonBlock(loc.getWorld(), this);
+	}
+	
+	public DungeonBlock(Map<String, Object> map) {
+		this();
+		for (Field f : this.getClass().getFields()) {
+			try {
+				if (f.getType().equals(SerializableLocation.class)) {
+					f.set(this, SerializableLocation.fromString(map.get(f.getName()).toString()));
+				} else {
+					f.set(this, map.get(f.getName()));
+				}
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (this.location != null) {
+			registerDungeonBlock(this.location.getWorld(), this);
+			this.getLocation().getBlock().setType(this.getMaterial());
+		} else {
+			Exodus.logger.severe("Error initializing Dungeon Block; Location null or invalid.");
+		}
+	}
+	
+	public void initWorldRegistries() {
+		for (World w : Bukkit.getWorlds()) {
+			if (getDBRegistry(w) == null) {
+				DBRegistry.put(ExoWorld.getExoWorld(w), new HashMap<Location, DungeonBlock>());
+			}
+		}
 	}
 	
 	private int assignNewID() {
-		int tempID = IDcount;
-		do {
-			tempID = IDcount;
-			for (DungeonBlock d : DBRegistry.values()) {
-				if (d.getID() == tempID) {
-					IDcount++;
-				}
-			}
-		} while (tempID != IDcount);
-		
+		int tempID = 1;
+		while (!IDIsFree(tempID)) {
+			tempID++;
+		}
+
 		return tempID;
+	}
+	
+	public boolean IDIsFree(int id) {
+		boolean free = true;
+		
+		for (DungeonBlock d : getDungeonBlocks(this.getWorld())) {
+			if (d.getID() == id) {
+				free = false;
+			}
+		}
+		
+		return free;
 	}
 	
 	public int getID() {
@@ -72,9 +127,16 @@ public abstract class DungeonBlock {
 	public void getInfo(Player p) {
 		List<String> output = new ArrayList<String>();
 		
-		output.add("/>-{§3" + this.getName() + "§f}---{ID: §3" + this.getID() + "§f}");
-		output.add("| Linked to: §e" + Joiner.on(", ").join(this.getLinkedBlocks()));
-		output.add("| Linked from: §e" + Joiner.on(", ").join(this.getLinkedFromBlocks()));
+		String line1 = "/>-{§3" + this.getName() + "§f}---{ID: §3" + this.getID() + "§f}---{";
+		if (this.isEnabled()) {
+			line1 += "§2Enabled";
+		} else {
+			line1 += "§4Disabled";
+		}
+		line1 += "§f}\\";
+		output.add(line1);
+		output.add("| Linked to: §3" + Joiner.on("§f, §3").join(this.getLinkedBlocks()));
+		output.add("| Linked from: §3" + Joiner.on("§f, §3").join(this.getLinkedFromBlocks()));
 		
 		for (String s : output) {
 			p.sendMessage(s);
@@ -83,32 +145,39 @@ public abstract class DungeonBlock {
 		
 	}
 	
-	public Block getBlock() {
-		return this.block;
+	public Location getLocation() {
+		return this.location.toLocation();
 	}
 	
-	public Location getLocation() {
-		return this.block.getLocation();
+	public World getWorld() {
+		return this.getLocation().getWorld();
 	}
 
-	public static void registerDungeonBlock(DungeonBlock db) {
-		DBRegistry.put(db.getLocation(), db);
+	public static void registerDungeonBlock(World world, DungeonBlock db) {
+		if (getDBRegistry(world) != null) {
+			getDBRegistry(world).put(db.getLocation(), db);
+		} else {
+			Exodus.logger.severe("getDBRegistry(world) returned null");
+		}
 	}
 	
 	public static void removeDungeonBlock(Location loc) {
-		DBRegistry.remove(loc);
+		getDBRegistry(loc.getWorld()).remove(loc);
 	}
 	
 	public static DungeonBlock getDungeonBlock(Location loc) {
-		return DBRegistry.get(loc);
+		return getDBRegistry(loc.getWorld()).get(loc);
 	}
 	
 	public static DungeonBlock getDungeonBlock(Block b) {
-		return DBRegistry.get(b.getLocation());
+		if (getDBRegistry(b.getWorld()) == null) {
+			return null;
+		}
+		return getDBRegistry(b.getWorld()).get(b.getLocation());
 	}
 	
-	public static DungeonBlock getDungeonBlock(String s) {
-		for (DungeonBlock d : DBRegistry.values()) {
+	public static DungeonBlock getDungeonBlock(World world, String s) {
+		for (DungeonBlock d : getDBRegistry(world).values()) {
 			if (d.toString().equalsIgnoreCase(s)) {
 				return d;
 			}
@@ -116,46 +185,75 @@ public abstract class DungeonBlock {
 		return null;
 	}
 	
+	public static Collection<DungeonBlock> getDungeonBlocks(ExoWorld exoWorld) {
+		if (getDBRegistry(exoWorld) != null) {
+			return getDBRegistry(exoWorld).values();
+		} else {
+			return null;
+		}
+	}
+	
+	public static Collection<DungeonBlock> getDungeonBlocks(World world) {
+		if (getDBRegistry(world) != null) {
+			return getDBRegistry(world).values();
+		} else {
+			return null;
+		}
+	}
+	
 	public static boolean isDungeonBlock(Location loc) {
-		return DBRegistry.containsKey(loc);
+		if (getDBRegistry(loc.getWorld()) != null) {
+			return getDBRegistry(loc.getWorld()).containsKey(loc);
+		} else {
+			return false;
+		}
+	}
+	
+	public static HashMap<Location, DungeonBlock> getDBRegistry(ExoWorld exoWorld) {
+		return DBRegistry.get(exoWorld);
+	}
+	
+	public static HashMap<Location, DungeonBlock> getDBRegistry(World world) {
+		return DBRegistry.get(ExoWorld.getExoWorld(world));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Class<? extends DungeonBlock> getDungeonBlockClass(String s) {
+		try {
+			Class<?> c = Class.forName(DungeonBlock.class.getPackage().getName() + "." + s.replaceAll(" ", ""));
+			if (c.getAnnotation(DungeonBlockInfo.class) != null) {
+				return (Class<? extends DungeonBlock>) c;
+			} else {
+				return null;
+			}
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
 	}
 
 	public static void placeBlock(ExoPlayer exoPlayer, ItemStack block, Location location) {		
 		try {
-			Class<?> c = Class.forName(DungeonBlock.class.getPackage().getName() + "." + block.getItemMeta().getDisplayName().replaceAll(" ", ""));
-			if (c.getAnnotation(DungeonBlockInfo.class) != null) {
-				DungeonBlock db = (DungeonBlock) c.getConstructor(Location.class).newInstance(location);
-				exoPlayer.getPlayer().sendMessage("Placed §3" + db + "§f.");
+			Class<? extends DungeonBlock> c = getDungeonBlockClass(block.getItemMeta().getDisplayName());
+			if (c != null) {
+				DungeonBlock db = c.getConstructor(Location.class).newInstance(location);
+				exoPlayer.getPlayer().sendMessage("Placed and editing §3" + db + "§f.");
+				exoPlayer.setEditingBlock(db);
 			} else {
 				exoPlayer.getPlayer().sendMessage("This Dungeon Block is improperly configured: Missing Annotation.");
 			}
-		} catch (ClassNotFoundException e) {
-			exoPlayer.getPlayer().sendMessage("This is not a valid Dungeon Block.");
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		/*if (block.getItemMeta().getDisplayName().equals("Click Trigger")) {
-			new ClickTrigger(location);
-		} else if (block.getItemMeta().getDisplayName().equals("Entity Spawner")) {
-			new EntitySpawner(location);
-		}*/
 	}
 
 	public static void breakBlockEvent(ExoPlayer exodusPlayer, Block block) {
@@ -186,10 +284,10 @@ public abstract class DungeonBlock {
 				} else if (action == Action.RIGHT_CLICK_BLOCK && p.isSneaking() == false) {
 					//Right Click
 					if (exodusPlayer.getEditingBlock() != null && exodusPlayer.getEditingBlock().equals(cb)) {
-						p.sendMessage("No longer editing " + cb);
+						p.sendMessage("No longer editing " + cb.toString() + ".");
 						exodusPlayer.setEditingBlock(null);
 					} else {
-						p.sendMessage("Editing §3" + cb + "§f. Type §ehelp §fif you don't know what you're doing!");
+						p.sendMessage("Editing " + cb.toString() + ". Type §ehelp §fif you don't know what you're doing!");
 						exodusPlayer.setEditingBlock(cb);
 					}
 					
@@ -200,7 +298,7 @@ public abstract class DungeonBlock {
 						p.sendMessage("Block Deselected");
 					} else if (sbLoc == null || !sbLoc.equals(cbLoc)) {
 						exodusPlayer.setSelectedBlock(cb);
-						p.sendMessage("Selected block: §3" + cb);
+						p.sendMessage("Selected block: " + cb.toString());
 					}
 					
 				} else if (action == Action.RIGHT_CLICK_BLOCK && p.isSneaking() == true) {
@@ -214,7 +312,7 @@ public abstract class DungeonBlock {
 						p.sendMessage("Link broken!");
 					} else {
 						sb.addLinkedBlock(cb);
-						p.sendMessage("Link created! " + sb + " -> " + cb);
+						p.sendMessage("Link created! " + sb.toString() + " -> " + cb.toString());
 					}
 				}
 			}
@@ -230,14 +328,16 @@ public abstract class DungeonBlock {
 
 	
 	public static void onRedstoneEventEvent(BlockRedstoneEvent event) {
-		for (DungeonBlock d : DBRegistry.values()) {
+		for (DungeonBlock d : getDBRegistry(event.getBlock().getWorld()).values()) {
 			d.onRedstoneEvent(event);
 		}
 	}
 	
-	public void triggerLinkedBlocks() {
+	public void triggerLinkedBlocks(DungeonBlockEvent event) {
 		for (DungeonBlock d : this.getLinkedBlocks()) {
-			d.onTrigger();
+			if (d.isEnabled()) {
+				d.onTrigger(event);
+			}
 		}
 	}
 	
@@ -258,13 +358,17 @@ public abstract class DungeonBlock {
 	}
 	
 	public List<DungeonBlock> getLinkedFromBlocks() {
-		List<DungeonBlock> list = new ArrayList<DungeonBlock>();
-		for (DungeonBlock d : DBRegistry.values()) {
-			if (d.getLinkedBlocks().contains(this)) {
-				list.add(d);
+		if (getDBRegistry(this.getWorld()) != null) {
+			List<DungeonBlock> list = new ArrayList<DungeonBlock>();
+			for (DungeonBlock d : getDBRegistry(this.getWorld()).values()) {
+				if (d.getLinkedBlocks().contains(this)) {
+					list.add(d);
+				}
 			}
+			return list;
+		} else {
+			return null;
 		}
-		return list;
 	}
 	
 	public String getName() {
@@ -299,14 +403,17 @@ public abstract class DungeonBlock {
 		return Material.getMaterial(d.getClass().getAnnotation(DungeonBlockInfo.class).material());
 	}
 	
+	public SerializableLocation getSerializableLocation() {
+		return this.location;
+	}
+	
 	@Override
 	public String toString() {
 		return "§3" + this.getName() + " " + this.getID() + "§f";
 	}
 	
-	@DungeonBlockCommand(example = "delete; delete Entity Spawner 4; delete all", syntax = "delete <all, Dungeon Block>", description = "Deletes the selected Dungeon Block, specified Dungeon Block(s), or all DungeonBlocks.")
-	public String delete(CommandInfo ci) {
-		this.getBlock().setTypeId(0);
+	public void delete() {
+		this.getLocation().getBlock().setTypeId(0);
 		for (DungeonBlock d : this.getLinkedFromBlocks()) {
 			d.removeLinkedBlock(this);
 		}
@@ -317,30 +424,35 @@ public abstract class DungeonBlock {
 		} catch (Throwable e) {
 
 		}
-		
+	}
+	
+	@DungeonBlockCommand(example = "delete; delete Entity Spawner 4; delete all", syntax = "delete <all, Dungeon Block>", description = "Deletes the selected Dungeon Block, specified Dungeon Block(s), or all DungeonBlocks.")
+	public String delete(CommandInfo ci) {
+		this.delete();
 		ci.getExoPlayer().setEditingBlock(null);
 		return "§3" + this.toString() + "§f has been deleted and removed. No longer editing §3" + this.toString() + "§f.";
 	}
 	
 	@DungeonBlockCommand(example = "", syntax = "commands", description = "Returns a list of commands for the selected Dungeon Block.")
-	public String commands() {
+	public List<String> commands() {
 		
 		Method[] methods = this.getClass().getMethods();
 		
 		List<String> commands = new ArrayList<String>();
 		
+		commands.add("Commands for §3" + this.getName() + "§f: <§especific§f> <§7general§f>");
+		
 		for (Method m : methods) {
 			//Bukkit.broadcastMessage(m.getDeclaringClass().getName());
 			if (m.isAnnotationPresent(DungeonBlockCommand.class)) {
 				if (m.getDeclaringClass().getName().equals(this.getClass().getSuperclass().getName())) {
-					commands.add("§7" + m.getName());
+					commands.add("§7" + m.getName() + "§f: " + m.getAnnotation(DungeonBlockCommand.class).description());
 				} else {
-					commands.add("§e" + m.getName());
-					commands.add("§eexit");
+					commands.add("§e" + m.getName() + "§f: " + m.getAnnotation(DungeonBlockCommand.class).description());
 				}
 			}
 		}
-		return "Available commands for §3" + this.getName() + "§f: " + Joiner.on("§f, ").join(commands);
+		return commands;
 	}
 	
 	@DungeonBlockCommand(example = "help add; help remove", syntax = "help <command>", description = "Displays help and information for a specified command or the selected Dungeon Block.")
@@ -353,7 +465,7 @@ public abstract class DungeonBlock {
 				s += "n";
 			}
 			s += " §3" + this.getName() + "§f. It " + Introspector.decapitalize(this.description(null)) +
-			" To execute a §ecommand §f, type it into the chat box. For a list of §ecommands §f, type §ecommands §f.";
+			" To execute a command, type it into the chat box. For a list of §ecommands§f, type §ecommands§f.";
 			output.add(s);
 		} else {
 			for (Method m : this.getClass().getMethods()) {
@@ -380,10 +492,13 @@ public abstract class DungeonBlock {
 				}
 			}
 		}
+		if (output.isEmpty()) {
+			output.add("Command §e" + ci.getArguments()[0] + "§f not found.");
+		}
 		return output;
 	}
 	
-	@DungeonBlockCommand(example = "", syntax = "", description = "Gives a description of the specified command")
+	@DungeonBlockCommand(example = "", syntax = "", description = "Gives a description of the specified command.")
 	public String description(CommandInfo ci) {
 		if (ci != null) {
 			if (ci.getArguments().length == 0) {
@@ -464,7 +579,7 @@ public abstract class DungeonBlock {
 		String[] dungeonBlockStrings = Joiner.on(" ").join(Arrays.copyOfRange(ci.getArguments(), 1, ci.getArguments().length)).split(",");
 		
 		for (String s : dungeonBlockStrings) {
-			DungeonBlock db = getDungeonBlock(s.trim());
+			DungeonBlock db = getDungeonBlock(this.getWorld(), s.trim());
 			if (db != null) {
 				dungeonBlocks.add(db);
 			}
@@ -508,7 +623,7 @@ public abstract class DungeonBlock {
 		String[] dungeonBlockStrings = Joiner.on(" ").join(Arrays.copyOfRange(ci.getArguments(), 1, ci.getArguments().length)).split(",");
 		
 		for (String s : dungeonBlockStrings) {
-			DungeonBlock db = getDungeonBlock(s.trim());
+			DungeonBlock db = getDungeonBlock(this.getWorld(), s.trim());
 			if (db != null) {
 				dungeonBlocks.add(db);
 			}
@@ -524,5 +639,120 @@ public abstract class DungeonBlock {
 		}
 		return "Unlinked this Dungeon Block from §3" + Joiner.on("§f, §3").join(dungeonBlocks);
 
+	}
+	
+	@DungeonBlockCommand(description = "Enables a Dungeon Block.", example = "", syntax = "")
+	public String enable(CommandInfo ci) {
+		this.enabled = true;
+		return this + " enabled.";
+	}
+	
+	@DungeonBlockCommand(description = "Disables a Dungeon Block.", example = "", syntax = "")
+	public String disable(CommandInfo ci) {
+		this.enabled = false;
+		return this + " disabled.";
+	}
+	
+	@DungeonBlockCommand(description = "Exits the Dungeon Block Editor.", example = "", syntax = "")
+	public String exit(CommandInfo ci) {
+		String block = ci.getExoPlayer().getEditingBlock().toString();
+		ci.getExoPlayer().setEditingBlock(null);
+		return "No longer editing " + block;
+	}
+	
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		//map.put("Location", this.getSerializableLocation().toString());
+		//map.put("Enabled", this.isEnabled());
+		
+
+		for (Field f : this.getClass().getFields()) {
+			try {
+				if (f.getType().equals(SerializableLocation.class)) {
+					map.put(f.getName(), ((SerializableLocation) f.get(this)).toString());
+				} else {
+					map.put(f.getName(), f.get(this));
+				}
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return map;
+	}
+
+	public class DungeonBlockEvent {
+		
+		Entity entity;
+		DungeonBlock dungeonBlock;
+		
+		public DungeonBlockEvent(DungeonBlock dungeonBlock, Entity entity) {
+			this.dungeonBlock = dungeonBlock;
+			this.entity = entity;
+		}
+
+		public Entity getEntity() {
+			return entity;
+		}
+
+		public DungeonBlock getDungeonBlock() {
+			return dungeonBlock;
+		}
+
+		public void setEntity(Entity entity) {
+			this.entity = entity;
+		}
+
+		public void setDungeonBlock(DungeonBlock dungeonBlock) {
+			this.dungeonBlock = dungeonBlock;
+		}
+	}
+	
+	@Retention(value = RetentionPolicy.RUNTIME)
+	@Target(value = ElementType.METHOD)
+	public @interface DungeonBlockCommand {
+		
+		String syntax();
+		String example();
+		String description();
+		
+	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface DungeonBlockInfo {
+
+		public String name();
+		public String material();
+		public boolean hasInput();
+		public boolean hasOutput();
+		public String description();
+	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface DungeonToolInfo {
+
+		String[] description();
+		String material();
+		String name();
+		
+	}
+
+	public static void registerConfigurationSerializable() {
+		ConfigurationSerialization.registerClass(DungeonBlock.class);
 	}
 }

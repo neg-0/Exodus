@@ -178,10 +178,6 @@ public class XMLLoader {
 
 		Map<String, Object> itemMap = new HashMap<String, Object>();
 
-		Exodus.logger.info("Parsing defined item: "
-				+ eElement.getElementsByTagName("DisplayName").item(0)
-						.getTextContent().trim());
-
 		UUID id = UUID.fromString(eElement.getAttribute("Guid"));
 		itemMap.put("ID", id);
 

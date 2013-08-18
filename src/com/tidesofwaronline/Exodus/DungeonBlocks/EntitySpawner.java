@@ -2,7 +2,9 @@ package com.tidesofwaronline.Exodus.DungeonBlocks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -13,14 +15,14 @@ import com.tidesofwaronline.Exodus.Commands.ComDBEBlockCommand.CommandInfo;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntity;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock.DungeonBlockInfo;
 
 @DungeonBlockInfo(hasInput = true, hasOutput = false, name = "Entity Spawner", material = "NETHERRACK", description = "Spawns a list of entities when triggered.")
 public class EntitySpawner extends DungeonBlock {
 	
-	List<EntityType> spawnedEntities = new ArrayList<EntityType>();
-	List<CustomEntity> spawnedCustomEntities = new ArrayList<CustomEntity>();
-	List<ItemStack> spawnedItemStacks = new ArrayList<ItemStack>();
-	List<CustomItem> spawnedCustomItems = new ArrayList<CustomItem>();
+	List<Object> spawnedEntities = new ArrayList<Object>();
+	
+	Location spawnLocation = this.getLocation();
 	
 	public EntitySpawner(Location loc) {
 		super(loc);
@@ -28,54 +30,43 @@ public class EntitySpawner extends DungeonBlock {
 
 	public EntitySpawner() {
 	}
-
-	public void onTrigger() {
-		for (EntityType e : spawnedEntities) {
-			this.getBlock().getWorld().spawnEntity(this.getLocation(), e);
-		}
-		
-		for (CustomEntity e : spawnedCustomEntities) {
-			CustomEntity.spawn(e.getType(), this.getLocation(), 10);
-		}
-		
-		for (ItemStack i : spawnedItemStacks) {
-			this.getBlock().getWorld().dropItemNaturally(this.getLocation(), new ItemStack(i));
-		}
-		
-		for (CustomItem i : spawnedCustomItems) {
-			this.getBlock().getWorld().dropItemNaturally(this.getLocation(), new CustomItem(i));
+	
+	public void onTrigger(DungeonBlockEvent event) {
+		for (Object e : spawnedEntities) {
+			if (e instanceof EntityType) {
+				Bukkit.broadcastMessage("spawn");
+				spawnLocation.getWorld().spawnEntity(spawnLocation, (EntityType) e);
+			} else if (e instanceof CustomEntity) {
+				CustomEntity.spawn(((CustomEntity) e).getType(), spawnLocation, 10);
+			} else if (e instanceof ItemStack) {
+				spawnLocation.getWorld().dropItemNaturally(spawnLocation, new ItemStack((ItemStack) e));
+			} else if (e instanceof CustomItem) {
+				spawnLocation.getWorld().dropItemNaturally(spawnLocation, new CustomItem((CustomItem) e));
+			}
 		}
 	}
 	
 	@DungeonBlockCommand(example = "add zombie; add zombie, spider, giant; add log; add 276; add Sword of Storms", syntax = "add Entity, Entity, Entity...", description = "Adds an entity to the list of spawned entities.")
 	public String add(CommandInfo ci) {
-		List<EntityType> entitiesToAdd = new ArrayList<EntityType>();
-		List<CustomEntity> customEntitiesToAdd = new ArrayList<CustomEntity>();
-		List<ItemStack> itemStacksToAdd = new ArrayList<ItemStack>();
-		List<CustomItem> customItemsToAdd = new ArrayList<CustomItem>();
-				
-		String[] args = Joiner.on(" ").join(ci.getArguments()).split(",");
-		for (int i = 0; i < args.length; i++) {
-			args[i] = args[i].trim();
-		}
+		List<Object> entitiesToAdd = new ArrayList<Object>();
 		
-		for (String s : args) {
+		for (String s : ci.getCommaSeparatedArguments()) {
 			//Custom Items
 			if (CustomItemHandler.getDefinedItem(s) != null) {
-				customItemsToAdd.add(CustomItemHandler.getDefinedItem(s));
+				entitiesToAdd.add(CustomItemHandler.getDefinedItem(s));
 			}
 
 			//Items be ID
 			try {
 				int i = Integer.parseInt(s);
-				itemStacksToAdd.add(new ItemStack(i));
+				entitiesToAdd.add(new ItemStack(i));
 		    } catch(NumberFormatException ex) { 
 		    	
 		    }
 			
 			//Items by name
 			if (Material.getMaterial(s) != null) {
-				itemStacksToAdd.add(new ItemStack(Material.getMaterial(s)));
+				entitiesToAdd.add(new ItemStack(Material.getMaterial(s)));
 			}
 			
 			//Entities by name
@@ -85,26 +76,20 @@ public class EntitySpawner extends DungeonBlock {
 		}
 		
 		spawnedEntities.addAll(entitiesToAdd);
-		spawnedCustomEntities.addAll(customEntitiesToAdd);
-		spawnedItemStacks.addAll(itemStacksToAdd);
-		spawnedCustomItems.addAll(customItemsToAdd);
-		
+
 		List<String> list = new ArrayList<String>();
-		for (EntityType et : entitiesToAdd) {
-			list.add(et.getName());
+		for (Object e : spawnedEntities) {
+			if (e instanceof EntityType) {
+				list.add(((EntityType) e).getName());
+			} else if (e instanceof CustomEntity) {
+				list.add(((CustomEntity) e).getType().toString());
+			} else if (e instanceof CustomItem) {
+				list.add(((CustomItem) e).getName());
+			} else if (e instanceof ItemStack) {
+				list.add(((ItemStack) e).getType().toString());
+			} 
 		}
 		
-		for (CustomEntity ce : customEntitiesToAdd) {
-			list.add(ce.getType().getName());
-		}
-		
-		for (ItemStack i : itemStacksToAdd) {
-			list.add(i.getType().toString());
-		}
-		
-		for (CustomItem i : customItemsToAdd) {
-			list.add(i.getName());
-		}
 		
 		if (list.size() == 0) {
 			return "No items added!";
@@ -115,33 +100,25 @@ public class EntitySpawner extends DungeonBlock {
 	
 	@DungeonBlockCommand(example = "remove zombie; remove zombie spider giant", syntax = "remove EntityType...", description = "Removes an entity from the list of spawned entities.")
 	public String remove(CommandInfo ci) {
-		List<EntityType> entitiesToRemove = new ArrayList<EntityType>();
-		List<CustomEntity> customEntitiesToRemove = new ArrayList<CustomEntity>();
-		List<ItemStack> itemStacksToRemove = new ArrayList<ItemStack>();
-		List<CustomItem> customItemsToRemove = new ArrayList<CustomItem>();
-				
-		String[] args = Joiner.on(" ").join(ci.getArguments()).split(",");
-		for (int i = 0; i < args.length; i++) {
-			args[i] = args[i].trim();
-		}
+		List<Object> entitiesToRemove = new ArrayList<Object>();
 		
-		for (String s : args) {
+		for (String s : ci.getCommaSeparatedArguments()) {
 			//Custom Items
 			if (CustomItemHandler.getDefinedItem(s) != null) {
-				customItemsToRemove.add(CustomItemHandler.getDefinedItem(s));
+				entitiesToRemove.add(CustomItemHandler.getDefinedItem(s));
 			}
 
 			//Items be ID
 			try {
 				int i = Integer.parseInt(s);
-				itemStacksToRemove.add(new ItemStack(i));
+				entitiesToRemove.add(new ItemStack(i));
 		    } catch(NumberFormatException ex) { 
 		    	
 		    }
 			
 			//Items by name
 			if (Material.getMaterial(s) != null) {
-				itemStacksToRemove.add(new ItemStack(Material.getMaterial(s)));
+				entitiesToRemove.add(new ItemStack(Material.getMaterial(s)));
 			}
 			
 			//Entities by name
@@ -151,25 +128,10 @@ public class EntitySpawner extends DungeonBlock {
 		}
 		
 		spawnedEntities.removeAll(entitiesToRemove);
-		spawnedCustomEntities.removeAll(customEntitiesToRemove);
-		spawnedItemStacks.removeAll(itemStacksToRemove);
-		spawnedCustomItems.removeAll(customItemsToRemove);
 		
 		List<String> list = new ArrayList<String>();
-		for (EntityType et : entitiesToRemove) {
-			list.add(et.getName());
-		}
-		
-		for (CustomEntity ce : customEntitiesToRemove) {
-			list.add(ce.getType().getName());
-		}
-		
-		for (ItemStack i : itemStacksToRemove) {
-			list.add(i.getType().toString());
-		}
-		
-		for (CustomItem i : customItemsToRemove) {
-			list.add(i.getName());
+		for (Object et : entitiesToRemove) {
+			list.add(et.toString());
 		}
 		
 		if (list.size() == 0) {
@@ -182,31 +144,36 @@ public class EntitySpawner extends DungeonBlock {
 	@DungeonBlockCommand(example = "", syntax = "list", description = "Lists spawned entities.")
 	public String list() {
 		List<String> list = new ArrayList<String>();
-		for (EntityType et : spawnedEntities) {
-			list.add(et.getName());
+		for (Object e : spawnedEntities) {
+			if (e instanceof EntityType) {
+				list.add(((EntityType) e).getName());
+			} else if (e instanceof CustomEntity) {
+				list.add(((CustomEntity) e).getType().toString());
+			} else if (e instanceof CustomItem) {
+				list.add(((CustomItem) e).getName());
+			} else if (e instanceof ItemStack) {
+				list.add(((ItemStack) e).getType().toString());
+			} 
 		}
-		
-		for (CustomEntity ce : spawnedCustomEntities) {
-			list.add(ce.getType().getName());
-		}
-		
-		for (ItemStack i : spawnedItemStacks) {
-			list.add(i.getType().toString());
-		}
-		
-		for (CustomItem i : spawnedCustomItems) {
-			list.add(i.getName());
-		}
-		
 		return "Spawned Entities: " + Joiner.on(", ").join(list);
 	}
 	
 	@DungeonBlockCommand(example = "", syntax = "clear", description = "Clears the list of spawned entities.")
 	public boolean clear() {
 		spawnedEntities.clear();
-		spawnedCustomEntities.clear();
-		spawnedItemStacks.clear();
-		spawnedCustomItems.clear();
 		return true;
+	}
+	
+	@DungeonBlockCommand(description = "Sets the location to your current position.", example = "", syntax = "")
+	public String setLocation(CommandInfo ci) {
+		Location loc = ci.getExoPlayer().getPlayer().getLocation();
+		this.spawnLocation = loc;
+		return "Location set to " + loc.getWorld() + ": " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ();
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

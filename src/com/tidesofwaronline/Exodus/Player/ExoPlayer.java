@@ -45,7 +45,7 @@ import com.tidesofwaronline.Exodus.Spells.Spellbook;
 import com.tidesofwaronline.Exodus.Util.IconMenu;
 import com.tidesofwaronline.Exodus.Util.ItemUtil;
 
-public class ExoPlayer implements Runnable {
+public class ExoPlayer {
 
 	public enum ExoGameMode {
 		BUILD, COMBAT, DBEDITOR;
@@ -61,19 +61,18 @@ public class ExoPlayer implements Runnable {
 	private long sneakLastPressTime;
 	private long inventoryLastPressTime;
 	private boolean crouched;
-	private static final long DOUBLE_PRESS_INTERVAL = 250;
+	private static final long doublePressInterval = 250;
 	private CustomItem pickeditem;
 
 	private int slot;
 	//Inventories
+	private ExoGameMode exoGameMode = ExoGameMode.BUILD;
 	private Inventory buildInventory;
 	private CustomItem equippedmelee = new CustomItem(0);
 	private CustomItem equippedranged = new CustomItem(0);
 
 	private CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
 	//Gameplay
-	private boolean inCombat = false;
-	private boolean inDanger = false;
 	private int level;
 	private Party party = null;
 	private Guild guild = null;
@@ -86,9 +85,7 @@ public class ExoPlayer implements Runnable {
 	
 	private boolean filter = true;
 	//DungeonBlocks
-	private boolean inDBEditorMode = false;
 	private DungeonBlock selectedBlock = null;
-
 	private DungeonBlock editingBlock = null;
 
 	private static Map<String, ExoPlayer> playerIndex = new HashMap<String, ExoPlayer>();
@@ -135,6 +132,8 @@ public class ExoPlayer implements Runnable {
 
 		createStatsMenu();
 		recalcXPBar();
+		
+		setExoGameMode(ExoGameMode.valueOf(config().getString("ExoGameMode")));
 	}
 
 	public Quest addQuest(Quest quest) {
@@ -196,8 +195,12 @@ public class ExoPlayer implements Runnable {
 
 		if (crouched == false) {//if standing
 			// If double click...
-			if (pressTime - sneakLastPressTime <= DOUBLE_PRESS_INTERVAL) {
-				toggleCombat();
+			if (pressTime - sneakLastPressTime <= doublePressInterval) {
+				if (this.getExoGameMode() == ExoGameMode.BUILD) {
+					this.setExoGameMode(ExoGameMode.COMBAT);
+				} else if (this.getExoGameMode() == ExoGameMode.COMBAT) {
+					this.setExoGameMode(ExoGameMode.BUILD);
+				}
 			} else {     // If not double click....
 			}
 			// record the last time the menu button was pressed.
@@ -230,7 +233,7 @@ public class ExoPlayer implements Runnable {
 		// Get current time in nano seconds.
 		final long pressTime = System.currentTimeMillis();
 
-		if (pressTime - inventoryLastPressTime <= DOUBLE_PRESS_INTERVAL) {
+		if (pressTime - inventoryLastPressTime <= doublePressInterval) {
 
 			pickeditem = new CustomItem(event.getCursor());
 
@@ -274,30 +277,6 @@ public class ExoPlayer implements Runnable {
 
 	public Economy econ() {
 		return econ;
-	}
-
-	private void enterCombat() {
-		player.sendMessage("ENTERING COMBAT! Double-tap shift to exit.");
-		inCombat = true;
-		inventorySave();
-		player.getInventory().clear();
-
-		player.getInventory().setItem(0, getEquippedmelee());
-		player.getInventory().setItem(1, getEquippedranged());
-		player.getInventory().setItem(2, getEquippedarrow());
-
-		ArrayList<Spell> spells = spellbook.getSpells();
-
-		for (int i = 0; i < 34 && i < spells.size(); i++) {
-			player.getInventory().setItem(i + 3, spells.get(i).getItemStack());
-		}
-
-	}
-
-	private void exitCombat() {
-		player.sendMessage("EXITING COMBAT. Double-tap shift to enter.");
-		inCombat = false;
-		player.getInventory().setContents(buildInventory.getContents());
 	}
 
 	private void gainXPEvent() {
@@ -348,7 +327,7 @@ public class ExoPlayer implements Runnable {
 	}
 
 	public int getMeleeDamage() {
-		if (this.isInCombat()) {
+		if (this.getExoGameMode() == ExoGameMode.COMBAT) {
 			ItemStack is = player.getInventory().getItemInHand();
 			if (CustomItemHandler.isCustomItem(is)) {
 				CustomItem i = new CustomItem(is);
@@ -520,17 +499,14 @@ public class ExoPlayer implements Runnable {
 		config.save();
 	}
 
-	//@SuppressWarnings("deprecation")
 	public void inventoryLoad() {
 		buildInventory.setContents(config.loadInventory(player).getContents());
-		if (!inCombat) {
+		if (this.getExoGameMode() == ExoGameMode.BUILD) {
 			player.getInventory().setContents(buildInventory.getContents());
 		}
-		//player.updateInventory();
 	}
 
 	public boolean inventorySave() {
-		buildInventory.setContents(player.getInventory().getContents());
 		if (config.saveInventory(buildInventory)) {
 			return true;
 		} else {
@@ -542,15 +518,7 @@ public class ExoPlayer implements Runnable {
 		return filter;
 	}
 
-	public boolean isInCombat() {
-		return inCombat;
-	}
-
-	public boolean isInDBEditorMode() {
-		return inDBEditorMode;
-	}
-
-	public boolean isShowSpawners() {
+	public boolean isShowingSpawners() {
 		return showSpawners;
 	}
 
@@ -818,17 +786,7 @@ public class ExoPlayer implements Runnable {
 		}
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
 	public boolean savePlayer() {
-		if (inCombat) {
-			setCombat(false);
-		}
-
 		if (inventorySave()) { //Saving inventory also saves config
 			Logger.getLogger("minecraft").info("Player " + this.player.getName() + " saved");
 			return true;
@@ -839,17 +797,6 @@ public class ExoPlayer implements Runnable {
 
 	public void setAttribute(final String path, final Object value) {
 		config.getConfig().set(path, value);
-	}
-
-	public boolean setCombat(final boolean combat) {
-		inCombat = combat;
-		if (inCombat) {
-			enterCombat();
-		} else {
-			exitCombat();
-		}
-		return inCombat;
-
 	}
 
 	public void setEditingBlock(DungeonBlock editingBlock) {
@@ -868,23 +815,59 @@ public class ExoPlayer implements Runnable {
 		this.equippedranged = equippedranged;
 	}
 	
-	public void setExoGameMode(ExoGameMode e) {
-		//TODO
+	public ExoGameMode getExoGameMode() {
+		return this.exoGameMode;
 	}
 	
-	public void setFilter(boolean filter) {
-		this.filter = filter;
-	}
-
-	public void setInDanger(final boolean danger) {
-		inDanger = danger;
-	}
-
-	public void setInDBEditorMode(boolean inDBEditorMode) {
-		this.inDBEditorMode = inDBEditorMode;
+	public void setExoGameMode(ExoGameMode e) {
+		//Save
+		switch (this.getExoGameMode()) {
+		case BUILD: {
+			inventorySave();
+			break;
+		}
+		case COMBAT: {
+			sendMessage("EXITING COMBAT. Double-tap shift to enter.");
+			break;
+		}
+		case DBEDITOR: {
+			sendMessage("Exiting DungeonBlocks Editor Mode.");
+			player.getInventory().setContents(buildInventory.getContents());
+			if (player.getGameMode() == GameMode.SURVIVAL) {
+				player.setAllowFlight(false);
+				break;
+			}
+		}
+		}
 		
-		if (this.inDBEditorMode == true) {
-			player.sendMessage("Entering DungeonBlocks Editor Mode.");
+		//Load
+		switch (e) {
+		case BUILD: {
+			exoGameMode = ExoGameMode.BUILD;
+			player.getInventory().setContents(buildInventory.getContents());
+			config().set("ExoGameMode", ExoGameMode.BUILD.toString());
+			break;
+		}
+		case COMBAT: {
+			exoGameMode = ExoGameMode.COMBAT;
+			sendMessage("ENTERING COMBAT! Double-tap shift to exit.");
+			player.getInventory().clear();
+			
+			player.getInventory().setItem(0, getEquippedmelee());
+			player.getInventory().setItem(1, getEquippedranged());
+			player.getInventory().setItem(2, getEquippedarrow());
+
+			ArrayList<Spell> spells = spellbook.getSpells();
+
+			for (int i = 0; i < 34 && i < spells.size(); i++) {
+				player.getInventory().setItem(i + 3, spells.get(i).getItemStack());
+			}
+			config().set("ExoGameMode", ExoGameMode.COMBAT.toString());
+			break;
+		}
+		case DBEDITOR: {
+			exoGameMode = ExoGameMode.DBEDITOR;
+			sendMessage("Entering DungeonBlocks Editor Mode.");
 			inventorySave();
 			player.getInventory().clear();
 
@@ -892,16 +875,14 @@ public class ExoPlayer implements Runnable {
 			if (player.getGameMode() == GameMode.SURVIVAL) {
 				player.setAllowFlight(true);
 			}
+			config().set("ExoGameMode", ExoGameMode.DBEDITOR.toString());
+			break;
 		}
-		
-		if (this.inDBEditorMode == false) {
-			player.sendMessage("Exiting DungeonBlocks Editor Mode.");
-			inDBEditorMode = false;
-			player.getInventory().setContents(buildInventory.getContents());
-			if (player.getGameMode() == GameMode.SURVIVAL) {
-				player.setAllowFlight(false);
-			}
 		}
+	}
+	
+	public void setFilter(boolean filter) {
+		this.filter = filter;
 	}
 
 	public void setMaxHP(int value) {
@@ -914,7 +895,7 @@ public class ExoPlayer implements Runnable {
 
 	public void setMelee(CustomItem item) {
 		this.setEquippedmelee(item);
-		setAttribute("equippedmelee", item);
+		config.setEquippedItem("equippedmelee", item);
 		player.sendMessage("Melee Weapon Equipped!");
 		config.save();
 	}
@@ -939,7 +920,7 @@ public class ExoPlayer implements Runnable {
 
 	public void setRanged(final CustomItem item) {
 		this.setEquippedranged(new CustomItem(item));
-		setAttribute("equippedranged", item);
+		config.setEquippedItem("equippedranged", item);
 		player.sendMessage("Ranged Weapon Equipped!");
 	}
 
@@ -950,15 +931,12 @@ public class ExoPlayer implements Runnable {
 	public void setShowSpawners(boolean showSpawners) {
 		this.showSpawners = showSpawners;
 	}
-
-	public boolean toggleCombat() {
-		if (inDanger == false) {
-			if (!inCombat) {
-				enterCombat();
-			} else {
-				exitCombat();
-			}
-		}
-		return inCombat;
+	
+	public void sendMessage(String s) {
+		this.getPlayer().sendMessage(s);
+	}
+	
+	public void sendMessage(String[] s) {
+		this.getPlayer().sendMessage(s);
 	}
 }

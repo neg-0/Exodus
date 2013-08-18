@@ -7,6 +7,7 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -21,6 +22,7 @@ import com.tidesofwaronline.Exodus.Config.XMLLoader;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Listeners.DungeonBlocksListener;
 import com.tidesofwaronline.Exodus.Listeners.EntityListener;
 import com.tidesofwaronline.Exodus.Listeners.LoginListener;
@@ -47,6 +49,7 @@ public class Exodus extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+
 		//Scan for players already in-game (in case of reload)
 		final Player[] playerlist = Bukkit.getOnlinePlayers();
 		try {
@@ -58,6 +61,14 @@ public class Exodus extends JavaPlugin {
 		}
 		ExoPlayer.clear();
 		CustomEntityHandler.dropLevels();
+
+		//Save Worlds
+		for (World w : Bukkit.getWorlds()) {
+			ExoWorld exoWorld = ExoWorld.getExoWorld(w);
+			if (exoWorld != null) {
+				exoWorld.save();
+			}
+		}
 	}
 
 	@Override
@@ -117,17 +128,23 @@ public class Exodus extends JavaPlugin {
 			new ExoPlayer(this, p);
 			//exoplayer.loadInventory();
 		}
-		
+
+		for (Class<? extends DungeonBlock> clazz : ExoWorld.getDungeonBlockClasses()) {
+			ConfigurationSerialization.registerClass(clazz);
+		}
+
 		//Create ExoWorlds
 		for (World w : Bukkit.getWorlds()) {
 			new ExoWorld(w);
 		}
-		
+
 		//Add recipes
 		Chest.addLockRecipes();
-		
+
 		//Set up DBE Inventory
 		new DBInventory();
+
+
 	}
 
 	@Override
@@ -147,7 +164,7 @@ public class Exodus extends JavaPlugin {
 		econ = rsp.getProvider();
 		return econ != null;
 	}
-	
+
 	public static Economy getEcon() {
 		return econ;
 	}

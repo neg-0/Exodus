@@ -7,7 +7,8 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlockCommand;
+import com.google.common.base.Joiner;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock.DungeonBlockCommand;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class ComDBEBlockCommand {
@@ -57,13 +58,7 @@ public class ComDBEBlockCommand {
 				}
 			}
 		}
-		
-		if (command.equalsIgnoreCase("exit")) {
-			p.sendMessage("No longer editing " + exop.getEditingBlock().toString());
-			exop.setEditingBlock(null);
-		} else {
-			p.sendMessage("§7Command \"" + command + "\" not valid!");
-		}
+		p.sendMessage("§7Command \"" + command + "\" not valid!");
 	}
 	
 	public class CommandInfo {
@@ -82,6 +77,19 @@ public class ComDBEBlockCommand {
 
 		public String[] getArguments() {
 			return arguments;
+		}
+		
+		public String[] getCommaSeparatedArguments() {
+			String[] args = Joiner.on(" ").join(arguments).split(",");
+			for (int i = 0; i < args.length; i++) {
+				args[i] = args[i].trim();
+			}
+			
+			return args;
+		}
+		
+		public String getStringArguments() {
+			return Joiner.on(" ").join(arguments);
 		}
 	}
 

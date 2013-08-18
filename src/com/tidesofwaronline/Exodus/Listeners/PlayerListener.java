@@ -29,6 +29,7 @@ import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 import com.tidesofwaronline.Exodus.CustomEntity.Spawner.CustomEntitySpawnerIndex;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Player.ExperienceHandler;
+import com.tidesofwaronline.Exodus.Player.ExoPlayer.ExoGameMode;
 
 public class PlayerListener implements Listener {
 
@@ -142,14 +143,14 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public static void onBlockDamage(BlockDamageEvent event) {
-		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInCombat()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).getExoGameMode() == ExoGameMode.COMBAT) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler
 	public static void onBlockBreak(BlockBreakEvent event) {
-		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInCombat()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).getExoGameMode() == ExoGameMode.COMBAT) {
 			event.setCancelled(true);
 		}
 	}
@@ -179,7 +180,7 @@ public class PlayerListener implements Listener {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			ExoPlayer exo = ExoPlayer.getExodusPlayer(player);
-			if (exo.isInCombat()) {
+			if (exo.getExoGameMode() == ExoGameMode.COMBAT) {
 				player.getInventory().setItem(2, exo.getEquippedarrow());
 				player.getInventory().getItem(1).setDurability((short) 0);
 				player.updateInventory();
@@ -194,7 +195,7 @@ public class PlayerListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onDropItem(PlayerDropItemEvent event) {
-		if (ExoPlayer.getExodusPlayer(event.getPlayer()).isInCombat()) {
+		if (ExoPlayer.getExodusPlayer(event.getPlayer()).getExoGameMode() == ExoGameMode.COMBAT) {
 			event.setCancelled(true);
 			event.getPlayer().updateInventory();
 		}
@@ -213,7 +214,7 @@ public class PlayerListener implements Listener {
 
 		ExoPlayer exo = ExoPlayer.getExodusPlayer(event.getPlayer());
 
-		if (exo.isInCombat()) {
+		if (exo.getExoGameMode() == ExoGameMode.COMBAT) {
 			exo.addToInventory(event.getItem().getItemStack());
 			event.getItem().remove();
 			event.setCancelled(true);
@@ -231,7 +232,7 @@ public class PlayerListener implements Listener {
 				|| event.getAction() == Action.LEFT_CLICK_BLOCK
 				|| event.getAction() == Action.RIGHT_CLICK_AIR
 				|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			if (exo.isInCombat()) {
+			if (exo.getExoGameMode() == ExoGameMode.COMBAT) {
 				ItemStack block = event.getPlayer().getItemInHand();
 				if (block.getTypeId() == 0) {
 					return;
@@ -264,7 +265,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		event.getDrops().clear();
-		ExoPlayer.getExodusPlayer(event.getEntity()).setCombat(false);
+		ExoPlayer.getExodusPlayer(event.getEntity()).setExoGameMode(ExoGameMode.BUILD);
 	}
 
 	@EventHandler

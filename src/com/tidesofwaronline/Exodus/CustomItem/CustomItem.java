@@ -230,7 +230,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	}
 
 	public CustomItem(Map<String, Object> map) {
-		super(Material.getMaterial(map.get("Material").toString()));
+		super(Material.DIRT);
 		if (map.containsKey("ID")) {
 			this.ID = UUID.fromString(String.valueOf(map.get("ID")));
 		}
@@ -242,7 +242,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		}
 		if (map.containsKey("Material")) {
 			this.material = Material
-					.getMaterial(map.get("Material").toString());
+					.matchMaterial(map.get("Material").toString());
 		}
 		if (map.containsKey("Tier")) {
 			this.tier = Tier.valueOf(map.get("Tier").toString());
@@ -284,7 +284,6 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 
 		build();
 		CustomItemHandler.register(this);
-
 	}
 
 	public CustomItem(Material mat, int i) {

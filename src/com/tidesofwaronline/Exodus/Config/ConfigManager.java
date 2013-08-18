@@ -7,6 +7,9 @@ import com.tidesofwaronline.Exodus.Exodus;
 public class ConfigManager {
 	
 	private Plugin plugin;
+	
+
+
 		
 	public ConfigManager(Exodus exodus) {
 		this.plugin = exodus;

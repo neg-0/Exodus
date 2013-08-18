@@ -1,5 +1,7 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks;
 
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
@@ -28,9 +30,15 @@ public class RedstoneSwitch extends DungeonBlock {
 	}
 
 	@Override
-	public void onTrigger() {
+	public void onTrigger(DungeonBlockEvent event) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
