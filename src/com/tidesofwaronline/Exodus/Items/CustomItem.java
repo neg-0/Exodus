@@ -1,4 +1,4 @@
-package com.tidesofwaronline.Exodus.CustomItem;
+package com.tidesofwaronline.Exodus.Items;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,8 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.CustomEnchantment.CustomEnchantment;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Tier;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler.Type;
+import com.tidesofwaronline.Exodus.Items.CustomItemHandler.Tier;
+import com.tidesofwaronline.Exodus.Items.CustomItemHandler.Type;
 import com.tidesofwaronline.Exodus.Player.Attunement;
 import com.tidesofwaronline.Exodus.Util.MessageUtil;
 

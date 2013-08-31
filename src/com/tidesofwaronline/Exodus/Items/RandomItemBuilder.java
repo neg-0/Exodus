@@ -1,4 +1,4 @@
-package com.tidesofwaronline.Exodus.CustomItem;
+package com.tidesofwaronline.Exodus.Items;
 
 public class RandomItemBuilder {
 
