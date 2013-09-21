@@ -8,16 +8,20 @@ import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class ComPurge extends Command {
 	
-	public ComPurge(Plugin plugin, Player player, String arg)	{
+	public ComPurge(CommandPackage comPackage)	{
 		
-		if (arg.isEmpty()) {
+		Plugin plugin = comPackage.getPlugin();
+		Player player = comPackage.getPlayer();
+		String[] args = comPackage.getArgs();
+		
+		if (args.length == 0) {
 			player.sendMessage("You must specify a player name.");
 			return;
 		}
 		
-		Player p = Bukkit.getPlayer(arg);
+		Player p = Bukkit.getPlayer(args[0]);
 		if (p == null) {
-			player.sendMessage("Player " + arg + " doesn't exist or is offline!");
+			player.sendMessage("Player " + args[0] + " doesn't exist or is offline!");
 			return;
 		}
 		

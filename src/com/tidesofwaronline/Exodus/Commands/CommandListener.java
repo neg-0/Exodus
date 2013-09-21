@@ -1,5 +1,10 @@
 package com.tidesofwaronline.Exodus.Commands;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,6 +16,7 @@ import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 public class CommandListener implements CommandExecutor {
 
 	private final Exodus plugin;
+	CommandPackage comPackage;
 
 	public CommandListener(final Exodus plugin) {
 		this.plugin = plugin;
@@ -18,116 +24,71 @@ public class CommandListener implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command command,
-			final String label, final String[] args) {
-
-		if (!(sender instanceof Player))
-			return false;
-
-		Player player = (Player) sender;
-		ExoPlayer exoplayer = ExoPlayer.getExodusPlayer(player);
-
+			final String label, String[] args) {
+		
+		Player player = null;
+		ExoPlayer exoPlayer = null;
+		
+		if (sender instanceof Player) {
+			player = (Player) sender;
+			exoPlayer = ExoPlayer.getExodusPlayer(player);
+		}
+		
 		if (command.getName().equalsIgnoreCase("stats")) {
-			stats(player);
+			exoPlayer.openStatsMenu();
 		} else if (command.getName().equalsIgnoreCase("exo")) {
 			if (player.hasPermission("exodus.admin") || player.isOp()) {
-				exo(player, exoplayer, args);
+				
+				String subCommand = null;
+								
+				if (args.length > 0) {
+					subCommand = args[0];
+					args = Arrays.copyOfRange(args, 1, args.length);
+				}
+				
+				comPackage = new CommandPackage(plugin, player, exoPlayer, args);
+				
+				if (subCommand == null) {
+					new ComHelp(comPackage);
+					return true;
+				}
+				
+				try {
+					Class<?> clazz = Class.forName(this.getClass().getPackage().getName() + ".Com" + WordUtils.capitalize(subCommand));
+					Constructor<?> con = clazz.getConstructor(CommandPackage.class);
+					con.newInstance(comPackage);
+					return true;
+				} catch (ClassNotFoundException e) {
+					player.sendMessage("Command not found: " + subCommand);
+					return true;
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				}
 			} else {
 				player.sendMessage("You do not have permission for this command!");
 			}
-		} else if (command.getName().equalsIgnoreCase("party")) {
-			new ComParty(plugin, player, args);
-		} else if (command.getName().equalsIgnoreCase("guild")) {
-			new ComGuild(plugin, player, args);
-		} else if (command.getName().equalsIgnoreCase("dbe")) {
-			new ComDBE(plugin, player, args);
-		}
-
-		return true;
-	}
-
-	public void stats(final Player player) {
-		ExoPlayer.getExodusPlayer(player).openStatsMenu();
-	}
-
-	private void exo(final Player player, final ExoPlayer exoplayer,
-			final String[] args) {
-
-		if (args.length == 0) {
-			new ComHelp(plugin, player);
-			return;
-		}
-
-		String command = args[0];
-		String[] commandArgs = new String[args.length];
-
-		if (args.length > 1) {
-			for (int i = 1; i < args.length; i++) {
-				commandArgs[i - 1] = args[i];
+		} else { 
+			comPackage = new CommandPackage(plugin, player, exoPlayer, args);
+			if (command.getName().equalsIgnoreCase("party")) {
+				new ComParty(comPackage);
+			} else if (command.getName().equalsIgnoreCase("guild")) {
+				new ComGuild(comPackage);
+			} else if (command.getName().equalsIgnoreCase("dbe")) {
+				new ComDBE(comPackage);
+			} else if (command.getName().equalsIgnoreCase("gift")) {
+				new ComGift(comPackage);
 			}
 		}
-
-		if (command.equalsIgnoreCase("stats")) {
-			new ComStats(args, player);
-		}
-
-		else if (command.equalsIgnoreCase("setrace")) {
-			setrace(player, args[1]);
-		}
-
-		else if (command.equalsIgnoreCase("test")) {
-			new ComTest(exoplayer, args);
-		}
-
-		else if (command.equalsIgnoreCase("purge")) {
-			new ComPurge(plugin, player, args[1]);
-		}
-
-		else if (command.equalsIgnoreCase("info")) {
-			new ComInfo(player, args);
-		}
-
-		else if (command.equalsIgnoreCase("spawners")) {
-			new ComSpawners(player);
-		}
-
-		else if (command.equalsIgnoreCase("heal")) {
-			new ComHeal(player, args);
-		}
-
-		else if (command.equalsIgnoreCase("save")) {
-			new ComSave(player);
-		}
-
-		else if (command.equalsIgnoreCase("load")) {
-			new ComLoad(player);
-		}
-
-		else if (command.equalsIgnoreCase("filter")) {
-			new ComFilter(plugin, exoplayer);
-		}
-
-		else if (command.equalsIgnoreCase("text")) {
-			new ComTexture(player, args);
-		}
-
-		else if (command.equalsIgnoreCase("item")) {
-			new ComItem(player, commandArgs);
-		}
-
-		else if (command.equalsIgnoreCase("time")) {
-			new ComTime(player, commandArgs);
-		}
-	}
-
-	private void setrace(Player player, String string) {
-		ExoPlayer.getExodusPlayer(player).setRace(string);
-	}
-
-	public boolean isPlayer(final CommandSender sender) {
-		if (sender instanceof Player) {
-			return true;
-		} else {
-			return false;
-		}
+		return true;
 	}
 }

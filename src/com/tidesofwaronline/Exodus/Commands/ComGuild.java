@@ -2,17 +2,17 @@ package com.tidesofwaronline.Exodus.Commands;
 
 import org.bukkit.entity.Player;
 
-import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Guilds.Guild;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class ComGuild extends Command {
 
-	public ComGuild(Exodus plugin, Player player, String[] args) {
+	public ComGuild(CommandPackage comPackage) {
 
-		ExoPlayer exop = ExoPlayer.getExodusPlayer(player);
-
-		Guild guild = exop.getGuild();
+		ExoPlayer exoPlayer = comPackage.getExoPlayer();
+		Player player = comPackage.getPlayer();
+		String[] args = comPackage.getArgs();
+		Guild guild = exoPlayer.getGuild();
 
 		if (guild == null) {
 			player.sendMessage("You are not in a guild!");
@@ -37,7 +37,7 @@ public class ComGuild extends Command {
 			}
 
 			else if (command.equalsIgnoreCase("leave")) {
-				guild.removeMember(exop);
+				guild.removeMember(exoPlayer);
 			}
 
 			else if (command.equalsIgnoreCase("kick")) {

@@ -2,17 +2,17 @@ package com.tidesofwaronline.Exodus.Commands;
 
 import org.bukkit.entity.Player;
 
-import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Parties.Party;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class ComParty extends Command {
 
-	public ComParty(Exodus plugin, Player player, String[] args) {
+	public ComParty(CommandPackage comPackage) {
 
-		ExoPlayer exop = ExoPlayer.getExodusPlayer(player);
-
-		Party party = exop.getParty();
+		Player player = comPackage.getPlayer();
+		ExoPlayer exoPlayer = comPackage.getExoPlayer();
+		String[] args = comPackage.getArgs();
+		Party party = exoPlayer.getParty();
 
 		if (party == null && args.length == 0) {
 			player.sendMessage("You are not in a party!");
@@ -34,11 +34,11 @@ public class ComParty extends Command {
 					return;
 				} else {
 					if (party == null) {
-						party = new Party(exop);
+						party = new Party(exoPlayer);
 						party.invite(toInvite);
 						player.sendMessage("Party invite sent to " + toInvite.getPlayer().getName());
 						return;
-					} else if (party.isLeader(exop)) {
+					} else if (party.isLeader(exoPlayer)) {
 						party.invite(toInvite);
 						player.sendMessage("Party invite sent to " + toInvite.getPlayer().getName());
 						return;
@@ -53,8 +53,8 @@ public class ComParty extends Command {
 				}
 			} else if (command.equalsIgnoreCase("accept")) {
 				for (Party p : Party.getParties()) {
-					if (p.hasInvite(exop)) {
-						p.partyAccept(exop);
+					if (p.hasInvite(exoPlayer)) {
+						p.partyAccept(exoPlayer);
 						return;
 					}
 				}
@@ -62,7 +62,7 @@ public class ComParty extends Command {
 			}
 
 			else if (command.equalsIgnoreCase("leave")) {
-				party.removeMember(exop);
+				party.removeMember(exoPlayer);
 				return;
 			}
 
@@ -80,7 +80,7 @@ public class ComParty extends Command {
 			}
 			
 			else if (command.equalsIgnoreCase("private")) {
-				if (party.isLeader(exop)) {
+				if (party.isLeader(exoPlayer)) {
 					party.setPrivate(true);
 					player.sendMessage("Party set to private. Type \"/party public\" to make the party public.");
 					return;
@@ -88,7 +88,7 @@ public class ComParty extends Command {
 				
 				player.sendMessage("You must be the party leader to set private/public.");
 			} else if (command.equalsIgnoreCase("public")) {
-				if (party.isLeader(exop)) {
+				if (party.isLeader(exoPlayer)) {
 					party.setPrivate(false);
 					player.sendMessage("Party set to open. Type \"/party private\" to make the party private.");
 					return;

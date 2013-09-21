@@ -8,12 +8,12 @@ import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
 public class ComInfo extends Command {
 	
 	Player player;
-	
-	public ComInfo(Player player, String[] args) {
-		this.player = player;
-		String command = args[1];
 		
-		if (command.equalsIgnoreCase("chunk")) {
+	public ComInfo(CommandPackage comPackage) {
+		
+		player = comPackage.getPlayer();
+
+		if (comPackage.getArgs()[0].equalsIgnoreCase("chunk")) {
 			chunk();
 		}
 	}

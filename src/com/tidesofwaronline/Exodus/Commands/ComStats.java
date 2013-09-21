@@ -7,22 +7,25 @@ import com.tidesofwaronline.Exodus.Player.ExperienceHandler;
 
 public class ComStats extends Command {
 	
-	public ComStats(String[] args, Player player) {
+	public ComStats(CommandPackage comPackage) {
+		
+		Player player = comPackage.getPlayer();
+		String[] args = comPackage.getArgs();
 		
 		ExoPlayer exoplayer;
 		
-		if (player.getName() == args[1]) {
+		if (player.getName() == args[0]) {
 			exoplayer = ExoPlayer.getExodusPlayer(player);
 		} else {
-			exoplayer = ExoPlayer.getExodusPlayer(args[1]);
+			exoplayer = ExoPlayer.getExodusPlayer(args[0]);
 		}
 		
 		if (exoplayer == null) {
-			player.sendMessage("Player " + args[1] + " doesn't exist or is offline!");
+			player.sendMessage("Player " + args[0] + " doesn't exist or is offline!");
 			return;
 		}
 		
-			player.sendMessage("Showing stats of " + args[1]);
+			player.sendMessage("Showing stats of " + args[0]);
 			player.sendMessage("Level: "
 					+ exoplayer.getAttribute("level")
 					+ " - XP: "

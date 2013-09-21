@@ -5,14 +5,18 @@ import org.bukkit.entity.Player;
 
 public class ComHeal extends Command {
 
-	public ComHeal(Player player, String[] arg) {
-		if (arg.length > 1) {
-			Player p = Bukkit.getPlayerExact(arg[1]);
+	public ComHeal(CommandPackage comPackage) {
+		
+		Player player = comPackage.getPlayer();
+		String[] args = comPackage.getArgs();
+		
+		if (args.length > 0) {
+			Player p = Bukkit.getPlayerExact(args[0]);
 			if (p != null) {
 				p.setHealth(p.getMaxHealth());
 				player.sendMessage("Healed player " + p.getDisplayName());
 			} else {
-				player.sendMessage("Player " + arg[1]
+				player.sendMessage("Player " + args[0]
 						+ " does not exist or is offline!");
 			}
 

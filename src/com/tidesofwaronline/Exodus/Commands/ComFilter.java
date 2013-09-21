@@ -1,16 +1,16 @@
 package com.tidesofwaronline.Exodus.Commands;
 
-import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class ComFilter extends Command {
 	
-	ComFilter(Exodus exodus, ExoPlayer player) {
-		player.setFilter(!player.isFilter());
-		if (player.isFilter()) {
-			player.getPlayer().sendMessage("Exodus Item Filter Enabled");
+	ComFilter(CommandPackage comPackage) {
+		ExoPlayer exoPlayer = comPackage.getExoPlayer();
+		exoPlayer.setFilter(!exoPlayer.isFilter());
+		if (exoPlayer.isFilter()) {
+			exoPlayer.getPlayer().sendMessage("Exodus Item Filter Enabled");
 		} else {
-			player.getPlayer().sendMessage("Exodus Item Filter Disabled");
+			exoPlayer.getPlayer().sendMessage("Exodus Item Filter Disabled");
 		}
 	}
 }

@@ -5,9 +5,11 @@ import org.bukkit.plugin.Plugin;
 
 public class ComHelp extends Command {
 	
-	public ComHelp(Plugin plugin, final Player player) {
+	public ComHelp(CommandPackage comPackage) {
+		Plugin plugin = comPackage.getPlugin();
+		Player player = comPackage.getPlayer();
+		
 		player.sendMessage("Exodus version "
 				+ plugin.getDescription().getVersion());
 	}
-
 }
