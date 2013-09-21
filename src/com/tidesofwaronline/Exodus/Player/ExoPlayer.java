@@ -31,12 +31,12 @@ import org.kitteh.tag.TagAPI;
 
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Config.PlayerConfig;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Effects.PlayerLevelUpEffect;
 import com.tidesofwaronline.Exodus.Guilds.Guild;
+import com.tidesofwaronline.Exodus.Items.CustomItem;
+import com.tidesofwaronline.Exodus.Items.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Parties.Party;
 import com.tidesofwaronline.Exodus.Quests.Quest;
 import com.tidesofwaronline.Exodus.Races.Races.Race;
@@ -70,6 +70,7 @@ public class ExoPlayer {
 	private Inventory buildInventory;
 	private CustomItem equippedmelee = new CustomItem(0);
 	private CustomItem equippedranged = new CustomItem(0);
+	private ArrayList<ItemStack> giftsList = new ArrayList<ItemStack>();
 
 	private CustomItem equippedarrow = new CustomItem(Material.ARROW, 64);
 	//Gameplay
@@ -872,9 +873,9 @@ public class ExoPlayer {
 			player.getInventory().clear();
 
 			player.getInventory().setContents(DBInventory.getInventory().getContents());
-			if (player.getGameMode() == GameMode.SURVIVAL) {
-				player.setAllowFlight(true);
-			}
+			player.setGameMode(GameMode.SURVIVAL);
+			player.setAllowFlight(true);
+			
 			config().set("ExoGameMode", ExoGameMode.DBEDITOR.toString());
 			break;
 		}
@@ -938,5 +939,14 @@ public class ExoPlayer {
 	
 	public void sendMessage(String[] s) {
 		this.getPlayer().sendMessage(s);
+	}
+	
+	public static void giveItem(ExoPlayer ep, ItemStack... i) {
+		if (ep == null || !ep.getPlayer().isOnline()) {
+			
+		} else if (ep.getPlayer().isOnline()) {
+			HashMap<Integer, ItemStack> couldntGive = ep.getPlayer().getInventory().addItem(i);
+			ep.giftsList.addAll(couldntGive.values());
+		}
 	}
 }
