@@ -14,8 +14,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.tidesofwaronline.Exodus.Exodus;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.Items.CustomItem;
+import com.tidesofwaronline.Exodus.Items.CustomItemHandler;
 
 public class XMLLoader {
 
