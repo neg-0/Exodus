@@ -33,7 +33,7 @@ public class DBInventory {
 		
 		//Action Blocks
 		inv.setItem(6, new DBInventoryIcon(EntitySpawner.class));
-		//inv.setItem(7, new DBInventoryIcon(InventoryEditor.class));
+		inv.setItem(7, new DBInventoryIcon(InventoryEditor.class));
 		inv.setItem(8, new DBInventoryIcon(CommandExecutor.class));
 		//inv.setItem(26, new DBInventoryIcon(Material.IRON_BLOCK, "Cave-In", "§8Dungeon Block"));
 		//inv.setItem(33, new DBInventoryIcon(Material.GLASS, "Lightning", "§8Dungeon Block"));
