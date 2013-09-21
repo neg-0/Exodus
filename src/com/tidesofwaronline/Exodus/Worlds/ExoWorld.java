@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import com.tidesofwaronline.Exodus.DataStructure;
+import com.tidesofwaronline.Exodus.DungeonBlocks.CommandExecutor.Event;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 
 public class ExoWorld implements ConfigurationSerializable {
@@ -42,6 +43,8 @@ public class ExoWorld implements ConfigurationSerializable {
 	public ExoWorld(World world) {
 		this.world = world;
 		register(this.world, this);
+		
+		DungeonBlock.initWorldRegistries(this);
 		
 		worldFile = new File(DataStructure.getWorldsFolder() + world.getName() + "/world.yml");
 		dungeonBlockFile = new File(DataStructure.getWorldsFolder() + world.getName() + "/dungeonblocks.yml");
@@ -186,13 +189,13 @@ public class ExoWorld implements ConfigurationSerializable {
 		
 		dungeonBlockClassesFile = new File(DataStructure.getWorldsFolder()+ "dungeonblockclasses.yml");
 		dungeonBlockClassesConfig = YamlConfiguration.loadConfiguration(dungeonBlockClassesFile);
-		
+
 		List<Class<? extends DungeonBlock>> list = new ArrayList<Class<? extends DungeonBlock>>();
 		for (String s : dungeonBlockClassesConfig.getKeys(false)) {
 			try {
 				list.add((Class<? extends DungeonBlock>) Class.forName(dungeonBlockClassesConfig.getString(s)));
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				dungeonBlockClassesConfig.set(s, null);
 			}
 		}
 		return list;
@@ -207,5 +210,11 @@ public class ExoWorld implements ConfigurationSerializable {
 		
 		
 		return map;
+	}
+
+	public static void checkClass(Event event) {
+		if (!dungeonBlockClassesConfig.contains(event.getClass().getSimpleName())) {
+			dungeonBlockClassesConfig.set(event.getClass().getSimpleName(), event.getClass().getName());
+		}
 	}
 }
