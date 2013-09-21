@@ -38,8 +38,8 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.tidesofwaronline.Exodus.Exodus;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.Items.CustomItem;
+import com.tidesofwaronline.Exodus.Items.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 /**
