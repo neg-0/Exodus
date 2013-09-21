@@ -291,6 +291,12 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.material = mat;
 		CustomItemHandler.register(this);
 	}
+	
+	public CustomItem(Material mat) {
+		super(mat, 1);
+		this.material = mat;
+		CustomItemHandler.register(this);
+	}
 
 	public CustomItem(UUID ID, String name, ChatColor color, Material material,
 			Tier tier, Type type, int damagemin, int damagemax,
