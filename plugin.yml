@@ -20,3 +20,5 @@ commands:
     description: Exodus Guild commands.
   dbe:
     description: Dungeon Block Editor system command.
+  gift:
+    description: Give and receive gifts!
