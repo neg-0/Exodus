@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.tidesofwaronline.Exodus.Commands.ComDBEBlockCommand;
+import com.tidesofwaronline.Exodus.Commands.CommandPackage;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
@@ -61,7 +62,7 @@ public class DungeonBlocksListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		ExoPlayer exop = ExoPlayer.getExodusPlayer(event.getPlayer());
 		if (exop.getExoGameMode() == ExoGameMode.DBEDITOR && exop.getEditingBlock() != null) {
-			new ComDBEBlockCommand(exop, event.getMessage());
+			new ComDBEBlockCommand(new CommandPackage(null, event.getPlayer(), exop, event.getMessage()));
 			event.setCancelled(true);
 		}
 	}
