@@ -21,13 +21,12 @@ public class ClickTrigger extends DungeonBlock {
 		super(map);
 	}
 	
-/*	public ClickTrigger(Map<String, Object> map) {
-		super(SerializableLocation.fromString(map.get("Location").toString()).toLocation(), Integer.parseInt(map.get("ID").toString()));
-		
-		if (map.containsKey("Enabled")) {
-			this.setEnabled(Boolean.parseBoolean(map.get("Enabled").toString()));
+	@Override
+	public void onTrigger(DungeonBlockEvent event) {
+		if (this.isEnabled()) {
+			triggerLinkedBlocks(event);
 		}
-	}*/
+	}
 
 	@Override
 	public void onClickBlock(ExoPlayer exodusPlayer, Block clickedBlock,
