@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.tidesofwaronline.Exodus.DataStructure;
 import com.tidesofwaronline.Exodus.Exodus;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItem;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
+import com.tidesofwaronline.Exodus.Items.CustomItem;
+import com.tidesofwaronline.Exodus.Items.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer.ExoGameMode;
 import com.tidesofwaronline.Exodus.Util.MessageUtil;
