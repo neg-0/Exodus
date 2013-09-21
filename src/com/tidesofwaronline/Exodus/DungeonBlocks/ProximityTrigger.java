@@ -7,7 +7,9 @@ import java.util.Map;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock.DungeonBlockInfo;
 
+@DungeonBlockInfo(description = "Pulses when entities come within range.", hasInput = false, hasOutput = true, material = "LAPIS_LAZULI_BLOCK", name = "Proximity Trigger")
 public class ProximityTrigger extends DungeonBlock implements Runnable {
 	
 	List<EntityType> entityTypes = new ArrayList<EntityType>();
