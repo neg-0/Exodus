@@ -20,9 +20,10 @@ import com.tidesofwaronline.Exodus.Commands.CommandListener;
 import com.tidesofwaronline.Exodus.Config.ConfigManager;
 import com.tidesofwaronline.Exodus.Config.XMLLoader;
 import com.tidesofwaronline.Exodus.CustomEntity.CustomEntityHandler;
-import com.tidesofwaronline.Exodus.CustomItem.CustomItemHandler;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
+import com.tidesofwaronline.Exodus.Items.CustomItemHandler;
+import com.tidesofwaronline.Exodus.Items.GiftManager;
 import com.tidesofwaronline.Exodus.Listeners.DungeonBlocksListener;
 import com.tidesofwaronline.Exodus.Listeners.EntityListener;
 import com.tidesofwaronline.Exodus.Listeners.LoginListener;
@@ -49,6 +50,9 @@ public class Exodus extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		
+		//Save GiftManager Gifts
+		GiftManager.save();
 
 		//Scan for players already in-game (in case of reload)
 		final Player[] playerlist = Bukkit.getOnlinePlayers();
@@ -73,7 +77,6 @@ public class Exodus extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-
 		new ConfigManager(this);
 		PluginManager pm = getServer().getPluginManager();
 
@@ -105,6 +108,7 @@ public class Exodus extends JavaPlugin {
 		getCommand("party").setExecutor(comListener);
 		getCommand("guild").setExecutor(comListener);
 		getCommand("dbe").setExecutor(comListener);
+		getCommand("gift").setExecutor(comListener);
 
 		//ProtocolLib
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
@@ -144,6 +148,8 @@ public class Exodus extends JavaPlugin {
 		//Set up DBE Inventory
 		new DBInventory();
 
+		//Load GiftManager
+		new GiftManager();
 
 	}
 
