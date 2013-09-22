@@ -135,7 +135,7 @@ public class InventoryEditor extends DungeonBlock {
 				trigger = false;
 			}
 		}
-		if (trigger == true && this.isEnabled()) {
+		if (trigger == true) {
 			triggerLinkedBlocks(event);
 		}
 	}
