@@ -32,12 +32,12 @@ public class DBInventory {
 		//inv.setItem(30, new DBInventoryIcon(Material.REDSTONE_BLOCK, "Timer", "§8Dungeon Block"));
 		
 		//Action Blocks
+		inv.setItem(5, new DBInventoryIcon(EffectsPlayer.class));
 		inv.setItem(6, new DBInventoryIcon(EntitySpawner.class));
 		inv.setItem(7, new DBInventoryIcon(InventoryEditor.class));
 		inv.setItem(8, new DBInventoryIcon(CommandExecutor.class));
 		//inv.setItem(26, new DBInventoryIcon(Material.IRON_BLOCK, "Cave-In", "§8Dungeon Block"));
 		//inv.setItem(33, new DBInventoryIcon(Material.GLASS, "Lightning", "§8Dungeon Block"));
-		//inv.setItem(34, new DBInventoryIcon(Material.TNT, "Explosion", "§8Dungeon Block"));
 		//inv.setItem(35, new DBInventoryIcon(Material.IRON_ORE, "Physics", "§8Dungeon Block"));
 	}
 
