@@ -289,12 +289,14 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 	public CustomItem(Material mat, int i) {
 		super(mat, i);
 		this.material = mat;
+		this.name = WordUtils.capitalize(mat.toString());
 		CustomItemHandler.register(this);
 	}
 	
 	public CustomItem(Material mat) {
 		super(mat, 1);
 		this.material = mat;
+		this.name = WordUtils.capitalize(mat.toString());
 		CustomItemHandler.register(this);
 	}
 
