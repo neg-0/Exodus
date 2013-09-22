@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,11 +26,11 @@ import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 @DungeonBlockInfo(description = "Edits a player's inventory.", hasInput = true, hasOutput = true, material = "DIAMOND_BLOCK", name = "Inventory Editor")
 public class InventoryEditor extends DungeonBlock {
-
+	
 	private List<Event> events = new ArrayList<Event>();
 
 	public InventoryEditor() {
-
+		super();
 	}
 
 	public InventoryEditor(Location loc) {
@@ -48,7 +47,7 @@ public class InventoryEditor extends DungeonBlock {
 			addEvent(parseEvent(s));
 		}
 	}
-
+	
 	@DungeonBlockCommand(description = "Appends an Event to the end of the list.", example = "add /say Hello; add wait 500", syntax = "add <Event>")
 	public String add(CommandPackage cp) {
 		
@@ -57,9 +56,9 @@ public class InventoryEditor extends DungeonBlock {
 				Class<?> clazz = Class.forName(Event.class.getName() + "$" + WordUtils.capitalize(cp.getArgs()[0]));
 				Constructor<?> con = Class.forName(clazz.getName()).getConstructors()[0];
 				CommandPackage com = new CommandPackage(cp.getPlugin(), cp.getPlayer(), cp.getExoPlayer(), Arrays.copyOfRange(cp.getArgs(), 1, cp.getArgs().length));
-				return "Added " + addEvent((Event) con.newInstance(new Event(com) , com));
+				return "Added " + addEvent((Event) con.newInstance(new Event(), com));
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				cp.getPlayer().sendMessage(e.getMessage());
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			} catch (InstantiationException e) {
@@ -78,7 +77,7 @@ public class InventoryEditor extends DungeonBlock {
 		this.events.add(e);
 		return e;
 	}
-
+	
 	@DungeonBlockCommand(description = "Clears the Event list.", example = "", syntax = "")
 	public String clear(CommandPackage cp) {
 		this.clearEvents();
@@ -88,7 +87,7 @@ public class InventoryEditor extends DungeonBlock {
 	public void clearEvents() {
 		events.clear();
 	}
-
+	
 	@DungeonBlockCommand(description = "Returns a list of available Events.", example = "", syntax = "")
 	public String events(CommandPackage cp) {
 		List<String> list = new ArrayList<String>();
@@ -128,20 +127,29 @@ public class InventoryEditor extends DungeonBlock {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	@Override
 	public void onTrigger(DungeonBlockEvent event) {
+		boolean trigger = true;
 		for (Event e : getEvents()) {
-			e.onTrigger(event);
+			if (!e.onTrigger(event)) {
+				trigger = false;
+			}
+		}
+		if (trigger = true && this.isEnabled()) {
+			triggerLinkedBlocks(event);
 		}
 	}
 
-	private Event parseEvent(String s) {
+	protected Event parseEvent(String s) {
 		String command = s.split(" ")[0];
 		String[] arguments = Arrays.copyOfRange(s.split(" "), 1, s.split(" ").length);
 		try {
 			Class<?> clazz = Class.forName(Event.class.getName() + "$" + WordUtils.capitalize(command));
 			Constructor<?> con = Class.forName(clazz.getName()).getConstructors()[0];
-			return (Event) con.newInstance(new Event(null) , new CommandPackage(null, null, null, arguments));
+			Event event = new Event();
+			CommandPackage com = new CommandPackage(null, null, null, arguments);
+			return (Event) con.newInstance(new Object[] {event, com});
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -198,36 +206,39 @@ public class InventoryEditor extends DungeonBlock {
 
 		return map;
 	}
-	
+
 	public class Event {
 		
-		Mode mode;
-		Player player;
+		Mode mode = Mode.PLAYER;
+		String player = "";
 		CustomItem item;
 		int quantity;
 		
+		public Event() {}
+		
 		public Event(CommandPackage cp) {
+			
+			//sample:
 			//add give player mastac 64 diamond
 			
-			String m = cp.getArgs()[0];
-			mode = Mode.valueOf(m.toUpperCase());
-			player = Bukkit.getPlayer(cp.getArgs()[1]);
+			if (cp.getArgs().length != 4) {
+				throw new IllegalArgumentException("Wrong number of arguments; must be 4");
+			}
+			
+			mode = Mode.valueOf(cp.getArgs()[0].toUpperCase());
+			player = cp.getArgs()[1];
 			try {
 				quantity = Integer.parseInt(cp.getArgs()[2]);
 			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException();
+				quantity = 1;
 			}
 			item = CustomItemHandler.getDefinedItem(Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), 3, cp.getArgs().length)));
 			if (item == null) {
 				item = new CustomItem(Material.matchMaterial(cp.getArgs()[3]));
 			}
-			
+						
 			if (item != null) {
 				item.setAmount(quantity);
-			}
-			
-			if (mode == null || player == null || item == null) {
-				throw new IllegalArgumentException();
 			}
 		}
 
@@ -263,36 +274,53 @@ public class InventoryEditor extends DungeonBlock {
 				return false;
 			}
 		}
+		
+		@Override
 		public String toString() {
-			return this.getClass().getSimpleName() + " " + item.getType().toString() + " to " + mode.toString();
+			return this.getClass().getSimpleName() + " " + mode.toString().toLowerCase() + " " + player + " " + quantity + " " + item.getName().toLowerCase();
 		}
 		
 		public class Check extends Event {
-			
-			ExoPlayer exoPlayer;
-			
+						
 			public Check(CommandPackage cp) {
 				super(cp);
-				cp.getPlayer().sendMessage(cp.getArgumentsString());
 			}
 
 			@Override
 			public boolean onTrigger(DungeonBlockEvent event) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		}
-		
-		class Equip extends Event {
-			
-			public Equip(CommandPackage cp) {
-				super(cp);
-			}
+				if (event.getEntity() instanceof Player) {
+					switch (this.mode){
+					case PLAYER: {
+						return ((Player) event.getEntity()).getInventory().containsAtLeast(item, quantity);
+					}
+					case PARTY: {
+						Party party = ExoPlayer.getExodusPlayer((Player) event.getEntity()).getParty();
+						if (party != null) {
+							for (ExoPlayer ep : party.getMembers()) {
+								if (!ep.getPlayer().getInventory().containsAtLeast(item, quantity)) {
+									return false;
+								}
+							}
+							return true;
+						}
+					}
+					case GUILD: {
+						Guild guild = ExoPlayer.getExodusPlayer((Player) event.getEntity()).getGuild();
+						if (guild != null) {
+							for (ExoPlayer ep : guild.getMembers()) {
+								if (!ep.getPlayer().getInventory().containsAtLeast(item, quantity)) {
+									return false;
+								}
+							}
+							return true;
+						}
+					}
+					default: return false;
+					}
 
-			@Override
-			public boolean onTrigger(DungeonBlockEvent event) {
-				// TODO Auto-generated method stub
-				return false;
+				} else {
+					return false;
+				}
 			}
 		}
 		
