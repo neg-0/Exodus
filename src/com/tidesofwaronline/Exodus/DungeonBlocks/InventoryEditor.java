@@ -127,7 +127,6 @@ public class InventoryEditor extends DungeonBlock {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	@Override
 	public void onTrigger(DungeonBlockEvent event) {
 		boolean trigger = true;
@@ -136,7 +135,7 @@ public class InventoryEditor extends DungeonBlock {
 				trigger = false;
 			}
 		}
-		if (trigger = true && this.isEnabled()) {
+		if (trigger == true && this.isEnabled()) {
 			triggerLinkedBlocks(event);
 		}
 	}
