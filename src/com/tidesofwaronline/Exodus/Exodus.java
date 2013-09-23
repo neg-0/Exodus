@@ -32,6 +32,7 @@ import com.tidesofwaronline.Exodus.Listeners.ProtocolListener;
 import com.tidesofwaronline.Exodus.Listeners.TagAPIListener;
 import com.tidesofwaronline.Exodus.Locks.Chest;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
+import com.tidesofwaronline.Exodus.Player.PlayerLogger;
 import com.tidesofwaronline.Exodus.Worlds.ExoWorld;
 
 public class Exodus extends JavaPlugin {
@@ -73,6 +74,9 @@ public class Exodus extends JavaPlugin {
 				exoWorld.save();
 			}
 		}
+		
+		//Close PlayerLogger Connection
+		PlayerLogger.closeConnection();
 	}
 
 	@Override
@@ -85,6 +89,7 @@ public class Exodus extends JavaPlugin {
 		pm.registerEvents(new PlayerListener(this), this);
 		pm.registerEvents(new EntityListener(this), this);
 		pm.registerEvents(new DungeonBlocksListener(), this);
+		
 
 		//TagAPI
 		Plugin tagapi = pm.getPlugin("TagAPI");
@@ -150,6 +155,9 @@ public class Exodus extends JavaPlugin {
 
 		//Load GiftManager
 		new GiftManager();
+		
+		//Start PlayerLogger
+		new PlayerLogger(this);
 
 	}
 
