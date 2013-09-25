@@ -4,7 +4,8 @@ description: The RPG plugin for Exodus
 author: MastaC
 website: http://www.tidesofwaronline.com
 main: com.tidesofwaronline.Exodus.Exodus
-softdepend: [ProtocolLib]
+softdepend: [ProtocolLib, TagAPI, Vault]
+depend: [WorldEdit]
 
 commands:
   stats:
