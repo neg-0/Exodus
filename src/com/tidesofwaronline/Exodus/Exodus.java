@@ -16,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.tidesofwaronline.Exodus.Commands.CommandListener;
 import com.tidesofwaronline.Exodus.Config.ConfigManager;
 import com.tidesofwaronline.Exodus.Config.XMLLoader;
@@ -40,6 +41,7 @@ public class Exodus extends JavaPlugin {
 	public static Logger logger = Logger.getLogger("minecraft");
 	public static Economy econ = null;
 	public static boolean debugMode = false;
+	static WorldEditPlugin worldEditPlugin;
 
 	public static void main(String args[]) throws Exception {
 		debugMode = true;
@@ -90,6 +92,8 @@ public class Exodus extends JavaPlugin {
 		pm.registerEvents(new EntityListener(this), this);
 		pm.registerEvents(new DungeonBlocksListener(), this);
 		
+		//Grab WorldEdit
+		worldEditPlugin = (WorldEditPlugin) pm.getPlugin("WorldEdit");
 
 		//TagAPI
 		Plugin tagapi = pm.getPlugin("TagAPI");
@@ -181,5 +185,9 @@ public class Exodus extends JavaPlugin {
 
 	public static Economy getEcon() {
 		return econ;
+	}
+	
+	public static WorldEditPlugin getWorldEditPlugin() {
+		return worldEditPlugin;
 	}
 }
