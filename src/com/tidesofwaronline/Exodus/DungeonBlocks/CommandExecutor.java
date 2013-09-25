@@ -54,9 +54,6 @@ public class CommandExecutor extends DungeonBlock {
 			try {
 				Constructor<Event> con = (Constructor<Event>) clazz.getConstructors()[0];
 				for (Class<?> params : con.getParameterTypes()) {
-					Bukkit.broadcastMessage(params.getSimpleName());
-				}
-				for (Class<?> params : con.getParameterTypes()) {
 					if (params.equals(String.class)) {
 						Object o = Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), 1, cp.getArgs().length));
 						return "Added §e" + addEvent(con.newInstance(o));
@@ -206,9 +203,6 @@ public class CommandExecutor extends DungeonBlock {
 			Class<Event> clazz = getEventType(command);
 			try {
 				Constructor<Event> con = (Constructor<Event>) clazz.getConstructors()[0];
-				for (Class<?> params : con.getParameterTypes()) {
-					Bukkit.broadcastMessage(params.getSimpleName());
-				}
 				for (Class<?> params : con.getParameterTypes()) {
 					if (params.equals(String.class)) {
 						Object o = Joiner.on(" ").join(arguments);
