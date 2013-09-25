@@ -725,4 +725,11 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 	public @interface CommandAlias {
 		String value();
 	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@interface EventInfo {
+		String[] arguments();
+		String name();
+	}
 }
