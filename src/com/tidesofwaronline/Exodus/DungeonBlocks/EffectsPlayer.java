@@ -1,9 +1,5 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -50,7 +46,6 @@ public class EffectsPlayer extends DungeonBlock {
 	public String add(CommandPackage cp) {
 		
 			try {
-				cp.getPlayer().sendMessage(cp.getArgumentsString());
 				Class<?> clazz = Class.forName(Event.class.getName() + "$" + WordUtils.capitalize(cp.getArgs()[0]));
 				Constructor<?> con = Class.forName(clazz.getName()).getConstructors()[0];
 				CommandPackage com = new CommandPackage(cp.getPlugin(), cp.getPlayer(), cp.getExoPlayer(), Arrays.copyOfRange(cp.getArgs(), 1, cp.getArgs().length));
@@ -278,9 +273,10 @@ public class EffectsPlayer extends DungeonBlock {
 			return sb.toString();
 		}
 		
-		public class BlazeShoot extends Event {
+		@EventInfo(arguments = { "" }, name = "BlazeShoot")
+		public class Blazeshoot extends Event {
 			
-			public BlazeShoot(CommandPackage cp) {
+			public Blazeshoot(CommandPackage cp) {
 				super(cp);
 			}
 			
@@ -289,10 +285,11 @@ public class EffectsPlayer extends DungeonBlock {
 				location.getWorld().playEffect(location.toLocation(), Effect.BLAZE_SHOOT, 1);
 			}
 		}
-		
-		public class BowFire extends Event {
 
-			public BowFire(CommandPackage cp) {
+		@EventInfo(arguments = { "" }, name = "BowFire")
+		public class Bowfire extends Event {
+
+			public Bowfire(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -326,9 +323,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class DoorToggle extends Event {
+		@EventInfo(arguments = { "" }, name = "DoorToggle")
+		public class Doortoggle extends Event {
 
-			public DoorToggle(CommandPackage cp) {
+			public Doortoggle(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -338,9 +336,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class EnderSignal extends Event {
+		@EventInfo(arguments = { "" }, name = "EnderSignal")
+		public class Endersignal extends Event {
 
-			public EnderSignal(CommandPackage cp) {
+			public Endersignal(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -350,7 +349,7 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		@RequiredVars(variables = { "damage", "radius" })
+		@EventInfo(arguments = { "damage", "radius" }, name = "Explosion")
 		public class Explosion extends Event {
 			
 			public Explosion(CommandPackage cp) {
@@ -379,7 +378,7 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 
-		@RequiredVars(variables = { "damage" })
+		@EventInfo(arguments = { "damage" }, name = "Lightning")
 		public class Lightning extends Event {
 			
 			public Lightning(CommandPackage cp) {
@@ -396,9 +395,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class GhastShoot extends Event {
+		@EventInfo(arguments = { "" }, name = "GhastShoot")
+		public class Ghastshoot extends Event {
 
-			public GhastShoot(CommandPackage cp) {
+			public Ghastshoot(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -408,9 +408,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class GhastShriek extends Event {
+		@EventInfo(arguments = { "" }, name = "GhastShriek")
+		public class Ghastshriek extends Event {
 
-			public GhastShriek(CommandPackage cp) {
+			public Ghastshriek(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -420,9 +421,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class MobSpawnerFlames extends Event {
+		@EventInfo(arguments = { "" }, name = "MobSpawnerFlames")
+		public class Mobspawnerflames extends Event {
 
-			public MobSpawnerFlames(CommandPackage cp) {
+			public Mobspawnerflames(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -432,10 +434,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		@RequiredVars(variables = { "DataValue" })
-		public class PotionBreak extends Event {
+		@EventInfo(arguments = { "DataValue" }, name = "PotionBreak")
+		public class Potionbreak extends Event {
 
-			public PotionBreak(CommandPackage cp) {
+			public Potionbreak(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -445,10 +447,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		@RequiredVars(variables = { "DataValue" })
-		public class RecordPlay extends Event {
+		@EventInfo(arguments = { "DataValue" }, name = "RecordPlay")
+		public class Recordplay extends Event {
 
-			public RecordPlay(CommandPackage cp) {
+			public Recordplay(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -470,10 +472,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		@RequiredVars(variables = { "blockID" })
-		public class StepSound extends Event {
+		@EventInfo(arguments = { "blockID" }, name = "StepSound")
+		public class Stepsound extends Event {
 
-			public StepSound(CommandPackage cp) {
+			public Stepsound(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -483,9 +485,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class ZombieChewIronDoor extends Event {
+		@EventInfo(arguments = { "" }, name = "ZombieChewIronDoor")
+		public class Zombiechewirondoor extends Event {
 
-			public ZombieChewIronDoor(CommandPackage cp) {
+			public Zombiechewirondoor(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -495,9 +498,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class ZombieChewWoodenDoor extends Event {
+		@EventInfo(arguments = { "" }, name = "ZombieChewWoodenDoor")
+		public class Zombiechewwoodendoor extends Event {
 
-			public ZombieChewWoodenDoor(CommandPackage cp) {
+			public Zombiechewwoodendoor(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -507,9 +511,10 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 		}
 		
-		public class ZombieDestroyDoor extends Event {
+		@EventInfo(arguments = { "" }, name = "ZombieDestroyDoor")
+		public class Zombiedestroydoor extends Event {
 
-			public ZombieDestroyDoor(CommandPackage cp) {
+			public Zombiedestroydoor(CommandPackage cp) {
 				super(cp);
 			}
 
@@ -518,11 +523,5 @@ public class EffectsPlayer extends DungeonBlock {
 				location.getWorld().playEffect(location.toLocation(), Effect.ZOMBIE_DESTROY_DOOR, 1);
 			}
 		}
-	}
-	
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	@interface RequiredVars {
-		String[] variables();
 	}
 }
