@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Joiner;
+import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 
 public class CommandPackage {
@@ -12,6 +13,7 @@ public class CommandPackage {
 	private Player player;
 	private ExoPlayer exoPlayer;
 	private String[] args = null;
+	private DungeonBlock dungeonBlock;
 	
 	public CommandPackage(Plugin plugin, Player player, ExoPlayer exoPlayer, String... args) {
 		this.plugin = plugin;
@@ -36,6 +38,10 @@ public class CommandPackage {
 		return args;
 	}
 	
+	public void setArgs(String[] args) {
+		this.args = args;
+	}
+
 	public String[] getCommaSeparatedArguments() {
 		String[] args = Joiner.on(" ").join(this.args).split(",");
 		for (int i = 0; i < args.length; i++) {
@@ -58,5 +64,13 @@ public class CommandPackage {
 	
 	public String getArgumentsString() {
 		return Joiner.on(" ").join(args);
+	}
+
+	public DungeonBlock getDungeonBlock() {
+		return dungeonBlock;
+	}
+
+	public void setDungeonBlock(DungeonBlock dungeonBlock) {
+		this.dungeonBlock = dungeonBlock;
 	}
 }
