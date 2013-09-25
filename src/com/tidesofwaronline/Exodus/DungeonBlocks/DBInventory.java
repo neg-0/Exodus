@@ -19,6 +19,7 @@ public class DBInventory {
 		
 		//Tools
 		inv.setItem(0, new DBInventoryIcon(InfoTool.class));
+		inv.setItem(1, new ItemStack(Material.WOOD_AXE));
 		
 		//Logic Blocks
 		//inv.setItem(11, new DBInventoryIcon(Material.PUMPKIN, "Toggle Switch", "§8Dungeon Block"));
@@ -27,11 +28,13 @@ public class DBInventory {
 		
 		//Trigger Blocks
 		inv.setItem(2, new DBInventoryIcon(ClickTrigger.class));
+		
 		//inv.setItem(12, new DBInventoryIcon(Material.SNOW_BLOCK, "Item Proximity", "§8Dungeon Block"));
 		//inv.setItem(21, new DBInventoryIcon(Material.LAPIS_BLOCK, "Mob Proximity", "§8Dungeon Block"));
 		//inv.setItem(30, new DBInventoryIcon(Material.REDSTONE_BLOCK, "Timer", "§8Dungeon Block"));
 		
 		//Action Blocks
+		inv.setItem(4, new DBInventoryIcon(BlockManipulator.class));
 		inv.setItem(5, new DBInventoryIcon(EffectsPlayer.class));
 		inv.setItem(6, new DBInventoryIcon(EntitySpawner.class));
 		inv.setItem(7, new DBInventoryIcon(InventoryEditor.class));
