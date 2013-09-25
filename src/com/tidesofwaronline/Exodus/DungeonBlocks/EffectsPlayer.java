@@ -1,5 +1,9 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -63,6 +67,8 @@ public class EffectsPlayer extends DungeonBlock {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				return "That's not a valid command.";
+			} catch (Exception e) {
+				
 			}
 			return "nope";
 	}
@@ -123,14 +129,8 @@ public class EffectsPlayer extends DungeonBlock {
 	
 	@Override
 	public void onTrigger(DungeonBlockEvent event) {
-		boolean trigger = true;
 		for (Event e : getEvents()) {
-			if (!e.onTrigger(event)) {
-				trigger = false;
-			}
-		}
-		if (trigger == true) {
-			triggerLinkedBlocks(event);
+			e.onTrigger(event);
 		}
 	}
 
@@ -205,6 +205,9 @@ public class EffectsPlayer extends DungeonBlock {
 		SerializableLocation location;
 		Effect effect;
 		boolean damage = true;
+		int radius = 1;
+		int dataValue = 0;
+		int blockID = 1;
 		
 		public Event() {}
 		
@@ -213,30 +216,42 @@ public class EffectsPlayer extends DungeonBlock {
 			//sample:
 			//add lightning safe here
 			//add explosion unsafe at 100 64 200
-			
-			
-			if (cp.getArgs()[0].equalsIgnoreCase("safe")) {
-				damage = false;
-			} else if (cp.getArgs()[0].equalsIgnoreCase("unsafe")) {
-				damage = true;
+
+
+			for (int i = 0; i < cp.getArgs().length; i++) {
+				if (cp.getArgs()[i].equalsIgnoreCase("damage")) {
+					damage = Boolean.parseBoolean(cp.getArgs()[i + 1]);
+				} else if (cp.getArgs()[i].equalsIgnoreCase("here")) {
+					location = new SerializableLocation(cp.getPlayer().getLocation());
+				} else if (cp.getArgs()[i].equalsIgnoreCase("at")) {
+					try {
+						location = SerializableLocation.fromString(cp.getPlayer().getWorld().getName() + " " + Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), i + 1, i + 4)));
+					} catch (ArrayIndexOutOfBoundsException e) {
+						throw new IllegalArgumentException("Invalid number of Location arguments. Type the X Y and Z without the world name, letters, or characters.");
+					}
+				} else if (cp.getArgs()[i].contains("radius")) {
+					try {
+						radius = Integer.parseInt(cp.getArgs()[i + 1]);
+					} catch (NumberFormatException e) {
+						throw new IllegalArgumentException("Radius must be an integer");
+					}
+				} else if (cp.getArgs()[i].contains("datavalue")) {
+					try {
+						dataValue = Integer.parseInt(cp.getArgs()[i + 1]);
+					} catch (NumberFormatException e) {
+						throw new IllegalArgumentException("Data Value must be an integer");
+					}
+				} else if (cp.getArgs()[i].contains("blockID")) {
+					try {
+						blockID = Integer.parseInt(cp.getArgs()[i + 1]);
+					} catch (NumberFormatException e) {
+						throw new IllegalArgumentException("Block ID must be an integer");
+					}
+				}
 			}
-			
-			if (cp.getArgs()[1].equalsIgnoreCase("here")) {
-				location = new SerializableLocation(cp.getPlayer().getLocation());
-			} else if (cp.getArgs()[1].equalsIgnoreCase("at")) {
-				location = SerializableLocation.fromString(cp.getPlayer().getWorld().getName() + " " + Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), 3, 6)));
-			}
-			
-			
-//			if (effect == null) {
-//				throw new IllegalArgumentException("That is not a valid effect.");
-//			}
-			
-			
 		}
 
-		public boolean onTrigger(DungeonBlockEvent event) {
-			return false;
+		public void onTrigger(DungeonBlockEvent event) {
 		}
 		
 		@Override
@@ -244,11 +259,14 @@ public class EffectsPlayer extends DungeonBlock {
 			StringBuilder sb = new StringBuilder(); 
 			sb.append(this.getClass().getSimpleName());
 			sb.append(" ");
-			if (damage) {
-				sb.append("unsafe");
-			} else {
-				sb.append("safe");
-			}
+			sb.append("damage ");
+			sb.append(damage);
+			sb.append("radius ");
+			sb.append(radius);
+			sb.append("blockID ");
+			sb.append(blockID);
+			sb.append("dataValue ");
+			sb.append(dataValue);
 			sb.append(" at ");
 			sb.append(location.getWorldName());
 			sb.append(" ");
@@ -260,23 +278,79 @@ public class EffectsPlayer extends DungeonBlock {
 			return sb.toString();
 		}
 		
-		public class Lightning extends Event {
+		public class BlazeShoot extends Event {
 			
-			public Lightning(CommandPackage cp) {
+			public BlazeShoot(CommandPackage cp) {
 				super(cp);
 			}
 			
 			@Override
-			public boolean onTrigger(DungeonBlockEvent event) {
-				if (damage) {
-					location.getWorld().strikeLightning(location.toLocation());
-				} else {
-					location.getWorld().strikeLightningEffect(location.toLocation());
-				}
-				return true;
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.BLAZE_SHOOT, 1);
 			}
 		}
 		
+		public class BowFire extends Event {
+
+			public BowFire(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.BOW_FIRE, 1);
+			}
+		}
+		
+		public class Click1 extends Event {
+
+			public Click1(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.CLICK1, 1);
+			}
+		}
+		
+		public class Click2 extends Event {
+
+			public Click2(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.CLICK2, 1);
+			}
+		}
+		
+		public class DoorToggle extends Event {
+
+			public DoorToggle(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.DOOR_TOGGLE, 1);
+			}
+		}
+		
+		public class EnderSignal extends Event {
+
+			public EnderSignal(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.ENDER_SIGNAL, 1);
+			}
+		}
+		
+		@RequiredVars(variables = { "damage", "radius" })
 		public class Explosion extends Event {
 			
 			public Explosion(CommandPackage cp) {
@@ -284,15 +358,171 @@ public class EffectsPlayer extends DungeonBlock {
 			}
 			
 			@Override
-			public boolean onTrigger(DungeonBlockEvent event) {
+			public void onTrigger(DungeonBlockEvent event) {
 				if (damage) {
 					location.getWorld().createExplosion(location.toLocation(), 4.0F, damage);
 				} else {
 					location.getWorld().createExplosion(location.toLocation(), 0.0F, damage);
 				}
-				return true;
+			}
+		}
+		
+		public class Extinguish extends Event {
+
+			public Extinguish(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.EXTINGUISH, 1);
 			}
 		}
 
+		@RequiredVars(variables = { "damage" })
+		public class Lightning extends Event {
+			
+			public Lightning(CommandPackage cp) {
+				super(cp);
+			}
+			
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				if (damage) {
+					location.getWorld().strikeLightning(location.toLocation());
+				} else {
+					location.getWorld().strikeLightningEffect(location.toLocation());
+				}
+			}
+		}
+		
+		public class GhastShoot extends Event {
+
+			public GhastShoot(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.GHAST_SHOOT, 1);
+			}
+		}
+		
+		public class GhastShriek extends Event {
+
+			public GhastShriek(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.GHAST_SHRIEK, 1);
+			}
+		}
+		
+		public class MobSpawnerFlames extends Event {
+
+			public MobSpawnerFlames(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.MOBSPAWNER_FLAMES, null);
+			}
+		}
+		
+		@RequiredVars(variables = { "DataValue" })
+		public class PotionBreak extends Event {
+
+			public PotionBreak(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.POTION_BREAK, dataValue);
+			}
+		}
+		
+		@RequiredVars(variables = { "DataValue" })
+		public class RecordPlay extends Event {
+
+			public RecordPlay(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.RECORD_PLAY, dataValue);
+			}
+		}
+		
+		public class Smoke extends Event {
+
+			public Smoke(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.SMOKE, 0);
+			}
+		}
+		
+		@RequiredVars(variables = { "blockID" })
+		public class StepSound extends Event {
+
+			public StepSound(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.STEP_SOUND, dataValue);
+			}
+		}
+		
+		public class ZombieChewIronDoor extends Event {
+
+			public ZombieChewIronDoor(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.ZOMBIE_CHEW_IRON_DOOR, 1);
+			}
+		}
+		
+		public class ZombieChewWoodenDoor extends Event {
+
+			public ZombieChewWoodenDoor(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.ZOMBIE_CHEW_WOODEN_DOOR, 1);
+			}
+		}
+		
+		public class ZombieDestroyDoor extends Event {
+
+			public ZombieDestroyDoor(CommandPackage cp) {
+				super(cp);
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				location.getWorld().playEffect(location.toLocation(), Effect.ZOMBIE_DESTROY_DOOR, 1);
+			}
+		}
+	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@interface RequiredVars {
+		String[] variables();
 	}
 }
