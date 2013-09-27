@@ -15,6 +15,14 @@ public class CommandPackage {
 	private String[] args = null;
 	private DungeonBlock dungeonBlock;
 	
+	public CommandPackage() {
+		
+	}
+	
+	public CommandPackage(String... args) {
+		this.args = args;		
+	}
+	
 	public CommandPackage(Plugin plugin, Player player, ExoPlayer exoPlayer, String... args) {
 		this.plugin = plugin;
 		this.player = player;
@@ -38,8 +46,9 @@ public class CommandPackage {
 		return args;
 	}
 	
-	public void setArgs(String[] args) {
+	public CommandPackage setArgs(String[] args) {
 		this.args = args;
+		return this;
 	}
 
 	public String[] getCommaSeparatedArguments() {
@@ -70,7 +79,8 @@ public class CommandPackage {
 		return dungeonBlock;
 	}
 
-	public void setDungeonBlock(DungeonBlock dungeonBlock) {
+	public CommandPackage setDungeonBlock(DungeonBlock dungeonBlock) {
 		this.dungeonBlock = dungeonBlock;
+		return this;
 	}
 }
