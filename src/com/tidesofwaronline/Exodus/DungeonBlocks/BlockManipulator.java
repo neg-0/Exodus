@@ -1,5 +1,7 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -13,13 +15,20 @@ import org.bukkit.Location;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.sk89q.worldedit.EmptyClipboardException;
+import com.sk89q.worldedit.FilenameException;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.data.DataException;
+import com.tidesofwaronline.Exodus.DataStructure;
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Commands.CommandPackage;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock.DungeonBlockInfo;
+import com.tidesofwaronline.Exodus.Util.SerializableLocation;
+import com.tidesofwaronline.Exodus.Util.TerrainManager;
 
 @DungeonBlockInfo(description = "Changes the state of blocks in the world.", hasInput = true, hasOutput = false, material = "BRICK", name = "Block Manipulator")
 public class BlockManipulator extends DungeonBlock {
@@ -51,7 +60,7 @@ public class BlockManipulator extends DungeonBlock {
 			try {
 				Class<?> clazz = Class.forName(Event.class.getName() + "$" + WordUtils.capitalize(cp.getArgs()[0]));
 				Constructor<?> con = Class.forName(clazz.getName()).getConstructors()[0];
-				CommandPackage com = new CommandPackage(cp.getPlugin(), cp.getPlayer(), cp.getExoPlayer(), Arrays.copyOfRange(cp.getArgs(), 1, cp.getArgs().length));
+				CommandPackage com = new CommandPackage(cp.getPlugin(), cp.getPlayer(), cp.getExoPlayer(), Arrays.copyOfRange(cp.getArgs(), 1, cp.getArgs().length)).setDungeonBlock(this);
 				return "Added " + addEvent((Event) con.newInstance(new Event(), com));
 			} catch (IllegalArgumentException e) {
 				cp.getPlayer().sendMessage(e.getMessage());
@@ -62,14 +71,15 @@ public class BlockManipulator extends DungeonBlock {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				e.getCause().printStackTrace();
-				cp.getPlayer().sendMessage(e.getCause().getMessage());
+				if (e.getMessage() != null) {
+					cp.getPlayer().sendMessage(e.getMessage());
+				} else if (e.getCause().getMessage() != null) {
+					cp.getPlayer().sendMessage(e.getCause().getMessage());
+				}
 			} catch (ClassNotFoundException e) {
 				return "That's not a valid command.";
-			} catch (Exception e) {
-				
 			}
-			return "Something has happened :( Tell MastaC";
+			return "There's been some kind of error. Check the chat and console.";
 	}
 	
 	public Event addEvent(Event e) {
@@ -140,7 +150,7 @@ public class BlockManipulator extends DungeonBlock {
 			Class<?> clazz = Class.forName(Event.class.getName() + "$" + WordUtils.capitalize(command));
 			Constructor<?> con = Class.forName(clazz.getName()).getConstructors()[0];
 			Event event = new Event();
-			CommandPackage com = new CommandPackage(null, null, null, arguments);
+			CommandPackage com = new CommandPackage(arguments).setDungeonBlock(this);
 			return (Event) con.newInstance(new Object[] {event, com});
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -259,7 +269,10 @@ public class BlockManipulator extends DungeonBlock {
 							}
 						}
 					}
+					selection = new CuboidSelection(cp.getDungeonBlock().getWorld(), min, max);
 				}
+				
+			
 
 				if (selection instanceof CuboidSelection) {
 					min = selection.getNativeMinimumPoint();
@@ -269,6 +282,7 @@ public class BlockManipulator extends DungeonBlock {
 				}
 			}
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void onTrigger(DungeonBlockEvent event) {
 				if (min != null) {
@@ -368,6 +382,7 @@ public class BlockManipulator extends DungeonBlock {
 							}
 						}
 					}
+					selection = new CuboidSelection(cp.getDungeonBlock().getWorld(), min, max);
 				}
 
 				if (selection instanceof CuboidSelection) {
@@ -378,6 +393,7 @@ public class BlockManipulator extends DungeonBlock {
 				}
 			}
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void onTrigger(DungeonBlockEvent event) {
 				if (min != null) {
@@ -437,6 +453,75 @@ public class BlockManipulator extends DungeonBlock {
 				sb.append(max.getY());
 				sb.append(" ");
 				sb.append(max.getZ());
+				return sb.toString();
+			}
+		}
+		
+		@EventInfo(arguments = { "selection" }, name = "Set")
+		public class Schematic extends Event {
+			
+			SerializableLocation location;
+			File file;
+			String schematicName;
+			
+			public Schematic(CommandPackage cp) throws FilenameException {
+				super(cp);
+				
+				schematicName = cp.getArgs()[0];
+				
+				file = new File(DataStructure.getSchematicsFolder() + schematicName + ".schematic");
+				if (!file.exists()) {
+					throw new IllegalArgumentException("File not found.");
+				}
+
+				for (int i = 0; i < cp.getArgs().length; i++) {
+					if (cp.getArgs()[i].equalsIgnoreCase("here")) {
+						location = new SerializableLocation(cp.getPlayer().getLocation());
+					} else if (cp.getArgs()[i].equalsIgnoreCase("at")) {
+						try {
+							location = SerializableLocation.fromString(cp.getPlayer().getWorld().getName() + " " + Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), i + 1, i + 4)));
+						} catch (ArrayIndexOutOfBoundsException e) {
+							throw new IllegalArgumentException("Invalid number of Location arguments. Type the X Y and Z without the world name, letters, or characters.");
+						}
+					}
+				}
+				
+				if (location == null) {
+					throw new IllegalArgumentException("Location required");
+				}
+			}
+
+			@Override
+			public void onTrigger(DungeonBlockEvent event) {
+				TerrainManager tm = new TerrainManager(Exodus.getWorldEditPlugin(), event.getDungeonBlock().getWorld());
+				try {
+					tm.loadSchematicNoAir(file, location.toLocation());
+				} catch (FilenameException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MaxChangedBlocksException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (EmptyClipboardException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DataException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public String toString() {
+				StringBuilder sb = new StringBuilder(); 
+				sb.append(this.getClass().getSimpleName());
+				sb.append(" ");
+				sb.append(schematicName);
+				sb.append(" ");
+				sb.append(location.toString());
 				return sb.toString();
 			}
 		}
