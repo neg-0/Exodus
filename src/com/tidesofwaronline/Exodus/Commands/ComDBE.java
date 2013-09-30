@@ -40,6 +40,8 @@ public class ComDBE extends Command {
 					if (DungeonBlock.getDungeonBlocks(player.getWorld()) != null) {
 						player.sendMessage(Joiner.on(", ").join(DungeonBlock.getDungeonBlocks(player.getWorld())));
 					}
+				} else if(command.equalsIgnoreCase("heartbeat")) {
+					player.sendMessage("Total HeartBeats: " + DungeonBlock.getTotalHeartBeat(player.getWorld()));
 				} else if (command.equalsIgnoreCase("deleteall")) {
 					Iterator<DungeonBlock> i = DungeonBlock.getDungeonBlocks(player.getWorld()).iterator();
 					while (i.hasNext()) {
@@ -48,10 +50,10 @@ public class ComDBE extends Command {
 						db.delete();
 					}
 				} else {
-					player.sendMessage("/dbe on, off, save, load, list, deleteall");
+					player.sendMessage("/dbe on, off, save, load, list, heartbeat, deleteall");
 				}
 			} else {
-				player.sendMessage("/dbe on, off, save, load, list, deleteall");
+				player.sendMessage("/dbe on, off, save, load, list, heartbeat, deleteall");
 			}
 		}
 	}
