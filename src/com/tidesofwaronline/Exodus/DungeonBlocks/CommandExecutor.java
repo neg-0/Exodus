@@ -210,9 +210,7 @@ public class CommandExecutor extends DungeonBlock {
 					} else if (params.isArray() && params.getComponentType().equals(DungeonBlock.class)) {
 						List<DungeonBlock> dungeonBlocks = new ArrayList<DungeonBlock>();
 						for (String st : commaSeparated) {
-							if (getDungeonBlock(this.getWorld(), st) != null) {
-								dungeonBlocks.add(getDungeonBlock(this.getWorld(), st));
-							}
+							dungeonBlocks.add(new PseudoDungeonBlock(st));
 						}
 						return con.newInstance(new Object[] {dungeonBlocks.toArray(new DungeonBlock[dungeonBlocks.size()])});
 					} else if (params.equals(long.class)) {
@@ -309,17 +307,20 @@ public class CommandExecutor extends DungeonBlock {
 		}
 
 		class Disable implements Event {
-			List<DungeonBlock> toDisable = new ArrayList<DungeonBlock>();
+			List<String> toDisable = new ArrayList<String>();
 
 			public Disable(DungeonBlock... dungeonBlocks) {
 				for (DungeonBlock d : dungeonBlocks) {
-					toDisable.add(d);
+					toDisable.add(d.toString());
 				}
 			}
 
 			public void onTrigger(DungeonBlockEvent event) {
-				for (DungeonBlock d : toDisable) {
-					d.disable(null);
+				for (String s : toDisable) {
+					DungeonBlock d = DungeonBlock.getDungeonBlock(event.getDungeonBlock().getWorld(), s);
+					if (d != null) {
+						d.disable(new CommandPackage());
+					}
 				}
 			}
 
@@ -330,17 +331,20 @@ public class CommandExecutor extends DungeonBlock {
 		}
 
 		class Enable implements Event {
-			List<DungeonBlock> toEnable = new ArrayList<DungeonBlock>();
+			List<String> toEnable = new ArrayList<String>();
 
 			public Enable(DungeonBlock... dungeonBlocks) {
 				for (DungeonBlock d : dungeonBlocks) {
-					toEnable.add(d);
+					toEnable.add(d.toString());
 				}
 			}
 
 			public void onTrigger(DungeonBlockEvent event) {
-				for (DungeonBlock d : toEnable) {
-					d.enable(null);
+				for (String s : toEnable) {
+					DungeonBlock d = DungeonBlock.getDungeonBlock(event.getDungeonBlock().getWorld(), s);
+					if (d != null) {
+						d.enable(new CommandPackage());
+					}
 				}
 			}
 
@@ -437,18 +441,21 @@ public class CommandExecutor extends DungeonBlock {
 		}
 
 		class Pulse implements Event {
-			List<DungeonBlock> toPulse = new ArrayList<DungeonBlock>();
+			List<String> toPulse = new ArrayList<String>();
 
 			public Pulse(DungeonBlock... dungeonBlocks) {
 				for (DungeonBlock d : dungeonBlocks) {
-					toPulse.add(d);
+					toPulse.add(d.toString());
 				}
 			}
 
 			public void onTrigger(DungeonBlockEvent event) {
-				for (DungeonBlock d : toPulse) {
-					if (d.isEnabled()) {
-						d.onTrigger(event);
+				for (String s : toPulse) {
+					DungeonBlock d = DungeonBlock.getDungeonBlock(event.getDungeonBlock().getWorld(), s);
+					if (d != null) {
+						if (d.isEnabled()) {
+							d.onTrigger(event);
+						}
 					}
 				}
 			}
