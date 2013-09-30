@@ -33,16 +33,21 @@ import com.google.common.base.Joiner;
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Commands.CommandPackage;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
+import com.tidesofwaronline.Exodus.Player.ExoPlayer.ExoGameMode;
+import com.tidesofwaronline.Exodus.Util.MessageUtil;
+import com.tidesofwaronline.Exodus.Util.NumberUtil;
 import com.tidesofwaronline.Exodus.Util.SerializableLocation;
 import com.tidesofwaronline.Exodus.Worlds.ExoWorld;
 
 public abstract class DungeonBlock implements ConfigurationSerializable {
 	static HashMap<ExoWorld, HashMap<Location, DungeonBlock>> DBRegistry = new HashMap<ExoWorld, HashMap<Location, DungeonBlock>>();
+	HeartBeat heartBeat;
 
 	public static void breakBlockEvent(ExoPlayer exodusPlayer, Block block) {
 		removeDungeonBlock(getDungeonBlock(block).getLocation());
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void clickBlockEvent(ExoPlayer exodusPlayer, Block clickedBlock, Action action) {
 		//Left click = Block Info
 		//Right click = Edit Block
@@ -59,7 +64,7 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		if (DBInventory.isHoldingInfoTool(exodusPlayer.getPlayer())) {
 			if (DungeonBlock.isDungeonBlock(clickedBlock.getLocation())) {
 				if (action == Action.LEFT_CLICK_BLOCK && p.isSneaking() == false) {
-					cb.getInfo(p);
+					cb.getInfo(cb, p);
 				} else if (action == Action.RIGHT_CLICK_BLOCK && p.isSneaking() == false) {
 					//Right Click
 					if (exodusPlayer.getEditingBlock() != null && exodusPlayer.getEditingBlock().equals(cb)) {
@@ -96,6 +101,7 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		}
 		if (isDungeonBlock(clickedBlock.getLocation())) {
 			getDungeonBlock(clickedBlock).onClickBlock(exodusPlayer, clickedBlock, action);
+			p.sendBlockChange(cbLoc, cb.getMaterial(), (byte) 0);
 		}
 	}
 
@@ -254,8 +260,12 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		this.location = loc;
 		this.ID = assignNewID();
 		registerDungeonBlock(loc.getWorld(), this);
+		
+		heartBeat = new HeartBeat(this);
+		heartBeat.start();
 	}
 
+	@SuppressWarnings("deprecation")
 	public DungeonBlock(Map<String, Object> map) {
 		for (Field f : (Field[]) ArrayUtils.addAll(this.getClass().getFields(), this.getClass().getDeclaredFields())) {
 			try {
@@ -274,12 +284,23 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		}
 		if (this.location != null) {
 			registerDungeonBlock(this.location.getWorld(), this);
-			this.getLocation().getBlock().setType(this.getMaterial());
+			
+			for (Player p : this.getWorld().getPlayers()) {
+				if (ExoPlayer.getExodusPlayer(p).getExoGameMode() == ExoGameMode.DBEDITOR) {
+					p.sendBlockChange(this.getLocation(), 0, (byte) 0);
+				}
+			}
+			
+			heartBeat = new HeartBeat(this);
+			heartBeat.start();
+			
 		} else {
 			Exodus.logger.severe("Error initializing Dungeon Block; Location null or invalid.");
 		}
+		
+		
 	}
-
+	
 	public void addLinkedBlock(DungeonBlock db) {
 		this.linkedBlocks.add(db);
 	}
@@ -310,7 +331,11 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		return commands;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void delete() {
+		for (Player p : this.getWorld().getPlayers()) {
+			p.sendBlockChange(this.getLocation(), 0, (byte) 0);
+		}
 		this.getLocation().getBlock().setTypeId(0);
 		for (DungeonBlock d : this.getLinkedFromBlocks()) {
 			d.removeLinkedBlock(this);
@@ -406,7 +431,7 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		return this.ID;
 	}
 
-	public void getInfo(Player p) {
+	public void getInfo(DungeonBlock db, Player p) {
 		List<String> output = new ArrayList<String>();
 		String line1 = "/>-{§3" + this.getName() + "§f}---{ID: §3" + this.getID() + "§f}---{";
 		if (this.isEnabled()) {
@@ -418,9 +443,31 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		output.add(line1);
 		output.add("| Linked to: §3" + Joiner.on("§f, §3").join(this.getLinkedBlocks()));
 		output.add("| Linked from: §3" + Joiner.on("§f, §3").join(this.getLinkedFromBlocks()));
+		output.add("| Heartbeat: " + NumberUtil.round((heartBeat.getTimeToExecute()/1000000), 4) + "ms");
+		
+		for (Class<?> clazz : db.getClass().getDeclaredClasses()) {
+			if (clazz.getSimpleName().equals("Event")) {
+				output.add("| Events:");
+				for (int i = 0; i < this.getEvents().size(); i++) {
+					output.add("| " + (i + 1) + ". §e" + this.getEvents().get(i));
+				}
+			}
+		}
+		
+		String bottom = "\\>";
+		for(int i = 17; i < MessageUtil.getStringWidth(MessageUtil.removeColourCode(line1)); i+=6) {
+			bottom += "-";
+		}
+		bottom += "/";
+		output.add(bottom);
+		
 		for (String s : output) {
 			p.sendMessage(s);
 		}
+	}
+	
+	public List<?> getEvents() {
+		return null;
 	}
 
 	public List<DungeonBlock> getLinkedBlocks() {
@@ -455,6 +502,21 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 
 	public World getWorld() {
 		return this.getLocation().getWorld();
+	}
+	
+	public long getHeartBeat() {
+		return heartBeat.getTimeToExecute();
+	}
+	
+	public static long getTotalHeartBeat(World world) {
+		
+		long total = 0;
+		
+		for (DungeonBlock db : getDungeonBlocks(world)) {
+			total += db.getHeartBeat();
+		}
+		
+		return total;
 	}
 
 	public boolean hasInput() {
@@ -731,5 +793,48 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 	@interface EventInfo {
 		String[] arguments();
 		String name();
+	}
+	
+	private class HeartBeat extends Thread {
+		
+		private DungeonBlock db;
+		private long time;
+		private long timeToExecute;
+		
+		private HeartBeat(DungeonBlock db) {
+			this.db = db;
+		}
+		
+		@SuppressWarnings("deprecation")
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					sleep(2500);
+
+					time = System.nanoTime();
+
+					for (Player p : db.getWorld().getPlayers()) {
+						if (ExoPlayer.getExodusPlayer(p).getExoGameMode() == ExoGameMode.DBEDITOR) {
+							if (p.getLocation().distance(db.getLocation()) < 10) {
+								db.getLocation().getBlock().setType(db.getMaterial());
+							} else {
+								db.getLocation().getBlock().setType(Material.AIR);
+								p.sendBlockChange(db.getLocation(), db.getMaterial(), (byte) 0);
+							}
+						} else {
+							p.sendBlockChange(db.getLocation(), Material.AIR, (byte) 0);
+						}
+					}
+
+					timeToExecute = System.nanoTime() - time;
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+
+		public long getTimeToExecute() {
+			return timeToExecute;
+		}
 	}
 }
