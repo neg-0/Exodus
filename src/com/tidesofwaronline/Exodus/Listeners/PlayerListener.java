@@ -225,6 +225,7 @@ public class PlayerListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
 		ExoPlayer exo = ExoPlayer.getExodusPlayer(event.getPlayer());

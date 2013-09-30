@@ -16,6 +16,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.tidesofwaronline.Exodus.Commands.CommandPackage;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock.DungeonBlockInfo;
+import com.tidesofwaronline.Exodus.Util.NumberUtil;
 import com.tidesofwaronline.Exodus.Util.SerializableLocation;
 
 @DungeonBlockInfo(description = "Plays an effect, explosion, or lightning.", hasInput = true, hasOutput = false, material = "IRON_BLOCK", name = "Effects Player")
@@ -48,7 +49,7 @@ public class EffectsPlayer extends DungeonBlock {
 			try {
 				Class<?> clazz = Class.forName(Event.class.getName() + "$" + WordUtils.capitalize(cp.getArgs()[0]));
 				Constructor<?> con = Class.forName(clazz.getName()).getConstructors()[0];
-				CommandPackage com = new CommandPackage(cp.getPlugin(), cp.getPlayer(), cp.getExoPlayer(), Arrays.copyOfRange(cp.getArgs(), 1, cp.getArgs().length));
+				CommandPackage com = cp.setArgs(Arrays.copyOfRange(cp.getArgs(), 1, cp.getArgs().length)).setDungeonBlock(this);
 				return "Added " + addEvent((Event) con.newInstance(new Event(), com));
 			} catch (IllegalArgumentException e) {
 				cp.getPlayer().sendMessage(e.getMessage());
@@ -136,7 +137,7 @@ public class EffectsPlayer extends DungeonBlock {
 			Class<?> clazz = Class.forName(Event.class.getName() + "$" + WordUtils.capitalize(command));
 			Constructor<?> con = Class.forName(clazz.getName()).getConstructors()[0];
 			Event event = new Event();
-			CommandPackage com = new CommandPackage(null, null, null, arguments);
+			CommandPackage com = new CommandPackage(null, null, null, arguments).setDungeonBlock(this);
 			return (Event) con.newInstance(new Object[] {event, com});
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -220,7 +221,7 @@ public class EffectsPlayer extends DungeonBlock {
 					location = new SerializableLocation(cp.getPlayer().getLocation());
 				} else if (cp.getArgs()[i].equalsIgnoreCase("at")) {
 					try {
-						location = SerializableLocation.fromString(cp.getPlayer().getWorld().getName() + " " + Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), i + 1, i + 4)));
+						location = SerializableLocation.fromString(cp.getDungeonBlock().getWorld().getName() + " " + Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), i + 2, i + 5)));
 					} catch (ArrayIndexOutOfBoundsException e) {
 						throw new IllegalArgumentException("Invalid number of Location arguments. Type the X Y and Z without the world name, letters, or characters.");
 					}
@@ -251,25 +252,25 @@ public class EffectsPlayer extends DungeonBlock {
 		
 		@Override
 		public String toString() {
+						
 			StringBuilder sb = new StringBuilder(); 
 			sb.append(this.getClass().getSimpleName());
-			sb.append(" ");
-			sb.append("damage ");
+			sb.append(" damage ");
 			sb.append(damage);
-			sb.append("radius ");
+			sb.append(" radius ");
 			sb.append(radius);
-			sb.append("blockID ");
+			sb.append(" blockID ");
 			sb.append(blockID);
-			sb.append("dataValue ");
+			sb.append(" dataValue ");
 			sb.append(dataValue);
 			sb.append(" at ");
 			sb.append(location.getWorldName());
 			sb.append(" ");
-			sb.append(location.getX());
+			sb.append(NumberUtil.round(location.getX(), 2));
 			sb.append(" ");
-			sb.append(location.getY());
+			sb.append(NumberUtil.round(location.getY(), 2));
 			sb.append(" ");
-			sb.append(location.getZ());
+			sb.append(NumberUtil.round(location.getZ(), 2));
 			return sb.toString();
 		}
 		
@@ -468,7 +469,7 @@ public class EffectsPlayer extends DungeonBlock {
 
 			@Override
 			public void onTrigger(DungeonBlockEvent event) {
-				location.getWorld().playEffect(location.toLocation(), Effect.SMOKE, 0);
+				location.getWorld().playEffect(location.toLocation(), Effect.SMOKE, 1);
 			}
 		}
 		

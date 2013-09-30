@@ -17,6 +17,7 @@ public class Freeze extends CustomEnchantment implements Runnable,
 		return "Freeze";
 	}
 
+	@SuppressWarnings("deprecation")
 	public void onHit(ExoPlayer player, LivingEntity target) {
 
 		target.getLocation().getBlock().setTypeId(Material.ICE.getId(), false);

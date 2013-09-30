@@ -79,6 +79,7 @@ public class EntitySpawner extends DungeonBlock {
 		return spawnVector.toLocation(this.getWorld());
 	}
 	
+	@SuppressWarnings("deprecation")
 	@DungeonBlockCommand(example = "", syntax = "list", description = "Lists spawned entities.")
 	public String list() {
 		List<String> list = new ArrayList<String>();
@@ -101,6 +102,7 @@ public class EntitySpawner extends DungeonBlock {
 		return "" + this.spawnedEntityList.size();
 	}
 	
+	@SuppressWarnings("deprecation")
 	private String objectToString(Object o) {
 		if (o instanceof EntityType) {
 			return ((EntityType) o).getName();
@@ -164,6 +166,7 @@ public class EntitySpawner extends DungeonBlock {
 		this.spawnVector = vector;
 	}
 
+	@SuppressWarnings("deprecation")
 	private Object stringToObject(String s) {
 		if (CustomItemHandler.getDefinedItem(s) != null) {
 			return CustomItemHandler.getDefinedItem(s);

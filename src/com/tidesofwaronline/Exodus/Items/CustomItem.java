@@ -202,6 +202,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		CustomItemHandler.register(this);
 	}
 
+	@SuppressWarnings("deprecation")
 	public CustomItem(int i) {
 		super(i);
 		this.material = Material.getMaterial(i);
@@ -337,6 +338,7 @@ public class CustomItem extends ItemStack implements ConfigurationSerializable {
 		this.getEl().addAll(el);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void build() {
 		this.setType(this.material);
 

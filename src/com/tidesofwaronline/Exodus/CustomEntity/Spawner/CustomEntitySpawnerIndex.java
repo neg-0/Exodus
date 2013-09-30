@@ -37,6 +37,7 @@ public class CustomEntitySpawnerIndex {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void infoMenu(Player player, Block block) {
 		CreatureSpawner cs = (CreatureSpawner) block.getState();
 		player.sendMessage("Spawner Info");
@@ -51,6 +52,7 @@ public class CustomEntitySpawnerIndex {
 		register(block);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void showSpawners(Player player) {
 		for (CustomEntitySpawner c : spawners.values()) {
 			player.sendBlockChange(c.getLocation(), Material.MOB_SPAWNER,

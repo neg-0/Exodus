@@ -572,6 +572,7 @@ public class ExoPlayer {
 		player.setExp(ExperienceHandler.getXPBarPercentage(this));
 	}
 
+	@SuppressWarnings("deprecation")
 	public void refreshOptions() {
 
 		HashMap<Race, Integer> races = getRacesByRep();
@@ -820,6 +821,7 @@ public class ExoPlayer {
 		return this.exoGameMode;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void setExoGameMode(ExoGameMode e) {
 		//Save
 		switch (this.getExoGameMode()) {
@@ -834,6 +836,11 @@ public class ExoPlayer {
 		case DBEDITOR: {
 			sendMessage("Exiting DungeonBlocks Editor Mode.");
 			player.getInventory().setContents(buildInventory.getContents());
+			
+			for (DungeonBlock db : DungeonBlock.getDungeonBlocks(player.getWorld())) {
+				player.sendBlockChange(db.getLocation(), 0, (byte) 0);
+			}
+			
 			if (player.getGameMode() == GameMode.SURVIVAL) {
 				player.setAllowFlight(false);
 				break;
@@ -875,6 +882,10 @@ public class ExoPlayer {
 			player.getInventory().setContents(DBInventory.getInventory().getContents());
 			player.setGameMode(GameMode.SURVIVAL);
 			player.setAllowFlight(true);
+			
+			for (DungeonBlock db : DungeonBlock.getDungeonBlocks(player.getWorld())) {
+				player.sendBlockChange(db.getLocation(), db.getMaterial(), (byte) 0);
+			}
 			
 			config().set("ExoGameMode", ExoGameMode.DBEDITOR.toString());
 			break;

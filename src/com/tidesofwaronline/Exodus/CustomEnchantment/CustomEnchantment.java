@@ -83,6 +83,7 @@ public class CustomEnchantment {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public String getName() {
 		if (e != null)
 			return String.valueOf(e.getId()).replace("16", "Sharpness")

@@ -15,6 +15,7 @@ public class ItemUtil {
 			271, 273, 274, 275, 277, 278, 279, 284, 285, 286, 290, 291, 292,
 			293, 294);
 	
+	@SuppressWarnings("deprecation")
 	public static ItemStack getItemFromString(String s) {
 		if (CustomItemHandler.getDefinedItem(s) != null) {
 			return CustomItemHandler.getDefinedItem(s);

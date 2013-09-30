@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryStringDeSerializer {
+	@SuppressWarnings("deprecation")
 	public static String InventoryToString(final Inventory invInventory) {
 		String serialization = invInventory.getSize() + ";";
 		for (int i = 0; i < invInventory.getSize(); i++) {
@@ -46,6 +47,7 @@ public class InventoryStringDeSerializer {
 		return serialization;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Inventory StringToInventory(final String invString) {
 		final String[] serializedBlocks = invString.split(";");
 		final String invInfo = serializedBlocks[0];

@@ -47,6 +47,7 @@ public class Races {
 			return block;
 		}
 		
+		@SuppressWarnings("deprecation")
 		public final byte getBlockData() {
 			if (woolColor != null) {
 				return woolColor.getWoolData();

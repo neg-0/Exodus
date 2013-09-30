@@ -46,6 +46,7 @@ public class CustomEntitySpawner implements Listener{
 		return this.loc;
 	}
 
+	@SuppressWarnings("deprecation")
 	public byte getData() {
 		return block.getData();
 	}
