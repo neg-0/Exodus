@@ -54,6 +54,8 @@ public class Exodus extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
+		logger.info("Stopping Exodus");
+		
 		//Save GiftManager Gifts
 		GiftManager.save();
 
@@ -79,10 +81,16 @@ public class Exodus extends JavaPlugin {
 		
 		//Close PlayerLogger Connection
 		PlayerLogger.closeConnection();
+		
+		logger.info("Exodus Stopped");
 	}
 
 	@Override
 	public void onEnable() {
+		
+		logger.info("---=== Starting Exodus ===---");
+		long startTime = System.currentTimeMillis();
+		
 		new ConfigManager(this);
 		PluginManager pm = getServer().getPluginManager();
 
@@ -162,6 +170,8 @@ public class Exodus extends JavaPlugin {
 		
 		//Start PlayerLogger
 		new PlayerLogger(this);
+		
+		logger.info("---=== Exodus Started, total time was " + (System.currentTimeMillis() - startTime) + "ms ===---");
 
 	}
 
