@@ -28,6 +28,7 @@ public class DBInventory {
 		
 		//Trigger Blocks
 		inv.setItem(2, new DBInventoryIcon(ClickTrigger.class));
+		inv.setItem(3, new DBInventoryIcon(ProximityTrigger.class));
 		
 		//inv.setItem(12, new DBInventoryIcon(Material.SNOW_BLOCK, "Item Proximity", "§8Dungeon Block"));
 		//inv.setItem(21, new DBInventoryIcon(Material.LAPIS_BLOCK, "Mob Proximity", "§8Dungeon Block"));
