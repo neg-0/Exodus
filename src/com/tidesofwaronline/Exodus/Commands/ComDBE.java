@@ -1,5 +1,6 @@
 package com.tidesofwaronline.Exodus.Commands;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.bukkit.entity.Player;
@@ -37,11 +38,14 @@ public class ComDBE extends Command {
 					player.sendMessage("Loading this world's Dungeon Blocks from disk.");
 					ExoWorld.getExoWorld(player.getWorld()).loadDungeonBlocks();
 				} else if (command.equalsIgnoreCase("list")) {
-					if (DungeonBlock.getDungeonBlocks(player.getWorld()) != null) {
-						player.sendMessage(Joiner.on(", ").join(DungeonBlock.getDungeonBlocks(player.getWorld())));
+					final Collection<DungeonBlock> list = DungeonBlock.getDungeonBlocks(player.getWorld());
+					if (list != null) {
+						if (list.size() > 0) {
+							player.sendMessage(Joiner.on(", ").join(DungeonBlock.getDungeonBlocks(player.getWorld())));
+						} else {
+							player.sendMessage("There are no DungeonBlocks in this world.");
+						}
 					}
-				} else if(command.equalsIgnoreCase("heartbeat")) {
-					player.sendMessage("Total HeartBeats: " + DungeonBlock.getTotalHeartBeat(player.getWorld()));
 				} else if (command.equalsIgnoreCase("deleteall")) {
 					Iterator<DungeonBlock> i = DungeonBlock.getDungeonBlocks(player.getWorld()).iterator();
 					while (i.hasNext()) {
