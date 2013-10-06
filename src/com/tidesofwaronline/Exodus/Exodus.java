@@ -25,11 +25,12 @@ import com.tidesofwaronline.Exodus.DungeonBlocks.DBInventory;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock;
 import com.tidesofwaronline.Exodus.Items.CustomItemHandler;
 import com.tidesofwaronline.Exodus.Items.GiftManager;
+import com.tidesofwaronline.Exodus.Listeners.ClientProtocolListener;
 import com.tidesofwaronline.Exodus.Listeners.DungeonBlocksListener;
 import com.tidesofwaronline.Exodus.Listeners.EntityListener;
 import com.tidesofwaronline.Exodus.Listeners.LoginListener;
 import com.tidesofwaronline.Exodus.Listeners.PlayerListener;
-import com.tidesofwaronline.Exodus.Listeners.ProtocolListener;
+import com.tidesofwaronline.Exodus.Listeners.ServerProtocolListener;
 import com.tidesofwaronline.Exodus.Listeners.TagAPIListener;
 import com.tidesofwaronline.Exodus.Locks.Chest;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
@@ -42,6 +43,7 @@ public class Exodus extends JavaPlugin {
 	public static Economy econ = null;
 	public static boolean debugMode = false;
 	static WorldEditPlugin worldEditPlugin;
+	static Exodus plugin;
 
 	public static void main(String args[]) throws Exception {
 		debugMode = true;
@@ -91,6 +93,8 @@ public class Exodus extends JavaPlugin {
 		logger.info("---=== Starting Exodus ===---");
 		long startTime = System.currentTimeMillis();
 		
+		plugin = this;
+		
 		new ConfigManager(this);
 		PluginManager pm = getServer().getPluginManager();
 
@@ -129,7 +133,8 @@ public class Exodus extends JavaPlugin {
 
 		//ProtocolLib
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-			new ProtocolListener(this);
+			new ServerProtocolListener(this);
+			new ClientProtocolListener(this);
 			getLogger().log(Level.INFO, "Hooked into ProtocolLib!");
 		}
 
@@ -141,15 +146,8 @@ public class Exodus extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-
-		//Scan for players already in-game (in case of reload)
-		final Player[] playerlist = Bukkit.getOnlinePlayers();
-		for (final Player p : playerlist) {
-			//ExodusPlayer exoplayer = 
-			new ExoPlayer(this, p);
-			//exoplayer.loadInventory();
-		}
-
+		
+		//Register DungeonBlock Classes - Needs to be fixed. This is not needed.
 		for (Class<? extends DungeonBlock> clazz : ExoWorld.getDungeonBlockClasses()) {
 			ConfigurationSerialization.registerClass(clazz);
 		}
@@ -170,7 +168,15 @@ public class Exodus extends JavaPlugin {
 		
 		//Start PlayerLogger
 		new PlayerLogger(this);
-		
+
+		//Scan for players already in-game (in case of reload)
+		final Player[] playerlist = Bukkit.getOnlinePlayers();
+		for (final Player p : playerlist) {
+			//ExodusPlayer exoplayer = 
+			new ExoPlayer(this, p);
+			//exoplayer.loadInventory();
+		}
+
 		logger.info("---=== Exodus Started, total time was " + (System.currentTimeMillis() - startTime) + "ms ===---");
 
 	}
@@ -199,5 +205,9 @@ public class Exodus extends JavaPlugin {
 	
 	public static WorldEditPlugin getWorldEditPlugin() {
 		return worldEditPlugin;
+	}
+	
+	public static Plugin getPlugin() {
+		return plugin;
 	}
 }
