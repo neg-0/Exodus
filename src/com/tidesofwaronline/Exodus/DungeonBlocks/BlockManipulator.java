@@ -479,7 +479,7 @@ public class BlockManipulator extends DungeonBlock {
 						location = new SerializableLocation(cp.getPlayer().getLocation());
 					} else if (cp.getArgs()[i].equalsIgnoreCase("at")) {
 						try {
-							location = SerializableLocation.fromString(cp.getPlayer().getWorld().getName() + " " + Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), i + 1, i + 4)));
+							location = SerializableLocation.fromString(getWorld().getName() + " " + Joiner.on(" ").join(Arrays.copyOfRange(cp.getArgs(), i + 1, i + 4)));
 						} catch (ArrayIndexOutOfBoundsException e) {
 							throw new IllegalArgumentException("Invalid number of Location arguments. Type the X Y and Z without the world name, letters, or characters.");
 						}
@@ -520,10 +520,20 @@ public class BlockManipulator extends DungeonBlock {
 				sb.append(this.getClass().getSimpleName());
 				sb.append(" ");
 				sb.append(schematicName);
+				sb.append(" at ");
+				sb.append(location.getX());
 				sb.append(" ");
-				sb.append(location.toString());
+				sb.append(location.getY());
+				sb.append(" ");
+				sb.append(location.getZ());
 				return sb.toString();
 			}
 		}
+	}
+
+	@Override
+	public List<String> getAdditionalInfo() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
