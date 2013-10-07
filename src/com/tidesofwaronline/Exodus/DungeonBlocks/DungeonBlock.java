@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -28,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Joiner;
 import com.tidesofwaronline.Exodus.Exodus;
@@ -35,52 +38,48 @@ import com.tidesofwaronline.Exodus.Commands.CommandPackage;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer;
 import com.tidesofwaronline.Exodus.Player.ExoPlayer.ExoGameMode;
 import com.tidesofwaronline.Exodus.Util.MessageUtil;
-import com.tidesofwaronline.Exodus.Util.NumberUtil;
 import com.tidesofwaronline.Exodus.Util.SerializableLocation;
 import com.tidesofwaronline.Exodus.Worlds.ExoWorld;
 
 public abstract class DungeonBlock implements ConfigurationSerializable {
 	static HashMap<ExoWorld, HashMap<Location, DungeonBlock>> DBRegistry = new HashMap<ExoWorld, HashMap<Location, DungeonBlock>>();
-	HeartBeat heartBeat;
 
-	public static void breakBlockEvent(ExoPlayer exodusPlayer, Block block) {
-		removeDungeonBlock(getDungeonBlock(block).getLocation());
-	}
-
-	@SuppressWarnings("deprecation")
-	public static void clickBlockEvent(ExoPlayer exodusPlayer, Block clickedBlock, Action action) {
+	public static void clickBlockEvent(ExoPlayer exoPlayer, Block clickedBlock, Action action) {
+		if (clickedBlock == null) {
+			return;
+		}
 		//Left click = Block Info
 		//Right click = Edit Block
 		//Shift Left Click = Select Block
 		//Shift Right Click = Link Block
-		Player p = exodusPlayer.getPlayer();
-		DungeonBlock cb = getDungeonBlock(clickedBlock);
+		Player p = exoPlayer.getPlayer();
 		Location cbLoc = clickedBlock.getLocation();
-		DungeonBlock sb = exodusPlayer.getSelectedBlock();
+		DungeonBlock cb = getDungeonBlock(cbLoc);
+		DungeonBlock sb = exoPlayer.getSelectedBlock();
 		Location sbLoc = null;
 		if (sb != null) {
-			sbLoc = exodusPlayer.getSelectedBlock().getLocation();
+			sbLoc = exoPlayer.getSelectedBlock().getLocation();
 		}
-		if (DBInventory.isHoldingInfoTool(exodusPlayer.getPlayer())) {
-			if (DungeonBlock.isDungeonBlock(clickedBlock.getLocation())) {
+		if (DBInventory.isHoldingInfoTool(exoPlayer.getPlayer())) {
+			if (DungeonBlock.isDungeonBlock(cbLoc)) {
 				if (action == Action.LEFT_CLICK_BLOCK && p.isSneaking() == false) {
 					cb.getInfo(cb, p);
 				} else if (action == Action.RIGHT_CLICK_BLOCK && p.isSneaking() == false) {
 					//Right Click
-					if (exodusPlayer.getEditingBlock() != null && exodusPlayer.getEditingBlock().equals(cb)) {
+					if (exoPlayer.getEditingBlock() != null && exoPlayer.getEditingBlock().equals(cb)) {
 						p.sendMessage("No longer editing " + cb.toString() + ".");
-						exodusPlayer.setEditingBlock(null);
+						exoPlayer.setEditingBlock(null);
 					} else {
 						p.sendMessage("Editing " + cb.toString() + ". Type §ehelp §fif you don't know what you're doing!");
-						exodusPlayer.setEditingBlock(cb);
+						exoPlayer.setEditingBlock(cb);
 					}
 				} else if (action == Action.LEFT_CLICK_BLOCK && p.isSneaking() == true) {
 					//Select Block
 					if (sbLoc != null && sbLoc.equals(cbLoc)) {
-						exodusPlayer.setSelectedBlock(null);
+						exoPlayer.setSelectedBlock(null);
 						p.sendMessage("Block Deselected");
 					} else if (sbLoc == null || !sbLoc.equals(cbLoc)) {
-						exodusPlayer.setSelectedBlock(cb);
+						exoPlayer.setSelectedBlock(cb);
 						p.sendMessage("Selected block: " + cb.toString());
 					}
 				} else if (action == Action.RIGHT_CLICK_BLOCK && p.isSneaking() == true) {
@@ -99,9 +98,8 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 				}
 			}
 		}
-		if (isDungeonBlock(clickedBlock.getLocation())) {
-			getDungeonBlock(clickedBlock).onClickBlock(exodusPlayer, clickedBlock, action);
-			p.sendBlockChange(cbLoc, cb.getMaterial(), (byte) 0);
+		if (isDungeonBlock(cbLoc)) {
+			getDungeonBlock(cbLoc).onClickBlock(exoPlayer, cbLoc, action);
 		}
 	}
 
@@ -111,13 +109,6 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 
 	public static HashMap<Location, DungeonBlock> getDBRegistry(World world) {
 		return DBRegistry.get(ExoWorld.getExoWorld(world));
-	}
-
-	public static DungeonBlock getDungeonBlock(Block b) {
-		if (getDBRegistry(b.getWorld()) == null) {
-			return null;
-		}
-		return getDBRegistry(b.getWorld()).get(b.getLocation());
 	}
 
 	public static DungeonBlock getDungeonBlock(Location loc) {
@@ -252,6 +243,7 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 	public Location location;
 	public int ID;
 	public boolean enabled = true;
+	private boolean isValid = true;
 
 	public DungeonBlock() {}
 
@@ -261,17 +253,19 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		this.ID = assignNewID();
 		registerDungeonBlock(loc.getWorld(), this);
 		
-		heartBeat = new HeartBeat(this);
-		heartBeat.start();
+		//heartBeat = new HeartBeat(this);
+		//heartBeat.start();
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "unchecked" })
 	public DungeonBlock(Map<String, Object> map) {
 		for (Field f : (Field[]) ArrayUtils.addAll(this.getClass().getFields(), this.getClass().getDeclaredFields())) {
 			try {
 				if (!Modifier.isPrivate(f.getModifiers()) && map.containsKey(f.getName())) {
 					if (f.getType().equals(Location.class)) {
 						f.set(this, SerializableLocation.fromString(map.get(f.getName()).toString()).toLocation());
+					} else if (f.getType().isEnum()) {
+						f.set(this, Enum.valueOf(f.getType().asSubclass(Enum.class), map.get(f.getName()).toString()));
 					} else {
 						f.set(this, map.get(f.getName()));
 					}
@@ -284,15 +278,8 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		}
 		if (this.location != null) {
 			registerDungeonBlock(this.location.getWorld(), this);
-			
-			for (Player p : this.getWorld().getPlayers()) {
-				if (ExoPlayer.getExodusPlayer(p).getExoGameMode() == ExoGameMode.DBEDITOR) {
-					p.sendBlockChange(this.getLocation(), 0, (byte) 0);
-				}
-			}
-			
-			heartBeat = new HeartBeat(this);
-			heartBeat.start();
+			//heartBeat = new HeartBeat(this);
+			//heartBeat.start();
 			
 		} else {
 			Exodus.logger.severe("Error initializing Dungeon Block; Location null or invalid.");
@@ -331,25 +318,28 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		return commands;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void delete() {
-		for (Player p : this.getWorld().getPlayers()) {
-			p.sendBlockChange(this.getLocation(), 0, (byte) 0);
-		}
-		this.getLocation().getBlock().setTypeId(0);
 		for (DungeonBlock d : this.getLinkedFromBlocks()) {
 			d.removeLinkedBlock(this);
 		}
 		this.linkedBlocks = null;
+		this.setValid(false);
 		removeDungeonBlock(this.getLocation());
 		try {
 			this.finalize();
 		} catch (Throwable e) {}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public void delete(Player p) {
+		this.setValid(false);
+		p.sendBlockChange(this.location, Material.AIR, (byte) 0);
+		delete();
+	}
 
 	@DungeonBlockCommand(example = "delete; delete Entity Spawner 4; delete all", syntax = "delete <all, Dungeon Block>", description = "Deletes the selected Dungeon Block, specified Dungeon Block(s), or all DungeonBlocks.")
 	public String delete(CommandPackage cp) {
-		this.delete();
+		this.delete(cp.getPlayer());
 		cp.getExoPlayer().setEditingBlock(null);
 		return "§3" + this.toString() + "§f has been deleted and removed. No longer editing §3" + this.toString() + "§f.";
 	}
@@ -394,13 +384,23 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 	@DungeonBlockCommand(description = "Disables a Dungeon Block.", example = "", syntax = "")
 	public String disable(CommandPackage cp) {
 		this.enabled = false;
+		onDisable(cp);
 		return this + " disabled.";
+	}
+	
+	public void onDisable(CommandPackage cp) {
+		
 	}
 
 	@DungeonBlockCommand(description = "Enables a Dungeon Block.", example = "", syntax = "")
 	public String enable(CommandPackage cp) {
 		this.enabled = true;
+		onEnable(cp);
 		return this + " enabled.";
+	}
+	
+	public void onEnable(CommandPackage cp) {
+		
 	}
 
 	@DungeonBlockCommand(example = "", syntax = "example <command>", description = "Gives an example for the specified command.")
@@ -443,7 +443,6 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		output.add(line1);
 		output.add("| Linked to: §3" + Joiner.on("§f, §3").join(this.getLinkedBlocks()));
 		output.add("| Linked from: §3" + Joiner.on("§f, §3").join(this.getLinkedFromBlocks()));
-		output.add("| Heartbeat: " + NumberUtil.round((heartBeat.getTimeToExecute()/1000000), 4) + "ms");
 		
 		for (Class<?> clazz : db.getClass().getDeclaredClasses()) {
 			if (clazz.getSimpleName().equals("Event")) {
@@ -465,6 +464,8 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 			p.sendMessage(s);
 		}
 	}
+	
+	public abstract List<String> getAdditionalInfo();
 	
 	public List<?> getEvents() {
 		return null;
@@ -502,21 +503,6 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 
 	public World getWorld() {
 		return this.getLocation().getWorld();
-	}
-	
-	public long getHeartBeat() {
-		return heartBeat.getTimeToExecute();
-	}
-	
-	public static long getTotalHeartBeat(World world) {
-		
-		long total = 0;
-		
-		for (DungeonBlock db : getDungeonBlocks(world)) {
-			total += db.getHeartBeat();
-		}
-		
-		return total;
 	}
 
 	public boolean hasInput() {
@@ -614,7 +600,7 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		return "";
 	}
 
-	public void onClickBlock(ExoPlayer exodusPlayer, Block clickedBlock, Action action) {}
+	public void onClickBlock(ExoPlayer exodusPlayer, Location clickedBlock, Action action) {}
 
 	public void onRedstoneEvent(BlockRedstoneEvent event) {}
 
@@ -632,6 +618,8 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 				if (!Modifier.isPrivate(f.getModifiers())) {
 					if (f.getType().equals(Location.class)) {
 						map.put(f.getName(), new SerializableLocation((Location) f.get(this)).toString());
+					} else if (f.getType().isEnum()) {
+						map.put(f.getName(), f.get(this).toString());
 					} else {
 						map.put(f.getName(), f.get(this));
 					}
@@ -722,6 +710,14 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		return "Unlinked this Dungeon Block from §3" + Joiner.on("§f, §3").join(dungeonBlocks);
 	}
 
+	public boolean isValid() {
+		return isValid;
+	}
+
+	public void setValid(boolean isValid) {
+		this.isValid = isValid;
+	}
+
 	@Retention(value = RetentionPolicy.RUNTIME)
 	@Target(value = ElementType.METHOD)
 	public @interface DungeonBlockCommand {
@@ -739,6 +735,10 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		public DungeonBlockEvent(DungeonBlock dungeonBlock, Entity entity) {
 			this.dungeonBlock = dungeonBlock;
 			this.entity = entity;
+		}
+
+		public DungeonBlockEvent(DungeonBlock dungeonBlock) {
+			this.dungeonBlock = dungeonBlock;
 		}
 
 		public DungeonBlock getDungeonBlock() {
@@ -794,47 +794,33 @@ public abstract class DungeonBlock implements ConfigurationSerializable {
 		String[] arguments();
 		String name();
 	}
-	
-	private class HeartBeat extends Thread {
-		
-		private DungeonBlock db;
-		private long time;
-		private long timeToExecute;
-		
-		private HeartBeat(DungeonBlock db) {
-			this.db = db;
+
+	public void refreshBlock(Chunk[] chunks, Player player) {
+		if (ExoPlayer.getExodusPlayer(player).getExoGameMode() != ExoGameMode.DBEDITOR) {
+			return;
 		}
+		for (Chunk c : chunks) {
+			if (this.getLocation().getChunk().equals(c)) {
+				Bukkit.getScheduler().runTaskLater(Exodus.getPlugin(), new UpdateBlock(player, this), 5L);
+			}
+		}
+	}
+	
+	class UpdateBlock extends BukkitRunnable {
 		
+		Player player;
+		DungeonBlock dungeonBlock;
+
+		public UpdateBlock(Player player, DungeonBlock dungeonBlock) {
+			this.dungeonBlock = dungeonBlock;
+			this.player = player;
+		}
+
 		@SuppressWarnings("deprecation")
 		@Override
 		public void run() {
-			try {
-				while (true) {
-					sleep(2500);
-
-					time = System.nanoTime();
-
-					for (Player p : db.getWorld().getPlayers()) {
-						if (ExoPlayer.getExodusPlayer(p).getExoGameMode() == ExoGameMode.DBEDITOR) {
-							if (p.getLocation().distance(db.getLocation()) < 10) {
-								db.getLocation().getBlock().setType(db.getMaterial());
-							} else {
-								db.getLocation().getBlock().setType(Material.AIR);
-								p.sendBlockChange(db.getLocation(), db.getMaterial(), (byte) 0);
-							}
-						} else {
-							p.sendBlockChange(db.getLocation(), Material.AIR, (byte) 0);
-						}
-					}
-
-					timeToExecute = System.nanoTime() - time;
-				}
-			} catch (InterruptedException e) {
-			}
+			player.sendBlockChange(dungeonBlock.getLocation(), dungeonBlock.getMaterial(), (byte) 0);
 		}
-
-		public long getTimeToExecute() {
-			return timeToExecute;
-		}
+		
 	}
 }
