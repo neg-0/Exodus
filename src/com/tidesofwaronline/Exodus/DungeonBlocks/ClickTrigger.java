@@ -1,10 +1,10 @@
 package com.tidesofwaronline.Exodus.DungeonBlocks;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
@@ -30,12 +30,18 @@ public class ClickTrigger extends DungeonBlock {
 	}
 
 	@Override
-	public void onClickBlock(ExoPlayer exodusPlayer, Block clickedBlock,
+	public void onClickBlock(ExoPlayer exodusPlayer, Location clickedBlock,
 			Action action) {
 		Player player = exodusPlayer.getPlayer();
 		if (this.isEnabled() && player.getItemInHand().getType() != Material.BLAZE_ROD && player.getItemInHand().getType() != Material.WOOD_AXE) {
 			player.sendMessage("Click Triggered");
 			triggerLinkedBlocks(new DungeonBlockEvent(this, exodusPlayer.getPlayer()));
 		}
+	}
+
+	@Override
+	public List<String> getAdditionalInfo() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
