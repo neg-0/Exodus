@@ -504,4 +504,11 @@ public class CommandExecutor extends DungeonBlock {
 			}
 		}
 	}
+
+
+	@Override
+	public List<String> getAdditionalInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
