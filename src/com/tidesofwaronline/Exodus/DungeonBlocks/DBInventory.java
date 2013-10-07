@@ -21,28 +21,15 @@ public class DBInventory {
 		inv.setItem(0, new DBInventoryIcon(InfoTool.class));
 		inv.setItem(1, new ItemStack(Material.WOOD_AXE));
 		
-		//Logic Blocks
-		//inv.setItem(11, new DBInventoryIcon(Material.PUMPKIN, "Toggle Switch", "§8Dungeon Block"));
-		//inv.setItem(20, new DBInventoryIcon(Material.EMERALD_BLOCK, "Repeater", "§8Dungeon Block"));
-		//inv.setItem(3, new DBInventoryIcon(RedstoneSwitch.class));
-		
-		//Trigger Blocks
 		inv.setItem(2, new DBInventoryIcon(ClickTrigger.class));
 		inv.setItem(3, new DBInventoryIcon(ProximityTrigger.class));
-		
-		//inv.setItem(12, new DBInventoryIcon(Material.SNOW_BLOCK, "Item Proximity", "§8Dungeon Block"));
-		//inv.setItem(21, new DBInventoryIcon(Material.LAPIS_BLOCK, "Mob Proximity", "§8Dungeon Block"));
-		//inv.setItem(30, new DBInventoryIcon(Material.REDSTONE_BLOCK, "Timer", "§8Dungeon Block"));
-		
-		//Action Blocks
 		inv.setItem(4, new DBInventoryIcon(BlockManipulator.class));
 		inv.setItem(5, new DBInventoryIcon(EffectsPlayer.class));
 		inv.setItem(6, new DBInventoryIcon(EntitySpawner.class));
 		inv.setItem(7, new DBInventoryIcon(InventoryEditor.class));
 		inv.setItem(8, new DBInventoryIcon(CommandExecutor.class));
-		//inv.setItem(26, new DBInventoryIcon(Material.IRON_BLOCK, "Cave-In", "§8Dungeon Block"));
-		//inv.setItem(33, new DBInventoryIcon(Material.GLASS, "Lightning", "§8Dungeon Block"));
-		//inv.setItem(35, new DBInventoryIcon(Material.IRON_ORE, "Physics", "§8Dungeon Block"));
+		inv.setItem(11, new DBInventoryIcon(RedstoneSwitch.class));
+		inv.setItem(12, new DBInventoryIcon(PhysicsBlock.class));
 	}
 
 	public static Inventory getInventory() {
