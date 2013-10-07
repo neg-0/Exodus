@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 public class CustomEntity {
 
@@ -130,5 +131,9 @@ public class CustomEntity {
 	public void destroy() {
 		entity.remove();
 		CustomEntityHandler.unRegister(this.entity);
+	}
+
+	public void setVelocity(Vector velocity) {
+		entity.setVelocity(velocity);
 	}
 }
