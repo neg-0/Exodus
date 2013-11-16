@@ -4,14 +4,15 @@ description: The RPG plugin for Exodus
 author: MastaC
 website: http://www.tidesofwaronline.com
 main: com.tidesofwaronline.Exodus.Exodus
-softdepend: [ProtocolLib, TagAPI, Vault]
-depend: [WorldEdit]
+softdepend: [RemoteEntities, TagAPI]
+depend: [ProtocolLib, WorldEdit, Vault]
 
 commands:
   stats:
     description: Displays the stats menu.
   exo:
     description: Exodus Admin command.
+    aliases: [xo]
   exospawner:
     description: Controls Exodus Spawners
     aliases: [es]
