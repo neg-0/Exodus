@@ -7,7 +7,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="D:/Documents/eclipse/jars/TagAPI.jar"/>
-	<classpathentry kind="lib" path="D:/Documents/eclipse/jars/bukkit-1.6.4-R0.1-20130923.182036-4.jar">
+	<classpathentry kind="lib" path="D:/Documents/eclipse/jars/bukkit-1.6.4-R2.1-20131031.000035-1.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://jd.bukkit.org/apidocs/"/>
 		</attributes>
@@ -23,7 +23,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre6"/>
-	<classpathentry kind="lib" path="D:/Documents/eclipse/jars/remoteentities-1.7.jar">
+	<classpathentry kind="lib" path="D:/Documents/eclipse/jars/remoteentities-1.8-SNAPSHOT.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://docs.infinityblade.de/remoteentities/"/>
 		</attributes>
