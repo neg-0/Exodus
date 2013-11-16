@@ -23,10 +23,10 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.data.DataException;
-import com.tidesofwaronline.Exodus.DataStructure;
 import com.tidesofwaronline.Exodus.Exodus;
 import com.tidesofwaronline.Exodus.Commands.CommandPackage;
 import com.tidesofwaronline.Exodus.DungeonBlocks.DungeonBlock.DungeonBlockInfo;
+import com.tidesofwaronline.Exodus.Util.DataStructure;
 import com.tidesofwaronline.Exodus.Util.SerializableLocation;
 import com.tidesofwaronline.Exodus.Util.TerrainManager;
 
