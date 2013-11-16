@@ -131,6 +131,10 @@ public class CustomEntity {
 	public void destroy() {
 		entity.remove();
 		CustomEntityHandler.unRegister(this.entity);
+		this.name = null;
+		this.entity = null;
+		this.random = null;
+		this.plugin = null;
 	}
 
 	public void setVelocity(Vector velocity) {
